@@ -158,6 +158,8 @@ window.signup = async () => {
     // Show a persistent success modal with 60s countdown and manual redirect
     (function showSignupSuccessModal() {
       const successMessage = 'Your account is successfully created.';
+      // Compatibility alias: prevents runtime errors if any stale code path still references submissionResult.
+      const submissionResult = successMessage;
       const TOTAL_SECONDS = 60;
       let secondsLeft = TOTAL_SECONDS;
       let countdownInterval = null;
@@ -211,7 +213,7 @@ window.signup = async () => {
       title.style.fontSize = '20px';
       title.style.color = '#86efac';
 
-      const info = createEl('p', { html: successMessage });
+      const info = createEl('p', { html: submissionResult });
       info.style.color = '#dcfce7';
       info.style.margin = '6px 0 12px';
 
