@@ -44,10 +44,16 @@ exports.signup = async (req, res) => {
       yearOfStudy,
       avatarUrl
     } = req.body;
+
+    const normalizedEmail = String(email || '').trim().toLowerCase();
     
     // Validate required fields
     if (!firstName || !lastName || !email || !phone || !password) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
     }
 
     // Validate password confirmation (only if provided)
@@ -61,17 +67,17 @@ exports.signup = async (req, res) => {
     }
 
     // Auto-generate username from email if not provided
-    const generatedUsername = username || email.split('@')[0].toLowerCase();
+    const generatedUsername = username || normalizedEmail.split('@')[0];
 
     // Use parallel queries to check for duplicates
     const [existingUsername, existingEmail, existingPhone] = await Promise.all([
       User.findOne({ username: generatedUsername }).lean(),
-      User.findOne({ email: email.toLowerCase() }).lean(),
+      User.findOne({ email: normalizedEmail }).lean(),
       User.findOne({ phone }).lean()
     ]);
 
-    if (existingUsername) return res.status(400).json({ message: 'Username already taken' });
     if (existingEmail) return res.status(400).json({ message: 'Email already registered' });
+    if (existingUsername) return res.status(400).json({ message: 'Username already taken' });
     if (existingPhone) return res.status(400).json({ message: 'Phone number already registered' });
 
     // Hash password
@@ -84,7 +90,7 @@ exports.signup = async (req, res) => {
       firstName,
       middleName: middleName || '',
       lastName,
-      email: email.toLowerCase(),
+      email: normalizedEmail,
       phone,
       collegeName: String(collegeName || '').trim(),
       department: String(department || '').trim(),
@@ -120,8 +126,22 @@ exports.signup = async (req, res) => {
     
     // Handle duplicate key errors
     if (err.code === 11000) {
-      const field = Object.keys(err.keyPattern)[0];
-      return res.status(409).json({ message: `${field} already registered` });
+      const field = Object.keys(err.keyPattern || err.keyValue || {})[0];
+      const normalizedField = String(field || '').toLowerCase();
+
+      if (normalizedField === 'email' || String(err.message || '').toLowerCase().includes('email')) {
+        return res.status(409).json({ message: 'Email already registered' });
+      }
+
+      if (normalizedField === 'phone') {
+        return res.status(409).json({ message: 'Phone number already registered' });
+      }
+
+      if (normalizedField === 'username') {
+        return res.status(409).json({ message: 'Username already taken' });
+      }
+
+      return res.status(409).json({ message: 'Account already exists' });
     }
     
     res.status(500).json({ message: 'Server error', error: err.message });

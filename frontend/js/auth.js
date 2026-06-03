@@ -46,6 +46,11 @@ function updatePasswordStrength() {
   }
 }
 
+function isValidEmailAddress(value) {
+  const email = String(value || '').trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 window.signup = async () => {
   const firstName = document.getElementById("firstName").value.trim();
   const middleName = document.getElementById("middleName").value.trim();
@@ -65,8 +70,33 @@ window.signup = async () => {
 
   const fullName = [firstName, middleName, lastName].filter(Boolean).join(" ").trim();
 
+  function getSignupErrorMessage(rawMessage) {
+    const message = String(rawMessage || '').toLowerCase();
+
+    if (message.includes('email already registered') || message.includes('email already exists')) {
+      return 'Email already registered. Please sign in with your login credentials.';
+    }
+
+    if (
+      message.includes('already registered') ||
+      message.includes('already taken') ||
+      message.includes('duplicate') ||
+      message.includes('exists')
+    ) {
+      return 'Account already exists. Please sign in with your login credentials.';
+    }
+
+    return rawMessage || 'Could not create your account.';
+  }
+
   if (!firstName || !lastName || !phone || !email || !password || !confirmPassword) {
     status.textContent = "Please fill in all required fields.";
+    status.className = "status error";
+    return;
+  }
+
+  if (!isValidEmailAddress(email)) {
+    status.textContent = "Please enter a valid email address.";
     status.className = "status error";
     return;
   }
@@ -116,7 +146,7 @@ window.signup = async () => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok || !data.token || !data.user) {
-      throw new Error(data.message || data.error || 'Could not create your account.');
+      throw new Error(getSignupErrorMessage(data.message || data.msg || data.error));
     }
 
     localStorage.setItem('token', data.token);
@@ -127,6 +157,7 @@ window.signup = async () => {
 
     // Show a persistent success modal with 60s countdown and manual redirect
     (function showSignupSuccessModal() {
+      const successMessage = 'Your account is successfully created.';
       const TOTAL_SECONDS = 60;
       let secondsLeft = TOTAL_SECONDS;
       let countdownInterval = null;
@@ -165,22 +196,23 @@ window.signup = async () => {
       card.style.textAlign = 'center';
       card.style.fontFamily = 'Poppins, sans-serif';
 
-      const icon = createEl('div', { class: 'eo-success-icon', html: '✓' });
+      const icon = createEl('div', { class: 'eo-success-icon', html: '✅' });
       icon.style.fontSize = '48px';
       icon.style.width = '86px';
       icon.style.height = '86px';
       icon.style.lineHeight = '86px';
       icon.style.borderRadius = '999px';
       icon.style.margin = '0 auto 12px';
-      icon.style.background = 'linear-gradient(90deg,#38bdf8,#7c3aed)';
-      icon.style.boxShadow = '0 8px 28px rgba(56,189,248,0.18)';
+      icon.style.background = 'linear-gradient(90deg,#22c55e,#16a34a)';
+      icon.style.boxShadow = '0 8px 28px rgba(34,197,94,0.24)';
 
-      const title = createEl('h2', { html: 'Registration Submitted Successfully 🎉' });
+      const title = createEl('h2', { html: 'Your account is successfully created' });
       title.style.margin = '6px 0 4px';
       title.style.fontSize = '20px';
+      title.style.color = '#86efac';
 
-      const info = createEl('p', { html: submissionResult || 'Your registration has been submitted successfully.' });
-      info.style.color = '#cfe9ff';
+      const info = createEl('p', { html: successMessage });
+      info.style.color = '#dcfce7';
       info.style.margin = '6px 0 12px';
 
       const regInfo = createEl('div', { class: 'eo-reg-info' });
@@ -201,7 +233,7 @@ window.signup = async () => {
       countdownWrap.style.margin = '6px 0 18px';
 
       const countdownLabel = createEl('div', { html: 'Redirecting to Dashboard in' });
-      countdownLabel.style.color = '#93c5fd';
+      countdownLabel.style.color = '#86efac';
       countdownLabel.style.fontSize = '13px';
       countdownLabel.style.marginBottom = '8px';
 
