@@ -1,0 +1,4661 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dashboard | StartInno Solutions</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="banner-slider.css">
+	<style>
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		html, body { height: 100%; }
+		/* enable smooth scrolling and native momentum on touch devices */
+		html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+		body { touch-action: pan-y; }
+
+		:root {
+			--bg: #050816;
+			--bg-soft: #0b1120;
+			--ink: #e2e8f0;
+			--muted: #94a3b8;
+			--panel: rgba(17, 24, 39, 0.72);
+			--panel-strong: rgba(17, 24, 39, 0.88);
+			--primary: #4f46e5;
+			--primary-dark: #4338ca;
+			--accent: #7c3aed;
+			--glow: #38bdf8;
+			--border: rgba(148, 163, 184, 0.16);
+		}
+
+		body {
+			font-family: "Poppins", sans-serif;
+			background:
+				radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.18), transparent 28%),
+				radial-gradient(circle at 85% 12%, rgba(124, 58, 237, 0.22), transparent 28%),
+				radial-gradient(circle at 50% 85%, rgba(79, 70, 229, 0.16), transparent 30%),
+				linear-gradient(180deg, #050816 0%, #0b1120 55%, #111827 100%);
+			color: var(--ink);
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		.page-wrapper {
+			min-height: 100vh;
+			position: relative;
+			isolation: isolate;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			background:
+				linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(124, 58, 237, 0.05) 38%, transparent 65%),
+				linear-gradient(180deg, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.6));
+		}
+
+		.page-wrapper::before,
+		.page-wrapper::after {
+			content: '';
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		.page-wrapper::before {
+			background-image:
+				linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(124, 58, 237, 0.08) 1px, transparent 1px);
+			background-size: 96px 96px, 96px 96px;
+			opacity: 0.34;
+			-webkit-mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+			mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+		}
+
+		.page-wrapper::after {
+			background:
+				radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.12), transparent 22%),
+				radial-gradient(circle at 75% 30%, rgba(124, 58, 237, 0.14), transparent 24%),
+				radial-gradient(circle at 50% 85%, rgba(79, 70, 229, 0.12), transparent 26%);
+			filter: blur(14px);
+			opacity: 0.85;
+		}
+
+		header {
+			background: linear-gradient(180deg, rgba(17,24,39,0.84), rgba(15,23,42,0.72));
+			-webkit-backdrop-filter: blur(16px) saturate(1.15);
+			backdrop-filter: blur(16px) saturate(1.15);
+			border-bottom: 1px solid rgba(148,163,184,0.14);
+			padding: 16px 24px;
+			box-shadow: 0 18px 42px rgba(2,6,23,0.42);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			position: relative;
+			z-index: 2;
+		}
+
+		.reg-link-card {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			background: rgba(17, 24, 39, 0.62);
+			border: 1px solid rgba(148, 163, 184, 0.12);
+			padding: 10px 14px;
+			border-radius: 12px;
+			margin-left: 12px;
+			-webkit-backdrop-filter: blur(14px);
+			backdrop-filter: blur(14px);
+		}
+
+		.reg-link-card input {
+			flex: 1 1 auto;
+			border: 1px dashed rgba(99, 102, 241, 0.3);
+			padding: 8px 10px;
+			border-radius: 8px;
+			background: rgba(15,23,42,0.72);
+			color: var(--ink);
+		}
+
+		@keyframes fadeInUp {
+			0% { opacity: 0; transform: translateY(12px); }
+			100% { opacity: 1; transform: translateY(0); }
+		}
+
+		.fade-in-up {
+			animation: fadeInUp 420ms cubic-bezier(.2,.9,.2,1) both;
+		}
+
+		header h1 {
+			font-size: 1.6rem;
+			color: var(--ink);
+		}
+
+		.header-actions {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.top-actions {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.profile-shell {
+			position: relative;
+		}
+
+		.profile-backdrop {
+			position: fixed;
+			inset: 0;
+			background: rgba(2, 6, 23, 0.48);
+			-webkit-backdrop-filter: blur(2px);
+				backdrop-filter: blur(2px);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 180ms ease;
+			z-index: 1100;
+		}
+
+		.profile-backdrop.open {
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		.profile-trigger {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			border: 1px solid rgba(148,163,184,0.18);
+			background: linear-gradient(135deg, rgba(79,70,229,0.22), rgba(124,58,237,0.18));
+			color: #f8fafc;
+			border-radius: 999px;
+			padding: 8px 12px;
+			cursor: pointer;
+			transition: transform 180ms ease, box-shadow 180ms ease;
+			-webkit-backdrop-filter: blur(8px);
+			backdrop-filter: blur(8px);
+		}
+
+		.profile-trigger:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 10px 24px rgba(59,130,246,0.18);
+		}
+
+		.profile-avatar {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			display: grid;
+			place-items: center;
+			font-weight: 700;
+			font-size: 0.9rem;
+			color: #fff;
+			background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+			position: relative;
+		}
+
+		.profile-avatar.online::after {
+			content: '';
+			position: absolute;
+			right: 1px;
+			bottom: 1px;
+			width: 9px;
+			height: 9px;
+			border-radius: 50%;
+			background: #22c55e;
+			box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(34,197,94,0.8);
+		}
+
+		.profile-panel {
+			position: fixed;
+			top: 84px;
+			right: 18px;
+			width: min(420px, calc(100vw - 24px));
+			max-height: calc(100vh - 104px);
+			overflow: auto;
+			padding: 16px;
+			border-radius: 18px;
+			border: 1px solid rgba(255,255,255,0.18);
+			background: linear-gradient(180deg, rgba(17,24,39,0.84), rgba(15,23,42,0.78));
+			color: #e2e8f0;
+			box-shadow: 0 20px 60px rgba(2,6,23,0.5);
+			-webkit-backdrop-filter: blur(18px);
+			backdrop-filter: blur(18px);
+			transform: translateY(-10px) scale(0.98);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 180ms ease, transform 180ms ease;
+			z-index: 1201;
+		}
+    
+		/* Right-side sliding drawer */
+		.profile-panel {
+			position: fixed;
+			top: 0;
+			right: 0;
+			height: 100vh;
+			width: min(420px, 90vw);
+			overflow: auto;
+			padding: 20px 18px;
+			border-radius: 0 0 0 12px;
+			border-left: 1px solid rgba(255,255,255,0.06);
+			background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(15,23,42,0.94));
+			background:
+				radial-gradient(circle at top left, rgba(79,70,229,0.18), transparent 30%),
+				linear-gradient(180deg, rgba(17,24,39,0.96), rgba(2,6,23,0.96));
+			color: #e8eef8;
+			box-shadow: -8px 0 40px rgba(2,6,23,0.7);
+			-webkit-backdrop-filter: blur(18px);
+			backdrop-filter: blur(18px);
+			transform: translateX(100%);
+			pointer-events: none;
+			transition: transform 260ms cubic-bezier(.2,.9,.2,1);
+			z-index: 1202;
+		}
+    
+		.profile-panel.open {
+			transform: translateX(0);
+			pointer-events: auto;
+		}
+
+		.profile-panel.open {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+			pointer-events: auto;
+		}
+
+		.profile-head {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding-bottom: 12px;
+			border-bottom: 1px solid rgba(255,255,255,0.12);
+			margin-bottom: 12px;
+		}
+
+		.profile-meta h3 {
+			font-size: 1rem;
+			margin-bottom: 2px;
+			color: #f8fafc;
+		}
+
+		.profile-meta p {
+			font-size: 0.84rem;
+			color: #cbd5e1;
+		}
+
+		.profile-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+			margin-bottom: 12px;
+		}
+
+		.profile-item {
+			padding: 8px 10px;
+			border-radius: 10px;
+			background: rgba(15, 23, 42, 0.62);
+			border: 1px solid rgba(148,163,184,0.12);
+		}
+
+		.profile-item strong {
+			display: block;
+			font-size: 0.72rem;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: #94a3b8;
+		}
+
+		.profile-item span {
+			display: block;
+			margin-top: 3px;
+			font-size: 0.86rem;
+			color: #f1f5f9;
+			word-break: break-word;
+		}
+
+		.profile-actions,
+		.profile-shortcuts {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+			margin-bottom: 12px;
+		}
+
+		.profile-btn {
+			border: 1px solid rgba(148,163,184,0.3);
+			background: rgba(30,41,59,0.65);
+			color: #f8fafc;
+			border-radius: 10px;
+			padding: 10px;
+			cursor: pointer;
+			font-size: 0.84rem;
+			font-weight: 600;
+			transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+		}
+
+		.profile-btn:hover {
+			transform: translateY(-1px) scale(1.01);
+			border-color: rgba(96,165,250,0.7);
+			box-shadow: 0 8px 20px rgba(59,130,246,0.2);
+		}
+
+		.profile-btn.logout {
+			background: linear-gradient(135deg, rgba(220,38,38,0.88), rgba(127,29,29,0.92));
+			border-color: rgba(248,113,113,0.8);
+		}
+
+		.profile-loading {
+			padding: 12px;
+			border-radius: 10px;
+			font-size: 0.86rem;
+			background: rgba(148,163,184,0.12);
+			border: 1px solid rgba(148,163,184,0.18);
+			margin-bottom: 10px;
+		}
+
+		.profile-form {
+			display: none;
+			padding: 10px;
+			border-radius: 10px;
+			background: rgba(15, 23, 42, 0.58);
+			border: 1px solid rgba(148,163,184,0.14);
+			margin-bottom: 10px;
+		}
+
+		.profile-form.open {
+			display: block;
+		}
+
+		.profile-form .form-group label {
+			color: #cbd5e1;
+			font-size: 0.8rem;
+		}
+
+		.profile-form .form-group input {
+			background: rgba(15, 23, 42, 0.74);
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			color: #f8fafc;
+		}
+
+		.btn-sm {
+			border: 0;
+			border-radius: 12px;
+			padding: 10px 16px;
+			cursor: pointer;
+			font-family: inherit;
+			font-weight: 600;
+			font-size: 0.9rem;
+			transition: all 180ms ease;
+		}
+
+		.btn-logout {
+			background: linear-gradient(135deg, #ef4444 0%, #dc2626 55%, #991b1b 100%);
+			color: white;
+		}
+
+		.btn-logout:hover {
+			transform: translateY(-1px) scale(1.02);
+			box-shadow: 0 8px 16px rgba(239, 68, 68, 0.2);
+		}
+
+		.container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 32px 24px;
+			flex: 1 1 auto;
+		}
+
+		.content-grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0;
+			margin-top: 24px;
+		}
+
+		.card {
+			background: var(--panel);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 20px;
+			padding: 28px;
+			box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+			-webkit-backdrop-filter: blur(20px) saturate(1.1);
+			backdrop-filter: blur(20px) saturate(1.1);
+		}
+
+		.about-card {
+			position: relative;
+			overflow: hidden;
+			padding: 0;
+			border: 1px solid rgba(124, 58, 237, 0.2);
+			background:
+				radial-gradient(circle at top left, rgba(79, 70, 229, 0.22), transparent 40%),
+				radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.16), transparent 38%),
+				linear-gradient(145deg, rgba(17, 24, 39, 0.96), rgba(15, 23, 42, 0.92));
+			box-shadow:
+				0 28px 60px rgba(15, 23, 42, 0.34),
+				inset 0 1px 0 rgba(255, 255, 255, 0.05);
+			-webkit-backdrop-filter: blur(18px) saturate(1.12);
+			backdrop-filter: blur(18px) saturate(1.12);
+			transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+		}
+
+		.about-card:hover {
+			transform: translateY(-4px);
+			border-color: rgba(124, 58, 237, 0.38);
+			box-shadow:
+				0 34px 72px rgba(15, 23, 42, 0.42),
+				0 0 0 1px rgba(124, 58, 237, 0.16),
+				inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		}
+
+		.about-card::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(124, 58, 237, 0.04) 45%, transparent 72%);
+			pointer-events: none;
+		}
+
+		.about-card__inner {
+			position: relative;
+			padding: clamp(24px, 4vw, 40px);
+			color: #e2e8f0;
+		}
+
+		.about-card__eyebrow {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 14px;
+			border-radius: 999px;
+			background: rgba(79, 70, 229, 0.14);
+			border: 1px solid rgba(129, 140, 248, 0.18);
+			color: #c7d2fe;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			box-shadow: 0 10px 24px rgba(79, 70, 229, 0.14);
+		}
+
+		.about-card__title {
+			margin-top: 16px;
+			font-size: clamp(2rem, 4vw, 3.15rem);
+			line-height: 1.05;
+			font-weight: 800;
+			letter-spacing: -0.03em;
+			background: linear-gradient(135deg, #f8fafc 0%, #c7d2fe 34%, #7c3aed 78%, #4f46e5 100%);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+			text-shadow: 0 0 28px rgba(79, 70, 229, 0.18);
+		}
+
+		.about-card__lead {
+			margin-top: 14px;
+			max-width: 860px;
+			font-size: 1rem;
+			line-height: 1.9;
+			color: #e2e8f0;
+		}
+
+		.about-card__body {
+			display: grid;
+			gap: 16px;
+			margin-top: 26px;
+		}
+
+		.about-card__paragraph {
+			padding: 16px 18px;
+			border-radius: 16px;
+			background: rgba(15, 23, 42, 0.42);
+			border: 1px solid rgba(148, 163, 184, 0.12);
+			box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+			font-size: 0.98rem;
+			line-height: 1.85;
+			color: #cbd5e1;
+		}
+
+		.about-card__footer {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-top: 26px;
+		}
+
+		.about-card__pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 14px;
+			border-radius: 999px;
+			background: rgba(15, 23, 42, 0.6);
+			border: 1px solid rgba(79, 70, 229, 0.2);
+			color: #e2e8f0;
+			font-size: 0.86rem;
+			box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+		}
+
+		.settings-overlay,
+		.issue-success-overlay,
+		.registration-success-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 1300;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 18px;
+			background: rgba(2, 6, 23, 0.78);
+			-webkit-backdrop-filter: blur(18px);
+			backdrop-filter: blur(18px);
+		}
+
+		.settings-overlay.open,
+		.issue-success-overlay.open,
+		.registration-success-overlay.open {
+			display: flex;
+		}
+
+		.settings-modal {
+			width: min(1180px, 100%);
+			max-height: 92vh;
+			overflow: auto;
+			background:
+				radial-gradient(circle at top left, rgba(79, 70, 229, 0.12), transparent 34%),
+				linear-gradient(180deg, rgba(17, 24, 39, 0.94), rgba(15, 23, 42, 0.92));
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 28px;
+			box-shadow: 0 34px 90px rgba(2, 6, 23, 0.64);
+			color: #e2e8f0;
+			position: relative;
+			animation: fadeInUp 420ms ease both;
+		}
+
+		.settings-modal::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			background:
+				linear-gradient(120deg, rgba(56, 189, 248, 0.08), transparent 28%),
+				linear-gradient(300deg, rgba(124, 58, 237, 0.08), transparent 32%);
+			opacity: 0.8;
+		}
+
+		.settings-modal__inner {
+			position: relative;
+			padding: clamp(20px, 3vw, 28px);
+		}
+
+		.settings-header,
+		.issue-success-header {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 18px;
+		}
+
+		.settings-kicker,
+		.issue-success-kicker {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 14px;
+			border-radius: 999px;
+			background: rgba(79, 70, 229, 0.14);
+			border: 1px solid rgba(129, 140, 248, 0.2);
+			color: #c7d2fe;
+			font-size: 0.76rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+
+		.settings-title,
+		.issue-success-title {
+			margin-top: 10px;
+			font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+			font-weight: 800;
+			letter-spacing: -0.03em;
+		}
+
+		.settings-subtitle,
+		.issue-success-subtitle {
+			margin-top: 8px;
+			color: #94a3b8;
+			max-width: 820px;
+			line-height: 1.8;
+		}
+
+		.settings-title--compact {
+			font-size: 1.35rem;
+			margin-top: 8px;
+		}
+
+		.settings-card--spaced {
+			margin-top: 18px;
+		}
+
+		.settings-empty--spaced {
+			margin-top: 14px;
+		}
+
+		.settings-help-row--tight {
+			margin-top: 0;
+		}
+
+		.settings-tabs {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+			padding: 10px;
+			border-radius: 20px;
+			background: rgba(15, 23, 42, 0.55);
+			border: 1px solid rgba(148, 163, 184, 0.12);
+			margin-bottom: 18px;
+		}
+
+		.settings-tab {
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			background: rgba(17, 24, 39, 0.72);
+			color: #cbd5e1;
+			border-radius: 14px;
+			padding: 12px 16px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+		}
+
+		.settings-tab:hover {
+			transform: translateY(-1px);
+			border-color: rgba(96, 165, 250, 0.45);
+			box-shadow: 0 10px 24px rgba(59, 130, 246, 0.16);
+		}
+
+		.settings-tab.active {
+			background: linear-gradient(135deg, rgba(79, 70, 229, 0.42), rgba(124, 58, 237, 0.3));
+			color: #fff;
+			border-color: rgba(167, 139, 250, 0.42);
+			box-shadow: 0 14px 30px rgba(79, 70, 229, 0.24);
+		}
+
+		.settings-pane {
+			display: none;
+			animation: fadeInUp 320ms ease both;
+		}
+
+		.settings-pane.active {
+			display: block;
+		}
+
+		.settings-pane-grid {
+			display: grid;
+			grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+			gap: 18px;
+		}
+
+		.settings-card,
+		.settings-support-card,
+		.settings-issue-card,
+		.settings-registration-card,
+		.settings-history-card,
+		.issue-success-card {
+			background: rgba(17, 24, 39, 0.7);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 22px;
+			padding: 18px;
+			-webkit-backdrop-filter: blur(18px) saturate(1.08);
+			backdrop-filter: blur(18px) saturate(1.08);
+			box-shadow: 0 20px 46px rgba(2, 6, 23, 0.34);
+		}
+
+		.settings-issue-form {
+			display: grid;
+			gap: 14px;
+		}
+
+		.settings-field {
+			display: grid;
+			gap: 8px;
+		}
+
+		.settings-field label,
+		.settings-check label {
+			font-size: 0.92rem;
+			font-weight: 600;
+			color: #cbd5e1;
+		}
+
+		.settings-field input,
+		.settings-field select,
+		.settings-field textarea {
+			width: 100%;
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			border-radius: 14px;
+			background: rgba(15, 23, 42, 0.74);
+			color: #e2e8f0;
+			padding: 12px 14px;
+			font: inherit;
+			outline: none;
+			transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+		}
+
+		.settings-field input:focus,
+		.settings-field select:focus,
+		.settings-field textarea:focus {
+			border-color: rgba(124, 58, 237, 0.72);
+			box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.16);
+			transform: translateY(-1px);
+		}
+
+		.settings-field textarea {
+			min-height: 140px;
+			resize: vertical;
+		}
+
+		.settings-check {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 14px 16px;
+			border-radius: 16px;
+			background: rgba(15, 23, 42, 0.48);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+		}
+
+		.settings-check input {
+			margin-top: 4px;
+			accent-color: var(--accent);
+		}
+
+		.settings-submit,
+		.settings-secondary {
+			border: 0;
+			border-radius: 14px;
+			padding: 13px 18px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+		}
+
+		.settings-submit {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+			color: #fff;
+			box-shadow: 0 18px 34px rgba(79, 70, 229, 0.28), 0 0 24px rgba(124, 58, 237, 0.16);
+		}
+
+		.settings-submit:hover,
+		.settings-secondary:hover {
+			transform: translateY(-1px);
+			filter: brightness(1.04);
+		}
+
+		.settings-secondary {
+			background: rgba(30, 41, 59, 0.96);
+			color: #e2e8f0;
+			border: 1px solid rgba(148, 163, 184, 0.16);
+		}
+
+		.settings-note {
+			margin-top: 12px;
+			color: #94a3b8;
+			font-size: 0.9rem;
+			line-height: 1.7;
+		}
+
+		.settings-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 14px;
+		}
+
+		.settings-mini-card {
+			padding: 16px;
+			border-radius: 18px;
+			background: rgba(15, 23, 42, 0.56);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+		}
+
+		.settings-mini-card strong,
+		.settings-mini-card span {
+			display: block;
+		}
+
+		.settings-mini-card strong {
+			color: #f8fafc;
+			margin-bottom: 4px;
+		}
+
+		.settings-mini-card span {
+			color: #cbd5e1;
+			line-height: 1.7;
+		}
+
+		.settings-table-wrap {
+			overflow-x: auto;
+			border-radius: 18px;
+			border: 1px solid rgba(148, 163, 184, 0.14);
+		}
+
+		.settings-table {
+			width: 100%;
+			border-collapse: collapse;
+			min-width: 920px;
+			background: rgba(15, 23, 42, 0.5);
+		}
+
+		.settings-table th,
+		.settings-table td {
+			padding: 14px 12px;
+			text-align: left;
+			vertical-align: top;
+			border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+		}
+
+		.settings-table th {
+			font-size: 0.78rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: #94a3b8;
+		}
+
+		.settings-table td {
+			color: #e2e8f0;
+		}
+
+		.settings-table tr:hover td {
+			background: rgba(79, 70, 229, 0.08);
+		}
+
+		.issue-timeline {
+			display: grid;
+			gap: 12px;
+		}
+
+		.issue-card {
+			padding: 16px;
+			border-radius: 20px;
+			background: rgba(15, 23, 42, 0.58);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+		}
+
+		.issue-card__top {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			align-items: flex-start;
+			margin-bottom: 10px;
+		}
+
+		.issue-card__title {
+			font-weight: 800;
+			color: #f8fafc;
+		}
+
+		.issue-card__meta,
+		.issue-card__body,
+		.issue-card__footer {
+			color: #cbd5e1;
+			font-size: 0.92rem;
+			line-height: 1.7;
+		}
+
+		.issue-status-pill,
+		.issue-status-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			border-radius: 999px;
+			font-size: 0.8rem;
+			font-weight: 800;
+			letter-spacing: 0.02em;
+		}
+
+		.issue-status-pill.pending,
+		.issue-status-chip.pending { background: rgba(245, 158, 11, 0.16); color: #fde68a; }
+		.issue-status-pill.processing,
+		.issue-status-chip.processing { background: rgba(56, 189, 248, 0.16); color: #bae6fd; }
+		.issue-status-pill.resolved,
+		.issue-status-chip.resolved { background: rgba(34, 197, 94, 0.16); color: #bbf7d0; }
+		.issue-status-pill.rejected,
+		.issue-status-chip.rejected { background: rgba(239, 68, 68, 0.16); color: #fecaca; }
+
+		.settings-empty {
+			padding: 18px;
+			border-radius: 18px;
+			background: rgba(15, 23, 42, 0.48);
+			border: 1px dashed rgba(148, 163, 184, 0.2);
+			color: #94a3b8;
+			text-align: center;
+		}
+
+		.issue-success-card {
+			width: min(540px, 100%);
+		}
+
+		.registration-success-overlay {
+			z-index: 1350;
+			background:
+				radial-gradient(circle at top, rgba(34,197,94,0.16), transparent 24%),
+				rgba(2, 6, 23, 0.84);
+		}
+
+		.registration-success-card {
+			position: relative;
+			width: min(760px, 100%);
+			padding: 28px;
+			border-radius: 30px;
+			background:
+				radial-gradient(circle at top left, rgba(79, 70, 229, 0.16), transparent 30%),
+				radial-gradient(circle at top right, rgba(124, 58, 237, 0.14), transparent 32%),
+				rgba(17, 24, 39, 0.82);
+			border: 1px solid rgba(34,197,94,0.22);
+			box-shadow: 0 28px 90px rgba(2, 6, 23, 0.68), 0 0 0 1px rgba(34,197,94,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+			overflow: hidden;
+			animation: successPop 420ms cubic-bezier(.2,.9,.2,1) both;
+		}
+
+		.registration-success-home {
+			position: absolute;
+			top: 18px;
+			right: 64px;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			border-radius: 999px;
+			background: rgba(15, 23, 42, 0.72);
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			color: #e2e8f0;
+			font-size: 0.8rem;
+			font-weight: 700;
+			text-decoration: none;
+			box-shadow: 0 12px 24px rgba(2, 6, 23, 0.22);
+			transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+			z-index: 2;
+		}
+
+		.registration-success-home:hover {
+			transform: translateY(-1px);
+			border-color: rgba(34, 197, 94, 0.4);
+			box-shadow: 0 14px 28px rgba(34, 197, 94, 0.12);
+		}
+
+		.registration-success-top {
+			display: flex;
+			gap: 16px;
+			align-items: flex-start;
+			flex: 1;
+		}
+
+		.registration-success-body {
+			margin-top: 4px;
+		}
+
+		.registration-success-card::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 1px;
+			background: linear-gradient(135deg, rgba(34,197,94,0.9), rgba(79,70,229,0.55), rgba(124,58,237,0.8));
+			-webkit-mask:
+				linear-gradient(#fff 0 0) content-box,
+				linear-gradient(#fff 0 0);
+			mask:
+				linear-gradient(#fff 0 0) content-box,
+				linear-gradient(#fff 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			pointer-events: none;
+			animation: borderPulse 2.8s ease-in-out infinite;
+		}
+
+		@keyframes successPop {
+			from { opacity: 0; transform: translateY(24px) scale(0.96); }
+			to { opacity: 1; transform: translateY(0) scale(1); }
+		}
+
+		@keyframes borderPulse {
+			0%, 100% { opacity: 0.7; }
+			50% { opacity: 1; }
+		}
+
+		.registration-success-timer {
+			position: absolute;
+			top: 18px;
+			right: 118px;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			border-radius: 999px;
+			background: rgba(15, 23, 42, 0.72);
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			color: #e2e8f0;
+			font-size: 0.8rem;
+			font-weight: 700;
+			box-shadow: 0 12px 24px rgba(2, 6, 23, 0.22);
+			z-index: 2;
+		}
+
+		.registration-success-timer span {
+			color: #7efcde;
+		}
+
+		.success-badge {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 76px;
+			height: 76px;
+			border-radius: 24px;
+			background: linear-gradient(135deg, rgba(34,197,94,0.24), rgba(16,185,129,0.14));
+			border: 1px solid rgba(34,197,94,0.36);
+			box-shadow: 0 0 0 8px rgba(34,197,94,0.08), 0 0 28px rgba(34,197,94,0.22);
+			position: relative;
+			flex: 0 0 auto;
+		}
+
+		.success-badge svg {
+			width: 42px;
+			height: 42px;
+			stroke: #86efac;
+			stroke-width: 3.2;
+			fill: none;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			filter: drop-shadow(0 0 10px rgba(34,197,94,0.45));
+		}
+
+		.success-headline {
+			font-size: clamp(1.8rem, 4vw, 2.6rem);
+			font-weight: 800;
+			line-height: 1.08;
+			letter-spacing: -0.04em;
+			margin-bottom: 10px;
+			background: linear-gradient(135deg, #f8fafc, #bbf7d0 45%, #86efac 100%);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: transparent;
+		}
+
+		.success-copy {
+			color: #cbd5e1;
+			line-height: 1.85;
+			font-size: 0.98rem;
+		}
+
+		.success-details {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 12px;
+			margin: 22px 0 8px;
+		}
+
+		.success-detail {
+			padding: 14px 16px;
+			border-radius: 18px;
+			background: rgba(15, 23, 42, 0.62);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+		}
+
+		.success-detail strong,
+		.success-detail span {
+			display: block;
+		}
+
+		.success-detail strong {
+			font-size: 0.76rem;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: #94a3b8;
+			margin-bottom: 6px;
+		}
+
+		.success-detail span {
+			color: #f8fafc;
+			font-weight: 700;
+			line-height: 1.4;
+		}
+
+		.success-note {
+			margin-top: 14px;
+			padding: 16px 18px;
+			border-radius: 18px;
+			background: rgba(34,197,94,0.08);
+			border: 1px solid rgba(34,197,94,0.18);
+			color: #dcfce7;
+			line-height: 1.8;
+		}
+
+		.success-actions {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-top: 22px;
+		}
+
+		.success-outline {
+			border: 1px solid rgba(148,163,184,0.18);
+			background: rgba(15, 23, 42, 0.74);
+			color: #e2e8f0;
+			border-radius: 14px;
+			padding: 13px 18px;
+			font-weight: 700;
+			cursor: pointer;
+			transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+		}
+
+		.success-outline:hover {
+			transform: translateY(-1px);
+			border-color: rgba(34,197,94,0.35);
+			box-shadow: 0 12px 28px rgba(34,197,94,0.12);
+		}
+
+		.success-glow {
+			position: absolute;
+			inset: auto auto -120px -120px;
+			width: 260px;
+			height: 260px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(34,197,94,0.18), transparent 66%);
+			filter: blur(10px);
+			pointer-events: none;
+		}
+
+		.success-particles {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			overflow: hidden;
+		}
+
+		.success-particle {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #22c55e, #86efac);
+			box-shadow: 0 0 16px rgba(34,197,94,0.45);
+			opacity: 0.9;
+			animation: floatParticle 2.8s ease-in-out infinite;
+		}
+
+		@keyframes floatParticle {
+			0%, 100% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.6; }
+			50% { transform: translateY(-18px) translateX(8px) scale(1); opacity: 1; }
+		}
+
+		.success-confetti {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			overflow: hidden;
+		}
+
+		.success-confetti span {
+			position: absolute;
+			top: -12px;
+			width: 10px;
+			height: 18px;
+			border-radius: 4px;
+			animation: confettiFall 1.8s linear infinite;
+		}
+
+		@keyframes confettiFall {
+			0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+			100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
+		}
+
+		@media (max-width: 640px) {
+			.registration-success-card {
+				padding: 20px;
+				border-radius: 24px;
+			}
+
+			.registration-success-home {
+				top: 14px;
+				right: 14px;
+				padding: 7px 10px;
+				font-size: 0.74rem;
+			}
+
+			.registration-success-timer {
+				top: 14px;
+				right: 88px;
+				padding: 7px 10px;
+				font-size: 0.72rem;
+			}
+
+			.success-badge {
+				width: 64px;
+				height: 64px;
+			}
+
+			.success-badge svg {
+				width: 36px;
+				height: 36px;
+			}
+
+			.success-actions {
+				flex-direction: column;
+			}
+
+			.success-actions .btn-primary,
+			.success-actions .success-outline {
+				width: 100%;
+			}
+		}
+
+		.issue-success-cta {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+			margin-top: 18px;
+		}
+
+		.settings-help-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			margin-top: 12px;
+			flex-wrap: wrap;
+		}
+
+		.settings-link {
+			color: #c4b5fd;
+			text-decoration: none;
+			font-weight: 700;
+		}
+
+		.settings-link:hover {
+			text-decoration: underline;
+		}
+
+		.card h2 {
+			margin: 0 0 20px;
+			font-size: 1.35rem;
+			color: #f8fafc;
+		}
+
+		.card h3 {
+			margin: 20px 0 14px;
+			font-size: 1.05rem;
+			color: #f8fafc;
+		}
+
+		.register-cta-wrap {
+			display: flex;
+			justify-content: center;
+			margin: 18px 0 6px;
+		}
+
+		.register-main-btn {
+			border: 0;
+			border-radius: 999px;
+			padding: 14px 28px;
+			background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+			color: #fff;
+			font-family: inherit;
+			font-weight: 700;
+			font-size: 1rem;
+			cursor: pointer;
+			box-shadow: 0 14px 26px rgba(34, 197, 94, 0.22);
+			transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+		}
+
+		.register-main-btn:hover {
+			background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+			transform: translateY(-1px);
+			box-shadow: 0 18px 30px rgba(22, 163, 74, 0.24);
+		}
+
+		.registration-status-card {
+			margin-top: 18px;
+			display: none;
+			background: rgba(17, 24, 39, 0.62);
+			border-color: rgba(148, 163, 184, 0.14);
+			color: #e2e8f0;
+		}
+
+		.is-hidden {
+			display: none !important;
+		}
+
+		.issue-list {
+			margin-top: 12px;
+		}
+
+		.track-issues-btn {
+			margin-left: 8px;
+		}
+
+		.hidden-image {
+			display: none;
+		}
+
+		.status-list {
+			display: grid;
+			gap: 10px;
+			margin-top: 14px;
+		}
+
+		.confirm-acceptance {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			margin-bottom: 10px;
+		}
+
+		.review-summary {
+			display: grid;
+			gap: 10px;
+			padding: 14px;
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 14px;
+			background: rgba(17, 24, 39, 0.4);
+			margin-bottom: 14px;
+		}
+
+		.review-summary__grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 10px;
+		}
+
+		.review-summary__members {
+			margin-top: 10px;
+		}
+
+		.review-summary__item strong,
+		.review-summary__item span {
+			display: block;
+		}
+
+		.review-summary__item strong {
+			font-size: 0.78rem;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--muted);
+			margin-bottom: 4px;
+		}
+
+		.section-spacer {
+			margin-top: 12px;
+		}
+
+		.registration-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 1000;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			background: rgba(2, 6, 23, 0.68);
+			-webkit-backdrop-filter: blur(8px);
+			backdrop-filter: blur(8px);
+		}
+
+		.registration-overlay.open {
+			display: flex;
+		}
+
+		.registration-modal {
+			width: min(920px, 100%);
+			max-height: 92vh;
+			overflow: auto;
+			background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(15,23,42,0.94));
+			border: 1px solid rgba(148,163,184,0.14);
+			border-radius: 24px;
+			box-shadow: 0 28px 80px rgba(2, 6, 23, 0.58);
+			padding: 24px;
+			color: #e2e8f0;
+		}
+
+		.registration-modal__header {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 16px;
+		}
+
+		.registration-modal__header h2 {
+			margin: 2px 0 4px;
+			font-size: 1.4rem;
+		}
+
+		.modal-kicker {
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			color: var(--primary);
+		}
+
+		.modal-close {
+			border: 0;
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: rgba(15, 23, 42, 0.45);
+			color: #e2e8f0;
+			font-size: 1.2rem;
+			cursor: pointer;
+		}
+
+		.modal-progress {
+			margin-bottom: 16px;
+			font-size: 0.9rem;
+			font-weight: 700;
+			color: #94a3b8;
+		}
+
+		.registration-stepper {
+			position: relative;
+			min-height: 0;
+		}
+
+		.registration-step {
+			display: none;
+		}
+
+		.registration-step.active {
+			display: block;
+			animation: stepFadeIn 360ms ease both;
+		}
+
+		.registration-step.enter-left {
+			animation: stepEnterLeft 360ms ease both;
+		}
+
+		.registration-step.enter-right {
+			animation: stepEnterRight 360ms ease both;
+		}
+
+		@keyframes stepFadeIn {
+			from { opacity: 0; transform: translateX(20px); }
+			to { opacity: 1; transform: translateX(0); }
+		}
+
+		@keyframes stepEnterLeft {
+			from { opacity: 0; transform: translateX(40px); }
+			to { opacity: 1; transform: translateX(0); }
+		}
+
+		@keyframes stepEnterRight {
+			from { opacity: 0; transform: translateX(-40px); }
+			to { opacity: 1; transform: translateX(0); }
+		}
+
+		.registration-actions {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			margin-top: 20px;
+			flex-wrap: wrap;
+		}
+
+		.payment-options {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-bottom: 16px;
+		}
+
+		.payment-choice {
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			border-radius: 14px;
+			padding: 12px 16px;
+			background: rgba(17, 24, 39, 0.68);
+			color: #e2e8f0;
+			font-weight: 700;
+			cursor: pointer;
+		}
+
+		.payment-choice.active {
+			border-color: var(--primary);
+			background: rgba(79, 70, 229, 0.2);
+		}
+
+		.payment-panel {
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 18px;
+			padding: 18px;
+			background: rgba(17, 24, 39, 0.68);
+			color: #e2e8f0;
+		}
+
+		/* WhatsApp panel tweaks: remove extra top spacing and style card */
+		.registration-step[data-step="3"] .payment-panel {
+			padding-top: 0;
+			margin-top: -2px;
+			min-height: 0;
+			padding-bottom: 10px;
+		}
+
+		/* Tighter header spacing to remove large blank area */
+		.registration-step[data-step="3"] .step-header { margin-bottom: 4px; }
+
+		/* Premium glassmorphism with neon border */
+		.whatsapp-card-inner {
+			background: linear-gradient(180deg, rgba(20,24,40,0.6), rgba(12,14,26,0.5));
+			border: 1px solid rgba(124,58,237,0.14);
+			box-shadow: 0 10px 40px rgba(79,70,229,0.08), 0 2px 12px rgba(6,95,212,0.06);
+			border-radius: 16px;
+			position: relative;
+			padding: 20px;
+		}
+
+		/* neon gradient border */
+		.whatsapp-card-inner::before {
+			content: '';
+			position: absolute;
+			inset: -1px; border-radius: 17px;
+			background: linear-gradient(90deg, rgba(79,70,229,0.12), rgba(124,58,237,0.12));
+			filter: blur(10px); opacity: 0.75; z-index: 0;
+		}
+
+		.whatsapp-card-inner > * { position: relative; z-index: 1; }
+
+		/* floating particle accents */
+		.whatsapp-card-inner .particle { position:absolute; width:18px; height:18px; border-radius:50%; background:rgba(124,58,237,0.18); filter:blur(6px); animation: floaty 6s linear infinite; opacity:0.9 }
+		.whatsapp-card-inner .particle.p2 { width:12px; height:12px; background:rgba(59,130,246,0.12); left:12%; top:6%; animation-duration:5s }
+		.whatsapp-card-inner .particle.p3 { width:22px; height:22px; background:rgba(16,185,129,0.06); right:8%; bottom:10%; animation-duration:7s }
+
+		@keyframes floaty { 0% { transform: translateY(0) } 50% { transform: translateY(-8px) } 100% { transform: translateY(0) } }
+
+		/* logo adaptations: prefer external image if present */
+		.whatsapp-logo-img { width:64px; height:64px; border-radius:12px; display:block; object-fit:cover; }
+		.whatsapp-logo-svg { width: 88px; height: 88px; display: block; filter: drop-shadow(0 0 18px rgba(37, 211, 102, 0.35)); }
+		.whatsapp-brand-hero {
+			display:flex;
+			justify-content:center;
+			align-items:center;
+			margin: 6px 0 14px;
+		}
+		.whatsapp-brand-image {
+			width: min(100%, 360px);
+			height: auto;
+			display:block;
+			border-radius: 28px;
+			box-shadow: 0 18px 42px rgba(0,0,0,0.16);
+		}
+
+		/* fade-in animation */
+		.fade-in-up { animation: fadeInUp 420ms cubic-bezier(.2,.9,.2,1) both }
+
+		.whatsapp-card {
+			display: flex;
+			justify-content: center;
+			padding: 0;
+			margin-top: 0;
+		}
+
+			.whatsapp-card-inner {
+				width: 100%;
+				max-width: 920px;
+				background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+				border-radius: 18px;
+				padding: 14px 18px 18px;
+				-webkit-backdrop-filter: blur(10px) saturate(1.05);
+				backdrop-filter: blur(10px) saturate(1.05);
+				border: 1px solid rgba(34,197,94,0.12);
+				box-shadow: 0 8px 30px rgba(16,185,129,0.06);
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 18px;
+			}
+
+		.whatsapp-content { min-width:0; max-width: 440px; margin: 0 auto; text-align: center; }
+		.whatsapp-heading-copy { margin: 0 auto; }
+		.whatsapp-title { font-weight:800; font-size:1.08rem; color:#ecfdf5; line-height:1.25; }
+		.whatsapp-desc { font-size:0.94rem; color: #cbd5e1; line-height:1.45; }
+
+		.whatsapp-benefits-grid {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 12px;
+		}
+		.benefit {
+			display:flex;
+			flex-direction:column;
+			align-items:center;
+			justify-content:center;
+			text-align:center;
+			min-height: 104px;
+			padding: 14px 10px;
+			border-radius: 16px;
+			background: rgba(255,255,255,0.03);
+			border: 1px solid rgba(148,163,184,0.10);
+		}
+		.benefit-icon { font-size: 1.35rem; margin-bottom: 8px; }
+		.benefit-label { font-size: 0.84rem; line-height: 1.35; font-weight: 600; color: #e5e7eb; }
+
+		.whatsapp-actions { margin-left: 0; display:flex; flex-direction:column; gap:10px; align-items:stretch; }
+		.whatsapp-cta { width: 100%; }
+		.whatsapp-join-btn { background: linear-gradient(135deg,#14d76d 0%, #10b981 45%, #059669 100%); border-radius:16px; padding:14px 18px; font-weight:800; border:0; box-shadow: 0 16px 36px rgba(16,185,129,0.22); width:100%; font-size: 1rem; }
+		.whatsapp-join-btn:hover { transform: translateY(-2px); }
+		.whatsapp-join-btn:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+		#confirmJoinedBtn { border: 1px solid rgba(167,139,250,0.34); background: rgba(15,23,42,0.60); color:#e2e8f0; border-radius: 16px; padding: 14px 18px; width:100%; font-weight:700; }
+		.divider-or { display:flex; align-items:center; gap:12px; color: rgba(226,232,240,0.58); font-size: 0.9rem; justify-content:center; }
+		.divider-or::before,
+		.divider-or::after { content:""; height:1px; flex:1; background: linear-gradient(90deg, transparent, rgba(148,163,184,0.22), transparent); }
+		.divider-or span { white-space:nowrap; }
+		.btn-outline-ghost { border: 1px solid rgba(124,58,237,0.35); background: rgba(79,70,229,0.08); }
+		.btn-outline-ghost:hover { background: rgba(79,70,229,0.14); }
+
+		/* pulse/glow animation for join feedback */
+		@keyframes pulseGlow { 0% { box-shadow: 0 6px 18px rgba(16,185,129,0.08); transform:scale(1) } 50% { box-shadow: 0 18px 40px rgba(16,185,129,0.18); transform:scale(1.02) } 100% { box-shadow: 0 6px 18px rgba(16,185,129,0.08); transform:scale(1) } }
+		.pulse { animation: pulseGlow 1.2s ease-in-out infinite; }
+		.whatsapp-join-btn.visited { opacity:0.92; filter:grayscale(0.02); }
+		.success-animate { animation: successBounce 420ms ease both; background: linear-gradient(135deg,#059669, #047857); color:#fff; border:0; }
+		@keyframes successBounce { 0% { transform: scale(1) } 50% { transform: scale(1.06) } 100% { transform: scale(1) } }
+
+		@media (max-width:720px) {
+			.whatsapp-card-inner { flex-direction:column; align-items:stretch; gap:14px; padding: 14px; }
+			.whatsapp-brand-image { width: min(100%, 320px); }
+			.whatsapp-benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+			.whatsapp-actions { margin-left:0; }
+		}
+
+		.upi-payment-shell {
+			display: grid;
+			gap: 14px;
+		}
+
+		.upi-payment-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.upi-payment-mini {
+			padding: 8px 12px;
+			border-radius: 999px;
+			background: rgba(56, 189, 248, 0.12);
+			border: 1px solid rgba(56, 189, 248, 0.2);
+			color: #bae6fd;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+		}
+
+		.upi-amount-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 8px;
+			padding: 8px 12px;
+			border-radius: 999px;
+			background: rgba(79, 70, 229, 0.18);
+			border: 1px solid rgba(129, 140, 248, 0.22);
+			color: #c7d2fe;
+			font-weight: 700;
+		}
+
+		.upi-methods {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.upi-method-card {
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			border-radius: 16px;
+			padding: 14px 16px;
+			background: rgba(15, 23, 42, 0.72);
+			color: #e2e8f0;
+			font-weight: 700;
+			cursor: pointer;
+			text-align: left;
+			transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+		}
+
+		.upi-method-card:hover,
+		.upi-method-card.active {
+			border-color: rgba(56, 189, 248, 0.5);
+			background: linear-gradient(135deg, rgba(79, 70, 229, 0.22), rgba(56, 189, 248, 0.14));
+			transform: translateY(-1px);
+		}
+
+		.upi-method-panel {
+			display: grid;
+			gap: 14px;
+			padding: 16px;
+			border-radius: 16px;
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			background: rgba(15, 23, 42, 0.48);
+			position: relative;
+		}
+
+		/* Paid button: fixed bottom-right inside payment panels */
+		.paid-btn {
+			position: absolute;
+			right: 16px;
+			bottom: 12px;
+			background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+			color: #fff;
+			border: 0;
+			padding: 10px 14px;
+			border-radius: 10px;
+			font-weight: 700;
+			cursor: pointer;
+			box-shadow: 0 10px 30px rgba(16,185,129,0.18), 0 0 10px rgba(6,150,105,0.12);
+			transition: transform 140ms ease, box-shadow 140ms ease;
+		}
+
+		.paid-btn:hover { transform: translateY(-2px); }
+
+		.paid-btn.paid { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 8px 20px rgba(4,120,87,0.22); }
+
+		.upi-method-panel .payment-qr {
+			margin: 0;
+		}
+
+		.upi-method-copy {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		.upi-method-copy input {
+			flex: 1 1 220px;
+		}
+
+		.upi-completion-panel {
+			padding: 16px;
+			border-radius: 16px;
+			border: 1px solid rgba(34, 197, 94, 0.18);
+			background: rgba(20, 83, 45, 0.18);
+		}
+
+		.upi-transaction-panel {
+			margin-top: 14px;
+			padding: 16px;
+			border-radius: 18px;
+			border: 1px solid rgba(56, 189, 248, 0.26);
+			background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.52));
+			box-shadow: 0 18px 42px rgba(15, 23, 42, 0.24), 0 0 0 1px rgba(56, 189, 248, 0.04) inset;
+		}
+
+		.upi-transaction-panel .form-group {
+			margin-top: 12px;
+		}
+
+		.upi-transaction-panel input[type="text"] {
+			width: 100%;
+			padding: 14px 16px;
+			border-radius: 14px;
+			border: 1px solid rgba(103, 232, 249, 0.22);
+			background: rgba(2, 6, 23, 0.58);
+			color: #e2e8f0;
+			outline: none;
+			transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+		}
+
+		.upi-transaction-panel input[type="text"]::placeholder {
+			color: rgba(148, 163, 184, 0.78);
+		}
+
+		.upi-transaction-panel input[type="text"]:focus {
+			border-color: rgba(103, 232, 249, 0.78);
+			box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.16), 0 0 18px rgba(34, 211, 238, 0.22);
+		}
+
+		.upi-submit-row {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			align-items: center;
+			margin-top: 14px;
+		}
+
+		.upi-submit-btn {
+			min-width: 180px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+		}
+
+		.upi-submit-btn.is-loading {
+			pointer-events: none;
+			opacity: 0.9;
+		}
+
+		.upi-spinner {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			border-top-color: #fff;
+			animation: upiSpin 700ms linear infinite;
+			display: inline-block;
+		}
+
+		@keyframes upiSpin {
+			to { transform: rotate(360deg); }
+		}
+
+		.upi-toast {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			z-index: 3000;
+			padding: 12px 14px;
+			border-radius: 14px;
+			background: rgba(15, 23, 42, 0.92);
+			border: 1px solid rgba(56, 189, 248, 0.26);
+			box-shadow: 0 24px 60px rgba(2, 6, 23, 0.4);
+			color: #e2e8f0;
+			font-weight: 600;
+			transform: translateY(12px);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 180ms ease, transform 180ms ease;
+		}
+
+		.upi-toast.show {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.upi-toast.success {
+			border-color: rgba(34, 197, 94, 0.38);
+			box-shadow: 0 24px 60px rgba(34, 197, 94, 0.16);
+		}
+
+		.upi-toast.error {
+			border-color: rgba(248, 113, 113, 0.42);
+			box-shadow: 0 24px 60px rgba(248, 113, 113, 0.16);
+		}
+
+		.upi-completion-panel .form-group {
+			margin-top: 12px;
+		}
+
+		.payment-qr {
+			max-width: 220px;
+			width: 100%;
+			border-radius: 16px;
+			display: block;
+			margin: 12px 0;
+			object-fit: cover;
+		}
+
+		.upi-launch-shell {
+			align-items: flex-start;
+		}
+
+		.upi-summary-status {
+			padding: 12px 14px;
+			border-radius: 16px;
+			background: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(56, 189, 248, 0.1));
+			border: 1px solid rgba(129, 140, 248, 0.22);
+			color: #c7d2fe;
+			font-weight: 600;
+		}
+
+		.upi-payment-modal-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 2400;
+			display: grid;
+			place-items: center;
+			padding: 18px;
+			background: rgba(2, 6, 23, 0.68);
+			-webkit-backdrop-filter: blur(18px) saturate(1.2);
+			backdrop-filter: blur(18px) saturate(1.2);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 200ms ease;
+		}
+
+		.upi-payment-modal-overlay.open {
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		.upi-payment-modal {
+			width: min(920px, 100%);
+			max-height: min(90vh, 980px);
+			overflow: auto;
+			padding: 22px;
+			border-radius: 28px;
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(17, 24, 39, 0.84));
+			box-shadow: 0 40px 120px rgba(2, 6, 23, 0.55);
+			transform: translateY(12px) scale(0.98);
+			transition: transform 220ms ease;
+		}
+
+		.upi-payment-modal-overlay.open .upi-payment-modal {
+			transform: translateY(0) scale(1);
+		}
+
+		.upi-payment-modal__header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 16px;
+			margin-bottom: 16px;
+		}
+
+		.upi-payment-modal__status {
+			margin-bottom: 16px;
+			padding: 12px 14px;
+			border-radius: 16px;
+			background: rgba(79, 70, 229, 0.14);
+			border: 1px solid rgba(99, 102, 241, 0.22);
+			color: #e0e7ff;
+			font-weight: 600;
+		}
+
+		.upi-methods--modal {
+			margin-bottom: 16px;
+		}
+
+		.upi-method-card {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+		}
+
+		.upi-method-card__icon {
+			width: 40px;
+			height: 40px;
+			border-radius: 14px;
+			display: inline-grid;
+			place-items: center;
+			background: rgba(56, 189, 248, 0.12);
+			border: 1px solid rgba(56, 189, 248, 0.2);
+			color: #dbeafe;
+			font-size: 1rem;
+			flex: 0 0 auto;
+		}
+
+		.upi-method-card small {
+			display: block;
+			margin-top: 4px;
+			color: #94a3b8;
+			font-weight: 500;
+		}
+
+		.upi-modal-copy {
+			padding: 14px 16px;
+			border-radius: 18px;
+			background: rgba(15, 23, 42, 0.54);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			color: #dbeafe;
+		}
+
+		.upi-modal-copy p {
+			margin-top: 6px;
+			color: #94a3b8;
+			line-height: 1.6;
+		}
+
+		.upi-payment-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.btn-success--glow {
+			box-shadow: 0 16px 36px rgba(34, 197, 94, 0.22), 0 0 0 1px rgba(34, 197, 94, 0.08) inset;
+		}
+
+		.upi-completion-panel {
+			margin-top: 16px;
+		}
+
+		.upi-payment-shell .confirm-row {
+			margin-top: 0;
+		}
+
+		.confirm-row {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-top: 14px;
+		}
+
+		.btn-success {
+			border: 0;
+			border-radius: 14px;
+			padding: 12px 20px;
+			background: linear-gradient(135deg, #22c55e, #16a34a);
+			color: #fff;
+			font-weight: 700;
+			cursor: pointer;
+		}
+
+		.btn-success:disabled {
+			opacity: 0.55;
+			cursor: not-allowed;
+		}
+
+		.tab-buttons {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 24px;
+			border-bottom: 2px solid var(--border);
+			padding-bottom: 16px;
+		}
+
+		.tab-btn {
+			border: 0;
+			background: transparent;
+			padding: 10px 16px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 0.95rem;
+			color: var(--muted);
+			border-bottom: 3px solid transparent;
+			transition: all 180ms ease;
+			margin-bottom: -19px;
+		}
+
+		.tab-btn.active {
+			color: var(--primary);
+			border-bottom-color: var(--primary);
+		}
+
+		.tab-content {
+			display: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		.form-group {
+			margin-bottom: 16px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 6px;
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: #cbd5e1;
+		}
+
+		.form-group input,
+		.form-group select,
+		.form-group textarea {
+			width: 100%;
+			border: 1px solid rgba(148, 163, 184, 0.18);
+			border-radius: 12px;
+			padding: 10px 12px;
+			font-family: inherit;
+			font-size: 0.95rem;
+			outline: none;
+			transition: border-color 180ms ease, box-shadow 180ms ease;
+			background: rgba(15, 23, 42, 0.72);
+			color: #e2e8f0;
+		}
+
+		.form-group input:focus,
+		.form-group select:focus,
+		.form-group textarea:focus {
+			border-color: rgba(124, 58, 237, 0.65);
+			box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+		}
+
+		.form-group textarea {
+			resize: vertical;
+			min-height: 80px;
+		}
+
+		.form-row {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 16px;
+		}
+
+		.step-header {
+			padding: 16px;
+			background: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(124, 58, 237, 0.08));
+			border-radius: 12px;
+			margin-bottom: 20px;
+			border-left: 4px solid var(--primary);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			-webkit-backdrop-filter: blur(16px);
+			backdrop-filter: blur(16px);
+		}
+
+		.step-number {
+			font-weight: 700;
+			color: var(--primary);
+			margin-bottom: 4px;
+			text-shadow: 0 0 14px rgba(79, 70, 229, 0.25);
+		}
+
+		.members-container {
+			display: grid;
+			gap: 16px;
+			margin-top: 16px;
+		}
+
+		.member-form {
+			background: rgba(17, 24, 39, 0.46);
+			border: 1px solid rgba(148, 163, 184, 0.14);
+			border-radius: 12px;
+			padding: 16px;
+		}
+
+		.member-form h4 {
+			margin: 0 0 12px;
+			font-size: 0.95rem;
+			color: #f8fafc;
+		}
+
+
+
+		.status-item {
+			display: grid;
+			grid-template-columns: 40px 1fr auto;
+			gap: 12px;
+			align-items: center;
+			padding: 12px;
+			border-radius: 8px;
+			background: rgba(17, 24, 39, 0.48);
+			margin-bottom: 12px;
+		}
+
+		.status-icon {
+			font-size: 1.2rem;
+			text-align: center;
+		}
+
+		.status-text {
+			font-weight: 500;
+			color: #e2e8f0;
+		}
+
+		.status-badge {
+			font-size: 0.8rem;
+			padding: 4px 10px;
+			border-radius: 20px;
+			font-weight: 600;
+		}
+
+		.status-badge.not-started {
+			background: rgba(239, 68, 68, 0.16);
+			color: #fecaca;
+		}
+
+		.status-badge.in-progress {
+			background: rgba(249, 115, 22, 0.16);
+			color: #fdba74;
+		}
+
+		.status-badge.completed {
+			background: rgba(34, 197, 94, 0.16);
+			color: #bbf7d0;
+		}
+
+		.button-group {
+			display: flex;
+			gap: 12px;
+			margin-top: 24px;
+			flex-wrap: wrap;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			border: 0;
+			border-radius: 14px;
+			padding: 12px 20px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 0.95rem;
+			transition: all 180ms ease;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, #3b82f6 0%, var(--primary) 55%, #1e3a8a 100%);
+			color: white;
+		}
+
+		.btn-primary:hover {
+			transform: translateY(-1px) scale(1.02);
+			box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+		}
+
+		.btn-primary:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.btn-secondary {
+			background: rgba(17, 24, 39, 0.7);
+			border: 1px solid rgba(148, 163, 184, 0.16);
+			color: #e2e8f0;
+		}
+
+		.btn-secondary:hover {
+			background: rgba(30, 41, 59, 0.92);
+		}
+
+		.status-message {
+			margin-top: 16px;
+			padding: 12px;
+			border-radius: 10px;
+			font-size: 0.9rem;
+			display: none;
+		}
+
+		.status-message.success {
+			display: block;
+			background: #dcfce7;
+			color: #166534;
+			border: 1px solid #bbf7d0;
+		}
+
+		.status-message.error {
+			display: block;
+			background: #fee2e2;
+			color: #991b1b;
+			border: 1px solid #fecaca;
+		}
+
+		@media (max-width: 1200px) {
+			.content-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.form-row {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.container {
+				padding: 16px;
+			}
+
+			.card {
+				padding: 16px;
+			}
+
+			.about-card__inner {
+				padding: 20px;
+			}
+
+			.about-card__title {
+				font-size: 1.7rem;
+			}
+
+			.about-card__paragraph {
+				padding: 14px 15px;
+				font-size: 0.95rem;
+				line-height: 1.75;
+			}
+
+			header {
+				flex-direction: column;
+				gap: 12px;
+				align-items: flex-start;
+			}
+
+			.tab-buttons {
+				overflow-x: auto;
+			}
+
+			.button-group {
+				flex-direction: column;
+			}
+
+			.btn-primary,
+			.btn-secondary {
+				width: 100%;
+			}
+
+			.profile-panel {
+				left: 8px;
+				right: 8px;
+				width: auto;
+				top: 72px;
+				max-height: calc(100vh - 88px);
+			}
+    
+			.profile-panel {
+				top: 0;
+				left: 0;
+				right: 0;
+				width: 100%;
+				height: 100vh;
+				border-radius: 0;
+				padding: 18px;
+			}
+			.profile-grid,
+			.profile-actions,
+			.profile-shortcuts {
+				grid-template-columns: 1fr;
+			}
+		}
+		
+		/* --- Immersive background additions --- */
+		.bg-grid {
+			position: absolute;
+			inset: 0;
+			background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+			background-size: 48px 48px, 48px 48px;
+			opacity: 0.06;
+			pointer-events: none;
+			transform: translateZ(0);
+			filter: blur(0.6px) saturate(0.95);
+			z-index: 0;
+		}
+
+		.bg-blobs {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		.bg-blob {
+			position: absolute;
+			width: 520px;
+			height: 520px;
+			border-radius: 50%;
+			filter: blur(60px) saturate(120%);
+			opacity: 0.9;
+			mix-blend-mode: screen;
+			transform: translate3d(0,0,0);
+		}
+
+		.bg-blob.blob-1 { left: -8%; top: -12%; background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.18), rgba(59,130,246,0.06)); animation: blobFloat 18s linear infinite; }
+		.bg-blob.blob-2 { right: -6%; bottom: -6%; width: 640px; height: 640px; background: radial-gradient(circle at 60% 40%, rgba(6,182,212,0.14), rgba(59,130,246,0.05)); animation: blobFloat 22s linear infinite reverse; }
+		.bg-blob.blob-3 { left: 20%; bottom: -16%; width: 420px; height: 420px; background: radial-gradient(circle at 60% 60%, rgba(124,58,237,0.10), rgba(6,182,212,0.06)); animation: blobFloat 26s linear infinite; }
+
+		@keyframes blobFloat {
+			0% { transform: translate3d(0,0,0) scale(1); }
+			50% { transform: translate3d(0,-24px,0) scale(1.03); }
+			100% { transform: translate3d(0,0,0) scale(1); }
+		}
+
+		#particlesCanvas {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+			pointer-events: none;
+			opacity: 0.75;
+			mix-blend-mode: screen;
+		}
+
+		.content-dim {
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, rgba(2,6,23,0.28), rgba(2,6,23,0.32));
+			-webkit-backdrop-filter: blur(6px) saturate(1.02);
+			backdrop-filter: blur(6px) saturate(1.02);
+			z-index: 0;
+			pointer-events: none;
+		}
+
+		.page-content { position: relative; z-index: 2; }
+
+		/* When profile drawer is open, visually hide banners/background to focus drawer */
+		body.profile-open .homepage-banner,
+		body.profile-open #homepageBanner,
+		body.profile-open .bg-blobs,
+		body.profile-open .bg-grid,
+		body.profile-open .content-dim {
+			opacity: 0 !important;
+			visibility: hidden !important;
+			pointer-events: none !important;
+			transition: opacity 220ms ease, visibility 220ms ease;
+		}
+
+		@media (max-width: 640px) {
+			.bg-blob { display: none; }
+			.bg-grid { opacity: 0.04; }
+			#particlesCanvas { opacity: 0.5; }
+		}
+
+	</style>
+</head>
+<body>
+	<div class="page-wrapper">
+		<div class="bg-grid" aria-hidden="true"></div>
+		<div class="bg-blobs" aria-hidden="true">
+			<div class="bg-blob blob-1"></div>
+			<div class="bg-blob blob-2"></div>
+			<div class="bg-blob blob-3"></div>
+		</div>
+		<canvas id="particlesCanvas" aria-hidden="true"></canvas>
+		<div class="content-dim" aria-hidden="true"></div>
+		<div class="page-content">
+		<header>
+			<h1>Welcome to StartInno</h1>
+			<div class="top-actions">
+				<div class="reg-link-card">
+					<input id="adminRegLink" type="text" placeholder="Admin registration link (paste here)" aria-label="Registration link">
+					<button class="btn-sm btn-secondary" id="openRegLink">Open</button>
+					<button class="btn-sm btn-secondary" id="copyRegLink">Copy</button>
+					<button class="btn-sm" id="saveRegLink">Save</button>
+				</div>
+				<div class="header-actions">
+					<div class="profile-shell">
+						<button class="profile-trigger" id="profileToggle" type="button" aria-haspopup="true" aria-expanded="false">
+							<span class="profile-avatar online" id="profileAvatarSmall">U</span>
+							<span id="profileTriggerName">My Profile</span>
+						</button>
+						<div class="profile-panel" id="profilePanel" role="dialog" aria-label="Profile panel">
+							<div class="profile-loading" id="profileLoading">Loading profile...</div>
+							<div class="profile-head">
+								<div class="profile-avatar online" id="profileAvatarLarge">U</div>
+								<div class="profile-meta">
+									<h3 id="profileFullName">User</h3>
+									<p id="profileEmailTop">-</p>
+								</div>
+							</div>
+
+							<div class="profile-grid">
+								<div class="profile-item"><strong>Phone</strong><span id="profilePhone">-</span></div>
+								<div class="profile-item"><strong>College</strong><span id="profileCollege">-</span></div>
+								<div class="profile-item"><strong>Department</strong><span id="profileDepartment">-</span></div>
+								<div class="profile-item"><strong>Year</strong><span id="profileYear">-</span></div>
+								<div class="profile-item"><strong>User ID</strong><span id="profileUserId">-</span></div>
+								<div class="profile-item"><strong>Created</strong><span id="profileCreatedAt">-</span></div>
+								<div class="profile-item"><strong>Role</strong><span id="profileRole">User</span></div>
+								<div class="profile-item"><strong>Username</strong><span id="profileUsername">-</span></div>
+							</div>
+
+							<div class="profile-actions">
+								<button class="profile-btn" type="button" id="editProfileBtn">Edit Profile</button>
+								<button class="profile-btn" type="button" id="settingsBtn">Settings</button>
+							</div>
+
+							<div class="profile-form" id="editProfileForm">
+								<div class="form-group"><label for="editFullName">Full Name</label><input id="editFullName" type="text" /></div>
+								<div class="form-group"><label for="editPhone">Phone</label><input id="editPhone" type="text" /></div>
+								<div class="form-group"><label for="editCollege">College Name</label><input id="editCollege" type="text" /></div>
+								<div class="form-group"><label for="editDepartment">Department</label><input id="editDepartment" type="text" /></div>
+								<div class="form-group"><label for="editYear">Year of Study</label><input id="editYear" type="text" /></div>
+								<div class="button-group">
+									<button class="btn-primary" type="button" id="saveProfileBtn">Save</button>
+									<button class="btn-secondary" type="button" id="cancelProfileEditBtn">Cancel</button>
+								</div>
+								<div class="status-message" id="profileStatus"></div>
+							</div>
+
+							<button class="profile-btn logout" type="button" id="profileLogoutBtn">Logout</button>
+						</div>
+						<div class="profile-backdrop" id="profileBackdrop" aria-hidden="true"></div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<div class="container">
+			<section class="homepage-banner">
+				<div id="homepageBanner"></div>
+			</section>
+			<div class="register-cta-wrap">
+				<button class="register-main-btn" id="openRegistration" type="button">Register</button>
+			</div>
+
+			<div class="content-grid">
+				<main class="card about-card fade-in-up">
+					<div class="about-card__inner">
+						<div class="about-card__eyebrow">Innovation platform</div>
+						<h2 class="about-card__title">About StartInno Solutions</h2>
+						<p class="about-card__lead">StartInno Solutions is an innovation-driven platform dedicated to empowering students through technology, creativity, and real-world opportunities.</p>
+
+						<div class="about-card__body">
+							<p class="about-card__paragraph">Our platform helps students participate in hackathons, collaborate with teams, develop technical skills, and explore innovative solutions to real-world challenges.</p>
+							<p class="about-card__paragraph">We aim to create an engaging ecosystem where students can learn, build, innovate, and showcase their talents through technology-driven events and collaborative experiences.</p>
+							<p class="about-card__paragraph">StartInno Solutions focuses on creating opportunities for students to grow professionally, improve problem-solving skills, and gain practical exposure through innovation and teamwork.</p>
+						</div>
+
+						<div class="about-card__footer">
+							<span class="about-card__pill">Technology</span>
+							<span class="about-card__pill">Creativity</span>
+							<span class="about-card__pill">Collaboration</span>
+							<span class="about-card__pill">Real-world impact</span>
+						</div>
+					</div>
+				</main>
+
+			</div>
+		</div>
+
+		<div class="settings-overlay" id="settingsOverlay" aria-hidden="true">
+			<div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+				<div class="settings-modal__inner">
+					<div class="settings-header">
+						<div>
+							<div class="settings-kicker">User Settings</div>
+							<h2 class="settings-title" id="settingsTitle">Profile Settings & Support Hub</h2>
+							<p class="settings-subtitle">Manage your profile, report issues, review registration details, and track support tickets from one futuristic dashboard.</p>
+						</div>
+						<button type="button" class="modal-close" id="closeSettingsBtn" aria-label="Close settings">×</button>
+					</div>
+
+					<div class="settings-tabs" role="tablist" aria-label="Settings sections">
+						<button type="button" class="settings-tab active" data-settings-tab="report-issue">Report Issue</button>
+						<button type="button" class="settings-tab" data-settings-tab="registration-details">Registration Details</button>
+						<button type="button" class="settings-tab" data-settings-tab="track-my-issues">Track My Issues</button>
+					</div>
+
+					<section class="settings-pane active" data-settings-pane="report-issue">
+						<div class="settings-pane-grid">
+							<div class="settings-card">
+								<div class="settings-issue-form">
+									<div class="settings-field">
+										<label for="settingsIssueType">Issue Type</label>
+										<select id="settingsIssueType">
+											<option value="">Select issue type</option>
+											<option value="whatsapp">WhatsApp Group Issue</option>
+											<option value="payment">Payment Issue</option>
+											<option value="registration">Registration Issue</option>
+											<option value="login">Login Issue</option>
+											<option value="other">Other</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<div class="settings-field">
+											<label for="settingsIssueName">Name</label>
+											<input id="settingsIssueName" type="text" placeholder="Your name" />
+										</div>
+										<div class="settings-field">
+											<label for="settingsIssueEmail">Registered Email</label>
+											<input id="settingsIssueEmail" type="email" placeholder="Your registered email address" />
+										</div>
+									</div>
+									<div class="form-row">
+										<div class="settings-field">
+											<label for="settingsIssueContact">Contact Number</label>
+											<input id="settingsIssueContact" type="tel" placeholder="Your contact number" />
+										</div>
+										<div class="settings-field">
+											<label for="settingsIssueHelp">Need help?</label>
+											<input id="settingsIssueHelp" type="text" value="Use the Help Section for quick support" readonly />
+										</div>
+									</div>
+									<div class="settings-field">
+										<label for="settingsIssueDescription">Description</label>
+										<textarea id="settingsIssueDescription" placeholder="Describe the issue clearly"></textarea>
+									</div>
+									<label class="settings-check" for="settingsIssueConfirm">
+										<input id="settingsIssueConfirm" type="checkbox" />
+										<span>I confirm the above details are correct.</span>
+									</label>
+									<div class="settings-help-row">
+										<button type="button" class="settings-secondary" id="clearIssueFormBtn">Clear Form</button>
+										<button type="button" class="settings-submit" id="submitIssueBtn">Submit Issue</button>
+									</div>
+									<div class="status-message" id="reportIssueStatus"></div>
+								</div>
+							</div>
+							<div class="settings-support-card">
+								<div class="settings-card">
+									<div class="settings-kicker">Support</div>
+									<h3 class="settings-title settings-title--compact">Help Center Access</h3>
+									<p class="settings-subtitle">If you need faster support, open the help page. Your issue queue stays synchronized with the admin dashboard.</p>
+									<div class="issue-success-cta">
+										<a class="settings-link" href="help.html" target="_blank" rel="noopener noreferrer">Open Help Section</a>
+										<button type="button" class="settings-secondary" id="refreshIssuesBtn">Refresh My Issues</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<section class="settings-pane" data-settings-pane="registration-details">
+						<div class="settings-card">
+							<div class="settings-grid" id="registrationDetailsSummary"></div>
+						</div>
+						<div class="settings-card settings-card--spaced">
+							<div class="settings-table-wrap">
+								<table class="settings-table" aria-label="Registration details table">
+									<thead>
+										<tr>
+											<th>Team Name</th>
+											<th>Team Leader</th>
+											<th>Team Members</th>
+											<th>Email IDs</th>
+											<th>Phone Numbers</th>
+											<th>Stream</th>
+											<th>Year</th>
+											<th>College Name</th>
+											<th>Payment Status</th>
+											<th>Transaction ID</th>
+											<th>Registration Status</th>
+										</tr>
+									</thead>
+									<tbody id="registrationDetailsTableBody"></tbody>
+								</table>
+							</div>
+							<div class="settings-empty is-hidden settings-empty--spaced" id="registrationDetailsEmpty">No registration details found for your account yet.</div>
+						</div>
+					</section>
+
+					<section class="settings-pane" data-settings-pane="track-my-issues">
+						<div class="settings-card">
+							<div class="settings-help-row settings-help-row--tight">
+								<div>
+									<div class="settings-kicker">Ticket Queue</div>
+									<h3 class="settings-title settings-title--compact">Track My Issues</h3>
+								</div>
+								<a class="settings-link" href="help.html" target="_blank" rel="noopener noreferrer">Open Help Section</a>
+							</div>
+							<div class="issue-timeline" id="issueTimelineContainer"></div>
+							<div class="settings-empty is-hidden settings-empty--spaced" id="issueTimelineEmpty">No support tickets have been submitted yet.</div>
+						</div>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<div class="issue-success-overlay" id="issueSuccessOverlay" aria-hidden="true">
+			<div class="issue-success-card">
+				<div class="issue-success-header">
+					<div>
+						<div class="issue-success-kicker">Ticket submitted</div>
+						<h3 class="issue-success-title">Issue reported successfully</h3>
+						<p class="issue-success-subtitle" id="issueSuccessMessage">Your support ticket has been created and the confirmation email has been sent.</p>
+					</div>
+					<button type="button" class="modal-close" id="closeIssueSuccessBtn" aria-label="Close confirmation">×</button>
+				</div>
+				<div class="settings-grid">
+					<div class="settings-mini-card"><strong>Ticket ID</strong><span id="issueSuccessTicketId">—</span></div>
+					<div class="settings-mini-card"><strong>Status</strong><span id="issueSuccessStatus">Pending Review</span></div>
+				</div>
+				<div class="issue-success-cta">
+					<button type="button" class="settings-submit" id="viewIssueHistoryBtn">View My Issues</button>
+					<button type="button" class="settings-secondary" id="dismissIssueSuccessBtn">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="registration-overlay" id="registrationOverlay" aria-hidden="true">
+			<div class="registration-modal" role="dialog" aria-modal="true" aria-labelledby="registrationTitle">
+				<div class="registration-modal__header">
+					<div>
+						<div class="modal-kicker">Registration</div>
+
+				<div class="registration-success-overlay" id="registrationSuccessOverlay" aria-hidden="true">
+					<div class="registration-success-card" role="dialog" aria-modal="true" aria-labelledby="registrationSuccessTitle">
+						<div class="success-confetti" id="registrationSuccessConfetti" aria-hidden="true"></div>
+						<div class="success-particles" id="registrationSuccessParticles" aria-hidden="true"></div>
+						<div class="success-glow" aria-hidden="true"></div>
+						<div class="settings-header">
+							<div class="registration-success-top">
+								<div class="success-badge" aria-hidden="true">
+									<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+										<path d="M12 25.5L20.2 33.5L36 15" />
+									</svg>
+								</div>
+								<div>
+									<div class="settings-kicker">Registration Successful</div>
+									<h2 class="success-headline" id="registrationSuccessTitle">Thank You for Registering!</h2>
+									<p class="success-copy" id="registrationSuccessMessage">Thank you for registering for the hackathon conducted by StartInno Solutions.</p>
+								</div>
+							</div>
+								<div class="registration-success-timer" aria-live="polite">
+									Visible for <span id="registrationSuccessCountdown">30s</span>
+								</div>
+							<a class="registration-success-home" href="/user/index.html" aria-label="Go back to home page">Home</a>
+							<button type="button" class="modal-close" id="closeRegistrationSuccessBtn" aria-label="Close success message">×</button>
+						</div>
+						<div class="success-copy registration-success-body">
+							Your registration has been submitted successfully and is currently waiting for admin approval.
+							Once the admin approves your registration, you will receive a confirmation email with all further updates and event details.
+							We are excited to have you as part of the innovation journey.
+						</div>
+						<div class="success-note">
+							🚀 Welcome to StartInno Solutions Hackathon Platform!
+						</div>
+						<div class="success-details">
+							<div class="success-detail"><strong>Team</strong><span id="registrationSuccessTeam">—</span></div>
+							<div class="success-detail"><strong>Leader</strong><span id="registrationSuccessLeader">—</span></div>
+							<div class="success-detail"><strong>Status</strong><span id="registrationSuccessStatus">Pending Admin Approval</span></div>
+							<div class="success-detail"><strong>Email</strong><span id="registrationSuccessEmail">—</span></div>
+						</div>
+						<div class="success-actions">
+							<button type="button" class="btn-primary" id="goToDashboardBtn">Go to Dashboard</button>
+						</div>
+					</div>
+				</div>
+						<h2 id="registrationTitle">Step-by-step registration</h2>
+						<p class="muted">Complete each step in order. You cannot skip ahead.</p>
+					</div>
+					<button type="button" class="modal-close" id="closeRegistration" aria-label="Close registration">×</button>
+				</div>
+				<div class="modal-progress" id="registrationProgress">Step 1 of 4</div>
+				<div class="registration-stepper">
+					<section class="registration-step active" data-step="1">
+						<div class="step-header">
+							<div class="step-number">Step 1: Team Details</div>
+							<div>Enter your team information and continue.</div>
+						</div>
+						<div class="form-group">
+							<label for="regTeamName">Team Name</label>
+							<input id="regTeamName" type="text" placeholder="Enter team name" />
+						</div>
+						<div class="form-row">
+							<div class="form-group">
+								<label for="regLeaderName">Team Leader Name</label>
+								<input id="regLeaderName" type="text" placeholder="Leader name" />
+							</div>
+							<div class="form-group">
+								<label for="regLeaderEmail">Team Leader Email</label>
+								<input id="regLeaderEmail" type="email" placeholder="leader@example.com" />
+							</div>
+							<div class="form-group">
+								<label for="regYear">Year</label>
+								<select id="regYear">
+									<option value="">Select year</option>
+									<option value="1">1st Year</option>
+									<option value="2">2nd Year</option>
+									<option value="3">3rd Year</option>
+									<option value="4">4th Year</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group">
+								<label for="regStream">Stream</label>
+								<input id="regStream" type="text" placeholder="e.g., CSE, ECE, ME" />
+							</div>
+							<div class="form-group">
+								<label for="regContact">Contact Number</label>
+								<input id="regContact" type="tel" placeholder="10 digit contact number" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="regTeamSize">Team Size</label>
+							<select id="regTeamSize">
+								<option value="">Select team size</option>
+								<option value="2">2 members</option>
+								<option value="3">3 members</option>
+								<option value="4">4 members</option>
+								<option value="5">5 members</option>
+							</select>
+						</div>
+						<div id="regMembers" class="members-container"></div>
+						<div class="registration-actions">
+							<button type="button" class="btn-secondary" id="cancelRegistration1">Cancel</button>
+							<button type="button" class="btn-success" id="step1Submit">Submit</button>
+						</div>
+					</section>
+					<section class="registration-step" data-step="2">
+						<div class="step-header">
+							<div class="step-number">Step 2: Payment</div>
+							<div>Choose Razorpay or UPI payment using admin details.</div>
+						</div>
+						<div class="payment-options">
+							<button type="button" class="payment-choice active" data-payment-choice="razorpay">Razorpay</button>
+							<button type="button" class="payment-choice" data-payment-choice="upi">UPI</button>
+						</div>
+						<div class="payment-panel" id="razorpayPanel">
+							<p class="muted">Click the button below to mark Razorpay payment as complete.</p>
+							<div class="confirm-row">
+								<button type="button" class="btn-success" id="razorpayPayBtn">Pay with Razorpay</button>
+							</div>
+						</div>
+						<div class="payment-panel is-hidden" id="upiPanel">
+							<div class="upi-payment-shell upi-launch-shell">
+								<div class="upi-payment-header">
+									<div>
+										<div class="muted" id="upiInfoText">Loading UPI details...</div>
+										<div class="upi-amount-pill" id="upiAmountText">Registration fee: loading...</div>
+									</div>
+									<div class="upi-payment-mini">Secure UPI checkout</div>
+								</div>
+								<div class="upi-summary-status" id="upiPaymentSummaryStatus">Payment will remain under verification after submission.</div>
+								<div class="confirm-row">
+									<button type="button" class="btn-success btn-success--glow" id="openUpiPaymentModalBtn">Open UPI Payment</button>
+								</div>
+							</div>
+							</div>
+						</div>
+						<div class="registration-actions">
+							<button type="button" class="btn-secondary" id="backToStep1">Back</button>
+						</div>
+					</section>
+				<section class="registration-step" data-step="3">
+					<div class="step-header">
+						<div class="step-number">Step 3: WhatsApp Joining</div>
+						<div>Join the group and confirm your entry.</div>
+					</div>
+					<div class="payment-panel whatsapp-panel">
+						<!-- Hidden raw invite (kept for accessibility/debug but visually hidden) -->
+						<span id="whatsappInviteText" class="is-hidden" aria-hidden="true">Loading WhatsApp group link...</span>
+						<div class="whatsapp-brand-hero" aria-hidden="true">
+							<svg class="whatsapp-brand-image" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WhatsApp logo">
+								<rect width="420" height="220" rx="28" fill="#f8f1e8"/>
+								<circle cx="210" cy="74" r="52" fill="#25D366"/>
+								<path fill="#fff" d="M234 97.8c-1 3.2-6 5.6-8.2 6-2.2.4-4.4.5-9.6-1.4-6.3-2.5-13.4-8.7-17.3-14.6-4-5.9-4.3-10.6-4.3-12.5 0-2 1.2-4.7 2.8-6.3.8-.7 1.7-1 2.6-1h1.7c.8 0 1.7.2 2.6 1.9.9 1.7 2.6 6.4 2.9 7 .3.7.4 1.4.1 2-.2.6-.6 1.2-1.1 1.8-.4.5-.9 1.1-1.4 1.8-.5.6-1 1.1-.2 2.2.6 1 2.9 4.9 6.9 8.4 4.7 4.2 8.7 5.7 9.7 6 .9.3 1.6.3 2.3-.3.7-.7 2.5-3.5 3.1-4.4.8-1 1.5-.8 2.6-.5 1 .3 6.7 3.2 7.8 3.7 1.1.5 1.6.6 1.9 1 .2.3.2 2-.8 5z"/>
+								<text x="210" y="165" text-anchor="middle" fill="#25D366" font-family="Poppins, Arial, sans-serif" font-size="54" font-weight="700">WhatsApp</text>
+							</svg>
+						</div>
+						<div class="whatsapp-card">
+							<div class="whatsapp-card-inner">
+								<div class="whatsapp-content whatsapp-heading-copy">
+									<div class="whatsapp-title">Join the official WhatsApp group</div>
+									<div class="whatsapp-desc muted">Stay connected with your team and never miss important updates.</div>
+								</div>
+
+								<!-- benefits grid -->
+								<div class="whatsapp-benefits-grid">
+									<div class="benefit"><div class="benefit-icon">🔔</div><div class="benefit-label">Event Updates</div></div>
+									<div class="benefit"><div class="benefit-icon">👥</div><div class="benefit-label">Team Coordination</div></div>
+									<div class="benefit"><div class="benefit-icon">📣</div><div class="benefit-label">Important Announcements</div></div>
+									<div class="benefit"><div class="benefit-icon">🎧</div><div class="benefit-label">Live Support</div></div>
+								</div>
+
+								<div class="whatsapp-actions whatsapp-cta">
+									<button type="button" class="btn-success whatsapp-join-btn whatsapp-join-btn--large" id="joinGroupBtn">Join WhatsApp Group</button>
+									<div class="divider-or"><span>or</span></div>
+									<button type="button" class="btn-secondary btn-outline-ghost" id="confirmJoinedBtn" disabled>I Joined the Group</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="registration-actions">
+						<button type="button" class="btn-secondary" id="backToStep2">Back</button>
+					</div>
+				</section>
+					<section class="registration-step" data-step="4">
+						<div class="step-header">
+							<div class="step-number">Step 4: Complete Registration</div>
+							<div>Review and submit your registration.</div>
+						</div>
+						<div class="payment-panel">
+							<div id="registrationReviewSummary" class="review-summary"></div>
+							<label class="confirm-acceptance">
+								<input id="regConfirmDetails" type="checkbox" />
+								<span>I confirm that all the information above is correct and complete.</span>
+							</label>
+							<p class="muted">Everything is complete. Click accept and submit to send your registration for admin approval.</p>
+							<div class="confirm-row">
+								<button type="button" class="btn-success" id="continueRegistrationBtn" disabled>Accept & Submit</button>
+							</div>
+						</div>
+						<div class="registration-actions">
+							<button type="button" class="btn-secondary" id="backToStep3">Back</button>
+						</div>
+					</section>
+					<div class="status-message" id="registrationStatus"></div>
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+
+	<div class="upi-payment-modal-overlay" id="upiPaymentModal" aria-hidden="true" data-upi-method="qr">
+		<div class="upi-payment-modal" role="dialog" aria-modal="true" aria-labelledby="upiPaymentModalTitle">
+			<div class="upi-payment-modal__header">
+				<div>
+					<div class="step-number">UPI Payment</div>
+					<h3 id="upiPaymentModalTitle">Choose your payment method</h3>
+				</div>
+				<button type="button" class="modal-close" id="closeUpiPaymentModalBtn" aria-label="Close UPI payment modal">×</button>
+			</div>
+			<div class="upi-payment-modal__status" id="upiPaymentStatus">Your payment will stay under verification after submission.</div>
+			<div class="upi-methods upi-methods--modal">
+				<button type="button" class="upi-method-card active" id="upiMethodQrCard" data-upi-method="qr">
+					<span class="upi-method-card__icon">⌁</span>
+					<span>
+						<strong>Pay with QR Scanner</strong>
+						<small>Scan the dynamic QR from admin settings</small>
+					</span>
+				</button>
+				<button type="button" class="upi-method-card" id="upiMethodIdCard" data-upi-method="upi-id">
+					<span class="upi-method-card__icon">◉</span>
+					<span>
+						<strong>Pay with UPI ID</strong>
+						<small>Copy the dynamic UPI ID and pay instantly</small>
+					</span>
+				</button>
+			</div>
+			<div class="upi-method-panel" data-upi-method-panel="qr">
+				<img class="payment-qr hidden-image" id="upiQrPreview" alt="UPI QR" />
+				<div class="upi-modal-copy">
+					<strong>Scan and pay the exact amount shown below.</strong>
+					<p>Open your UPI app, scan the code, and return here with the transaction details for verification.</p>
+				</div>
+				<div class="upi-payment-meta">
+					<div class="upi-amount-pill" id="upiAmountTextModal">Registration fee: loading...</div>
+				</div>
+
+				<!-- Paid button for QR scanner panel (bottom-right) -->
+				<button type="button" class="paid-btn" id="upiQrPaidBtn">Paid</button>
+			</div>
+			<div class="upi-method-panel is-hidden" data-upi-method-panel="upi-id">
+				<div class="upi-modal-copy">
+					<strong>Use the admin-configured UPI ID.</strong>
+					<p>Copy the UPI ID, open your payment app, and send the exact registration fee.</p>
+				</div>
+				<div class="form-group">
+					<label>UPI ID</label>
+					<div class="upi-method-copy">
+						<input id="upiDisplay" type="text" readonly />
+						<button type="button" class="btn-secondary" id="copyUpiIdBtn">Copy</button>
+					</div>
+				</div>
+				<div class="upi-payment-meta">
+					<div class="upi-amount-pill" id="upiAmountTextModalAlt">Registration fee: loading...</div>
+				</div>
+
+				<!-- Paid button for UPI ID panel (bottom-right) -->
+				<button type="button" class="paid-btn" id="upiIdPaidBtn">Paid</button>
+			</div>
+			<div class="upi-transaction-panel" id="upiCompletionPanel">
+				<div class="upi-modal-copy">
+					<strong>Payment verification</strong>
+					<p>Enter the transaction ID from your UPI app and tap Done Payment to submit the payment for review.</p>
+				</div>
+				<div class="form-group">
+					<label for="upiTransactionId">Transaction ID</label>
+					<input id="upiTransactionId" type="text" placeholder="Enter your UPI transaction ID" autocomplete="off" />
+				</div>
+				<div class="upi-submit-row">
+					<button type="button" class="btn-success btn-success--glow upi-submit-btn" id="upiSubmitPaymentBtn">Done Payment</button>
+				</div>
+			</div>
+			<div id="paymentSummaryCard" class="payment-summary-card is-hidden" style="margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);backdrop-filter:blur(6px);box-shadow:0 6px 20px rgba(56,189,248,0.06);color:#e6f7ff;">
+				<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong>Fee Type:</strong><span id="summaryFeeType">—</span></div>
+				<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong>Participants:</strong><span id="summaryParticipants">—</span></div>
+				<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong>Fee Per Head:</strong><span id="summaryFeePerHead">—</span></div>
+				<div style="display:flex;justify-content:space-between;font-size:1.05em;color:#7efcde;"><strong>Total Amount:</strong><span id="summaryTotalAmount">—</span></div>
+			</div>
+		</div>
+	</div>
+	<div class="upi-toast" id="upiToast" aria-live="polite" aria-atomic="true"></div>
+
+	<script src="../js/banner-slider.js"></script>
+	<script>
+	// Lightweight particles animation (canvas)
+	(function(){
+		const canvas = document.getElementById('particlesCanvas');
+		if (!canvas) return;
+		const ctx = canvas.getContext('2d');
+		let w=0,h=0,dpr=1, particles=[];
+		function resize(){
+			dpr = Math.min(window.devicePixelRatio || 1, 2);
+			w = canvas.clientWidth = canvas.offsetWidth;
+			h = canvas.clientHeight = canvas.offsetHeight;
+			canvas.width = Math.round(w * dpr);
+			canvas.height = Math.round(h * dpr);
+			ctx.scale(dpr,dpr);
+		}
+		function makeParticles(){
+			const area = window.innerWidth * window.innerHeight;
+			const base = window.innerWidth > 900 ? 60 : 22;
+			const count = Math.max(12, Math.round(base * (area / (1400*800))));
+			particles = Array.from({length: count}).map(()=>({
+				x: Math.random()*w,
+				y: Math.random()*h,
+				r: (Math.random()*1.6)+0.6,
+				a: (Math.random()*0.6)+0.15,
+				xv: (Math.random()-0.5)*0.15,
+				yv: (Math.random()-0.5)*0.15,
+				color: `rgba(180,220,255,${(Math.random()*0.5)+0.06})`
+			}));
+		}
+		function step(){
+			ctx.clearRect(0,0,w,h);
+			for (let p of particles){
+				p.x += p.xv; p.y += p.yv;
+				if (p.x < -20) p.x = w + 20;
+				if (p.x > w + 20) p.x = -20;
+				if (p.y < -20) p.y = h + 20;
+				if (p.y > h + 20) p.y = -20;
+				ctx.beginPath();
+				ctx.fillStyle = p.color;
+				ctx.globalAlpha = p.a;
+				ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+				ctx.fill();
+			}
+			requestAnimationFrame(step);
+		}
+		function init(){
+			resize();
+			makeParticles();
+			step();
+		}
+		window.addEventListener('resize', ()=>{ resize(); makeParticles(); });
+		// initialize after small delay to ensure layout measured
+		setTimeout(init, 120);
+	})();
+
+		// Use same origin as the page so frontend calls the backend serving the app.
+		const API_BASE = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'http://localhost:5001';
+
+		function getStoredToken() {
+			return localStorage.getItem('token') || sessionStorage.getItem('token');
+		}
+
+		function getStoredUser() {
+			const rawUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+			if (!rawUser) return null;
+			try {
+				return JSON.parse(rawUser);
+			} catch (error) {
+				console.warn('[dashboard] failed to parse stored user', error);
+				return null;
+			}
+		}
+
+		function requireAuth() {
+			const token = getStoredToken();
+			if (!token) {
+				window.location.href = 'login.html';
+				return null;
+			}
+			return token;
+		}
+
+		window.logout = () => {
+			try {
+				localStorage.clear();
+				sessionStorage.clear();
+			} catch (e) { /* ignore */ }
+			document.body.style.transition = 'opacity 260ms ease';
+			document.body.style.opacity = '0.6';
+			setTimeout(() => {
+				window.location.href = '/frontend/user/login.html';
+			}, 260);
+		};
+
+		window.userLogout = function() { return window.logout(); };
+
+		const profileState = {
+			loading: false,
+			data: null
+		};
+
+		function formatProfileDate(value) {
+			if (!value) return '-';
+			const date = new Date(value);
+			if (Number.isNaN(date.getTime())) return '-';
+			return date.toLocaleDateString();
+		}
+
+		function getInitials(fullName, email) {
+			const source = String(fullName || '').trim();
+			if (source) {
+				const parts = source.split(/\s+/).filter(Boolean);
+				return (parts[0]?.[0] || 'U') + (parts[1]?.[0] || '');
+			}
+			return String(email || 'U').charAt(0).toUpperCase();
+		}
+
+		function setProfileLoading(isLoading) {
+			profileState.loading = isLoading;
+			const loadingEl = document.getElementById('profileLoading');
+			if (!loadingEl) return;
+			loadingEl.style.display = isLoading ? 'block' : 'none';
+		}
+
+		function renderProfilePanel(user) {
+			if (!user) return;
+			profileState.data = user;
+
+			const fullName = user.fullName || [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ').trim() || 'User';
+			const initials = getInitials(fullName, user.email);
+
+			const bindText = (id, value) => {
+				const el = document.getElementById(id);
+				if (el) el.textContent = value || '-';
+			};
+
+			bindText('profileTriggerName', fullName);
+			bindText('profileFullName', fullName);
+			bindText('profileEmailTop', user.email || '-');
+			bindText('profilePhone', user.phone || '-');
+			bindText('profileCollege', user.collegeName || '-');
+			bindText('profileDepartment', user.department || '-');
+			bindText('profileYear', user.yearOfStudy || '-');
+			bindText('profileUserId', String(user.registrationId || user.id || '-'));
+			bindText('profileCreatedAt', formatProfileDate(user.createdAt));
+			bindText('profileRole', user.role || (user.admin ? 'Admin' : 'User'));
+			bindText('profileUsername', user.username || '-');
+
+			const avatarSmall = document.getElementById('profileAvatarSmall');
+			const avatarLarge = document.getElementById('profileAvatarLarge');
+			if (avatarSmall) avatarSmall.textContent = initials.toUpperCase();
+			if (avatarLarge) avatarLarge.textContent = initials.toUpperCase();
+
+			const editFullName = document.getElementById('editFullName');
+			const editPhone = document.getElementById('editPhone');
+			const editCollege = document.getElementById('editCollege');
+			const editDepartment = document.getElementById('editDepartment');
+			const editYear = document.getElementById('editYear');
+			if (editFullName) editFullName.value = fullName;
+			if (editPhone) editPhone.value = user.phone || '';
+			if (editCollege) editCollege.value = user.collegeName || '';
+			if (editDepartment) editDepartment.value = user.department || '';
+			if (editYear) editYear.value = user.yearOfStudy || '';
+
+			localStorage.setItem('user', JSON.stringify({
+				...(getStoredUser() || {}),
+				...user,
+				fullName
+			}));
+		}
+
+		function splitFullName(name) {
+			const normalized = String(name || '').trim();
+			if (!normalized) return { firstName: '', middleName: '', lastName: '' };
+			const parts = normalized.split(/\s+/);
+			if (parts.length === 1) return { firstName: parts[0], middleName: '', lastName: '' };
+			if (parts.length === 2) return { firstName: parts[0], middleName: '', lastName: parts[1] };
+			return {
+				firstName: parts[0],
+				middleName: parts.slice(1, -1).join(' '),
+				lastName: parts[parts.length - 1]
+			};
+		}
+
+		function getStoredProfileFallback() {
+			const user = getStoredUser();
+			if (!user) return null;
+			return {
+				id: user.id,
+				registrationId: user.registrationId || user.id,
+				username: user.username || '',
+				firstName: user.firstName || '',
+				middleName: user.middleName || '',
+				lastName: user.lastName || '',
+				fullName: user.fullName || [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ').trim(),
+				email: user.email || '',
+				phone: user.phone || '',
+				collegeName: user.collegeName || '',
+				department: user.department || '',
+				yearOfStudy: user.yearOfStudy || '',
+				avatarUrl: user.avatarUrl || '',
+				role: user.role || (user.admin ? 'Admin' : 'User'),
+				createdAt: user.createdAt || ''
+			};
+		}
+
+		async function fetchMyProfile() {
+			const token = requireAuth();
+			if (!token) return;
+			setProfileLoading(true);
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/me`, {
+					headers: { Authorization: `Bearer ${token}` }
+				});
+				const body = await response.json().catch(() => ({}));
+				if (!response.ok || !body.user) {
+					throw new Error(body.message || 'Unable to fetch profile');
+				}
+				renderProfilePanel(body.user);
+			} catch (error) {
+				console.warn('[profile] fetch failed, using local fallback:', error.message);
+				const fallback = getStoredProfileFallback();
+				if (fallback) renderProfilePanel(fallback);
+			} finally {
+				setProfileLoading(false);
+			}
+		}
+
+		function closeProfilePanel() {
+			const panel = document.getElementById('profilePanel');
+			const toggle = document.getElementById('profileToggle');
+			const backdrop = document.getElementById('profileBackdrop');
+			if (panel) panel.classList.remove('open');
+			if (backdrop) backdrop.classList.remove('open');
+			if (toggle) toggle.setAttribute('aria-expanded', 'false');
+			document.body.style.overflow = '';
+			document.body.classList.remove('profile-open');
+		}
+
+		function openProfilePanel() {
+			const panel = document.getElementById('profilePanel');
+			const toggle = document.getElementById('profileToggle');
+			const backdrop = document.getElementById('profileBackdrop');
+			if (panel) panel.classList.add('open');
+			if (backdrop) backdrop.classList.add('open');
+			if (toggle) toggle.setAttribute('aria-expanded', 'true');
+			document.body.style.overflow = 'hidden';
+			document.body.classList.add('profile-open');
+		}
+
+		function toggleProfilePanel() {
+			const panel = document.getElementById('profilePanel');
+			if (!panel) return;
+			if (panel.classList.contains('open')) closeProfilePanel();
+			else openProfilePanel();
+		}
+
+		const registrationState = {
+			showRegistration: false,
+			currentStep: 1,
+			direction: 'forward',
+			isSubmitting: false,
+			paymentMethod: 'razorpay',
+			upiMethod: 'qr',
+			paymentReference: '',
+			paymentSubmissionId: '',
+			paymentStatus: 'pending',
+			paymentVerificationStatus: 'pending',
+			paymentCompleted: false,
+			paymentAmount: '',
+			whatsappJoined: false,
+			registrationConfirmed: false,
+			whatsappInviteLink: '',
+			upiId: '',
+			upiImageUrl: '',
+			upiQrEnabled: true,
+			upiIdEnabled: true,
+			upiModalOpen: false,
+			members: []
+		};
+
+		// Load real payment metadata from active banner (whatsapp link, UPI, registration link)
+		async function loadPaymentMeta() {
+			try {
+				const response = await fetch(`${API_BASE}/api/payments/settings`);
+				if (!response.ok) throw new Error('Failed to load payment metadata');
+				const body = await response.json();
+				const settings = body?.paymentSettings || body || {};
+				if (settings.whatsappGroupLink) {
+					registrationState.whatsappInviteLink = String(settings.whatsappGroupLink).trim();
+					console.log('[dashboard] loaded whatsapp link:', registrationState.whatsappInviteLink);
+				}
+				if (settings.upiId) registrationState.upiId = String(settings.upiId).trim();
+				if (settings.upiAmount) registrationState.paymentAmount = String(settings.upiAmount).trim();
+				if (settings.upiImageUrl) registrationState.upiImageUrl = String(settings.upiImageUrl).trim();
+				registrationState.upiQrEnabled = settings.upiQrEnabled !== false;
+				registrationState.upiIdEnabled = settings.upiIdEnabled !== false;
+			} catch (err) {
+				console.warn('[dashboard] payment metadata load failed:', err);
+			}
+
+			const upiDisplay = document.getElementById('upiDisplay');
+			const upiInfoText = document.getElementById('upiInfoText');
+			const upiAmountText = document.getElementById('upiAmountText');
+			const upiQrPreview = document.getElementById('upiQrPreview');
+			const upiPaymentSummaryStatus = document.getElementById('upiPaymentSummaryStatus');
+			if (upiDisplay) upiDisplay.value = registrationState.upiId || 'UPI ID not configured';
+			if (upiInfoText) upiInfoText.textContent = registrationState.upiId ? 'Scan the QR or use the UPI ID below.' : 'UPI details are not configured yet.';
+			if (upiAmountText) upiAmountText.textContent = registrationState.paymentAmount ? `Registration fee: ₹${registrationState.paymentAmount}` : 'Registration fee: ask admin';
+			if (upiQrPreview) {
+				if (registrationState.upiImageUrl) {
+					upiQrPreview.src = registrationState.upiImageUrl;
+					upiQrPreview.classList.remove('hidden-image');
+					upiQrPreview.style.display = 'block';
+				} else {
+					upiQrPreview.removeAttribute('src');
+					upiQrPreview.classList.add('hidden-image');
+					upiQrPreview.style.display = 'none';
+				}
+			}
+			if (upiPaymentSummaryStatus) {
+				upiPaymentSummaryStatus.textContent = registrationState.paymentSubmissionId
+					? 'Payment under verification. You can continue to the next step.'
+					: 'Your payment will stay under verification after submission.';
+			}
+		}
+
+		function calculatePaymentAmount() {
+			const upiAmountText = document.getElementById('upiAmountText');
+			const upiAmountTextModal = document.getElementById('upiAmountTextModal');
+			const upiAmountTextModalAlt = document.getElementById('upiAmountTextModalAlt');
+			const teamSize = Number(document.getElementById('regTeamSize')?.value || 0);
+			const membersCount = Math.max(teamSize, 1); // team leader included when teamSize>=1
+			const feeSettings = registrationState.feeSettings || { feeType: 'per_team', amount: '' };
+			let computed = '';
+			if (!feeSettings || feeSettings.amount === '' || feeSettings.amount === null) {
+				// fallback to banner-set amount if any
+				computed = registrationState.paymentAmount || '';
+			} else {
+				const amt = Number(feeSettings.amount || 0);
+				if (feeSettings.feeType === 'per_head') {
+					// participants = team leader + members; when regTeamSize is count of participants
+					const participants = Math.max(teamSize, 1);
+					computed = String(amt * participants);
+				} else {
+					computed = String(amt);
+				}
+			}
+			registrationState.paymentAmount = computed;
+			if (upiAmountText) upiAmountText.textContent = computed ? `Registration fee: ₹${computed}` : 'Registration fee: ask admin';
+			if (upiAmountTextModal) upiAmountTextModal.textContent = computed ? `Registration fee: ₹${computed}` : 'Registration fee: ask admin';
+			if (upiAmountTextModalAlt) upiAmountTextModalAlt.textContent = computed ? `Registration fee: ₹${computed}` : 'Registration fee: ask admin';
+
+			// Update summary card
+			const summaryCard = document.getElementById('paymentSummaryCard');
+			const sfType = document.getElementById('summaryFeeType');
+			const sParticipants = document.getElementById('summaryParticipants');
+			const sFeePerHead = document.getElementById('summaryFeePerHead');
+			const sTotal = document.getElementById('summaryTotalAmount');
+			if (sfType) sfType.textContent = (feeSettings.feeType === 'per_head') ? 'Per Head' : 'Per Team';
+			if (sParticipants) sParticipants.textContent = String(membersCount || 1);
+			if (sFeePerHead) sFeePerHead.textContent = feeSettings.amount ? `₹${feeSettings.amount}` : (registrationState.paymentAmount ? `₹${registrationState.paymentAmount}` : '—');
+			if (sTotal) sTotal.textContent = computed ? `₹${computed}` : '—';
+			if (summaryCard) summaryCard.classList.toggle('is-hidden', !computed);
+		}
+
+		function setUpiPaymentMethod(method) {
+			registrationState.upiMethod = method;
+			const methodButtons = document.querySelectorAll('[data-upi-method]');
+			const methodPanels = document.querySelectorAll('[data-upi-method-panel]');
+			methodButtons.forEach((button) => button.classList.toggle('active', button.dataset.upiMethod === method));
+			methodPanels.forEach((panel) => panel.classList.toggle('is-hidden', panel.dataset.upiMethodPanel !== method));
+			const qrButton = document.getElementById('upiMethodQrCard');
+			const idButton = document.getElementById('upiMethodIdCard');
+			if (qrButton) qrButton.classList.toggle('active', method === 'qr');
+			if (idButton) idButton.classList.toggle('active', method === 'upi-id');
+			const modal = document.getElementById('upiPaymentModal');
+			if (modal) modal.dataset.upiMethod = method;
+			if (!registrationState.paymentSubmissionId) setUpiSubmitButtonState('idle');
+		}
+
+		function openUpiPaymentModal(method = registrationState.upiMethod || 'qr') {
+			registrationState.upiModalOpen = true;
+			const modal = document.getElementById('upiPaymentModal');
+			if (!modal) return;
+			setUpiPaymentMethod(method);
+			if (!registrationState.paymentSubmissionId) setUpiSubmitButtonState('idle');
+			modal.classList.add('open');
+			modal.setAttribute('aria-hidden', 'false');
+			document.body.style.overflow = 'hidden';
+		}
+
+		function closeUpiPaymentModal() {
+			registrationState.upiModalOpen = false;
+			const modal = document.getElementById('upiPaymentModal');
+			if (!modal) return;
+			modal.classList.remove('open');
+			modal.setAttribute('aria-hidden', 'true');
+			document.body.style.overflow = registrationState.showRegistration ? 'hidden' : '';
+		}
+
+		function updateUpiVerificationUi(message = '') {
+			const status = document.getElementById('upiPaymentStatus');
+			const summary = document.getElementById('upiPaymentSummaryStatus');
+			const text = message || (registrationState.paymentSubmissionId ? 'Payment under verification. You can continue to the next step.' : 'Your payment will stay under verification after submission.');
+			if (status) status.textContent = text;
+			if (summary) summary.textContent = text;
+		}
+
+		function showUpiToast(message, type = 'success') {
+			const toast = document.getElementById('upiToast');
+			if (!toast) return;
+			toast.textContent = message;
+			toast.className = `upi-toast ${type}`;
+			toast.classList.add('show');
+			window.clearTimeout(window.__upiToastTimer);
+			window.__upiToastTimer = window.setTimeout(() => {
+				toast.classList.remove('show');
+			}, 2600);
+		}
+
+		function setUpiSubmitButtonState(state = 'idle') {
+			const submitBtn = document.getElementById('upiSubmitPaymentBtn');
+			if (!submitBtn) return;
+			submitBtn.classList.remove('is-loading');
+			submitBtn.innerHTML = 'Done Payment';
+			submitBtn.disabled = false;
+			if (state === 'loading') {
+				submitBtn.classList.add('is-loading');
+				submitBtn.disabled = true;
+				submitBtn.innerHTML = '<span class="upi-spinner" aria-hidden="true"></span><span>Processing...</span>';
+				return;
+			}
+			if (state === 'success') {
+				submitBtn.disabled = true;
+				submitBtn.textContent = 'Payment Submitted';
+			}
+		}
+
+		function copyUpiIdValue() {
+			const upiDisplay = document.getElementById('upiDisplay');
+			const value = upiDisplay?.value || registrationState.upiId;
+			if (!value || value === 'UPI ID not configured') {
+				setStatus('UPI ID is not configured yet.', 'error');
+				return;
+			}
+			navigator.clipboard.writeText(value).then(() => {
+				setStatus('UPI ID copied to clipboard.', 'success');
+			}).catch(() => {
+				setStatus('Unable to copy UPI ID right now.', 'error');
+			});
+		}
+
+		function openUpiApp() {
+			const upiId = registrationState.upiId || document.getElementById('upiDisplay')?.value || '';
+			if (!upiId || upiId === 'UPI ID not configured') {
+				setStatus('UPI ID is not configured yet.', 'error');
+				return;
+			}
+			const amount = registrationState.paymentAmount ? String(registrationState.paymentAmount).trim() : '';
+			const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('StartInno Solutions')}${amount ? `&am=${encodeURIComponent(amount)}` : ''}&cu=INR`;
+			window.location.href = upiUri;
+		}
+
+		async function submitUpiPayment() {
+			const token = requireAuth();
+			if (!token) {
+				setStatus('Please sign in again before submitting payment.', 'error');
+				showUpiToast('Please sign in again before submitting payment.', 'error');
+				return;
+			}
+
+			if (registrationState.paymentSubmissionId) {
+				setStatus('This payment has already been submitted and is under verification.', 'success');
+				showUpiToast('Payment already submitted.', 'success');
+				return;
+			}
+
+			const transactionId = document.getElementById('upiTransactionId')?.value.trim();
+			if (!transactionId) {
+				setStatus('Enter a transaction ID first.', 'error');
+				showUpiToast('Transaction ID is required.', 'error');
+				return;
+			}
+
+			const registrationId = getProfileSource().registrationId || getProfileSource().id || '';
+			const teamName = document.getElementById('regTeamName')?.value.trim();
+			const leaderName = document.getElementById('regLeaderName')?.value.trim();
+			const email = document.getElementById('regLeaderEmail')?.value.trim().toLowerCase();
+			const payload = new FormData();
+			payload.append('teamName', teamName || '');
+			payload.append('leaderName', leaderName || '');
+			payload.append('email', email || '');
+			payload.append('registrationId', registrationId || '');
+			payload.append('paymentMethod', `upi-${registrationState.upiMethod === 'upi-id' ? 'id' : 'qr'}`);
+			payload.append('upiMethod', registrationState.upiMethod || 'qr');
+			payload.append('upiId', registrationState.upiId || '');
+			payload.append('paymentAmount', registrationState.paymentAmount || '');
+			payload.append('transactionId', transactionId);
+
+			setStatus('Submitting UPI payment...', 'success');
+			setUpiSubmitButtonState('loading');
+
+			try {
+				const response = await fetch(`${API_BASE}/api/payments/submit-upi-payment`, {
+					method: 'POST',
+					headers: { Authorization: `Bearer ${token}` },
+					body: payload
+				});
+
+				const body = await response.json().catch(() => ({}));
+				if (!response.ok) {
+					throw new Error(body.message || body.msg || 'Failed to submit payment');
+				}
+
+				registrationState.paymentMethod = 'upi';
+				registrationState.paymentReference = transactionId;
+				registrationState.paymentSubmissionId = body.payment?._id || '';
+				registrationState.paymentStatus = body.payment?.status || 'pending';
+				registrationState.paymentVerificationStatus = body.payment?.status || 'pending';
+				registrationState.paymentCompleted = true;
+				setStatus('Pending Verification. You can continue to the next step.', 'success');
+				updateUpiVerificationUi('Pending Verification. You can continue to the next step.');
+				showUpiToast('Payment Submitted', 'success');
+				setUpiSubmitButtonState('success');
+				setTimeout(() => {
+						closeUpiPaymentModal();
+						setActiveStep(3, 'forward');
+					}, 900);
+			} catch (error) {
+				setStatus(error.message || 'Failed to submit payment.', 'error');
+				updateUpiVerificationUi(error.message || 'Failed to submit payment.');
+				showUpiToast(error.message || 'Failed to submit payment.', 'error');
+			} finally {
+				if (!registrationState.paymentSubmissionId) {
+					setUpiSubmitButtonState('idle');
+				}
+			}
+		}
+
+		function revealUpiTransactionEntry() {
+			registrationState.paymentCompleted = true;
+			registrationState.paymentStatus = 'completed';
+			const completionPanel = document.getElementById('upiCompletionPanel');
+			if (completionPanel) completionPanel.classList.remove('is-hidden');
+			const txnInput = document.getElementById('upiTransactionId');
+			if (txnInput) txnInput.focus();
+			updateContinueState();
+		}
+
+		// Paid button handlers: mark UI and reveal transaction entry for verification
+		(function attachPaidButtons() {
+			function onPaidClick(method, btnId) {
+				const btn = document.getElementById(btnId);
+				if (!btn) return;
+				btn.addEventListener('click', () => {
+					registrationState.upiMethod = method;
+					btn.classList.add('paid');
+					revealUpiTransactionEntry();
+					showUpiToast('Marked as paid — enter transaction ID', 'success');
+				});
+			}
+			onPaidClick('qr', 'upiQrPaidBtn');
+			onPaidClick('upi-id', 'upiIdPaidBtn');
+		})();
+
+		const registrationOverlay = document.getElementById('registrationOverlay');
+		const registrationProgress = document.getElementById('registrationProgress');
+		const registrationStatus = document.getElementById('registrationStatus');
+		const registerButton = document.getElementById('openRegistration');
+
+		function setStatus(message, type) {
+			if (!registrationStatus) return;
+			registrationStatus.textContent = message;
+			registrationStatus.className = `status-message ${type}`;
+		}
+
+		function setOverlayVisible(visible) {
+			registrationState.showRegistration = visible;
+			registrationOverlay.classList.toggle('open', visible);
+			registrationOverlay.setAttribute('aria-hidden', visible ? 'false' : 'true');
+			document.body.style.overflow = visible ? 'hidden' : '';
+		}
+
+		function getStepPanel(step) {
+			return registrationOverlay.querySelector(`.registration-step[data-step="${step}"]`);
+		}
+
+		function setActiveStep(step, direction = 'forward') {
+			const panels = registrationOverlay.querySelectorAll('.registration-step');
+			panels.forEach((panel) => {
+				panel.classList.remove('active', 'enter-left', 'enter-right');
+				panel.style.display = 'none';
+			});
+
+			const nextPanel = getStepPanel(step);
+			if (!nextPanel) return;
+
+			nextPanel.style.display = 'block';
+			nextPanel.classList.add('active');
+			nextPanel.classList.add(direction === 'back' ? 'enter-right' : 'enter-left');
+
+			registrationState.currentStep = step;
+			registrationState.direction = direction;
+			registrationProgress.textContent = `Step ${step} of 4`;
+			if (step === 4) renderReviewSummary();
+			updateContinueState();
+		}
+
+		function updateContinueState() {
+			const continueButton = document.getElementById('continueRegistrationBtn');
+			if (continueButton) {
+				const confirmBox = document.getElementById('regConfirmDetails');
+				continueButton.disabled = registrationState.isSubmitting || !(registrationState.currentStep === 4 && registrationState.whatsappJoined && registrationState.paymentCompleted && registrationState.paymentReference && (confirmBox ? confirmBox.checked : registrationState.registrationConfirmed));
+			}
+		}
+
+		function renderReviewSummary() {
+			const container = document.getElementById('registrationReviewSummary');
+			if (!container) return;
+
+			const teamName = document.getElementById('regTeamName').value.trim();
+			const leaderName = document.getElementById('regLeaderName').value.trim();
+			const leaderEmail = document.getElementById('regLeaderEmail').value.trim();
+			const year = document.getElementById('regYear').value;
+			const stream = document.getElementById('regStream').value.trim();
+			const contact = document.getElementById('regContact').value.trim();
+			const teamSize = document.getElementById('regTeamSize').value || '';
+			const members = readMembers();
+
+			container.innerHTML = `
+				<div class="review-summary__grid">
+					<div class="review-summary__item"><strong>Team</strong><span>${teamName || '—'}</span></div>
+					<div class="review-summary__item"><strong>Leader</strong><span>${leaderName || '—'}</span></div>
+					<div class="review-summary__item"><strong>Email</strong><span>${leaderEmail || '—'}</span></div>
+					<div class="review-summary__item"><strong>Year</strong><span>${year || '—'}</span></div>
+					<div class="review-summary__item"><strong>Stream</strong><span>${stream || '—'}</span></div>
+					<div class="review-summary__item"><strong>Contact</strong><span>${contact || '—'}</span></div>
+					<div class="review-summary__item"><strong>Team Size</strong><span>${teamSize ? `${teamSize} members` : '—'}</span></div>
+					<div class="review-summary__item"><strong>Payment</strong><span>${registrationState.paymentMethod === 'razorpay' ? 'Razorpay' : `UPI (${registrationState.upiMethod === 'upi-id' ? 'UPI ID' : 'QR'})`} ${registrationState.paymentReference ? `(${registrationState.paymentReference})` : '(pending)'}</span></div>
+					<div class="review-summary__item"><strong>Status</strong><span>${registrationState.paymentStatus === 'completed' ? 'Payment completed' : 'Payment pending'}</span></div>
+					<div class="review-summary__item"><strong>WhatsApp</strong><span>${registrationState.whatsappJoined ? 'Joined' : 'Pending'}</span></div>
+				</div>
+				${members.length ? `<div class="review-summary__grid review-summary__members">${members.map((member, index) => `<div class="review-summary__item"><strong>Member ${index + 1}</strong><span>${member.name || '—'} | ${member.email || '—'} | ${member.phone || '—'} | ${member.stream || '—'} | ${member.year || '—'}</span></div>`).join('')}</div>` : ''}
+			`;
+		}
+
+		function buildMemberInputs() {
+			const container = document.getElementById('regMembers');
+			const teamSize = Number(document.getElementById('regTeamSize').value || 0);
+			const memberCount = Math.max(teamSize - 1, 0);
+			registrationState.members = Array.from({ length: memberCount }, (_, index) => registrationState.members[index] || { name: '', email: '', phone: '', stream: '', year: '' });
+			container.innerHTML = '';
+
+			for (let index = 0; index < memberCount; index += 1) {
+				const wrapper = document.createElement('div');
+				wrapper.className = 'member-form';
+				wrapper.innerHTML = `
+					<h4>Member ${index + 1}</h4>
+					<div class="form-row">
+						<div class="form-group">
+							<label for="regMember_${index}_name">Name</label>
+							<input id="regMember_${index}_name" type="text" placeholder="Member ${index + 1} name" value="${registrationState.members[index]?.name || ''}" />
+						</div>
+						<div class="form-group">
+							<label for="regMember_${index}_email">Email</label>
+							<input id="regMember_${index}_email" type="email" placeholder="member${index + 1}@example.com" value="${registrationState.members[index]?.email || ''}" />
+						</div>
+						<div class="form-group">
+							<label for="regMember_${index}_phone">Phone</label>
+							<input id="regMember_${index}_phone" type="tel" placeholder="10 digit phone" value="${registrationState.members[index]?.phone || ''}" />
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group">
+							<label for="regMember_${index}_stream">Stream</label>
+							<input id="regMember_${index}_stream" type="text" placeholder="e.g., CSE" value="${registrationState.members[index]?.stream || ''}" />
+						</div>
+						<div class="form-group">
+							<label for="regMember_${index}_year">Year</label>
+							<select id="regMember_${index}_year">
+								<option value="">Select year</option>
+								<option value="1">1st Year</option>
+								<option value="2">2nd Year</option>
+								<option value="3">3rd Year</option>
+								<option value="4">4th Year</option>
+							</select>
+						</div>
+					</div>
+				`;
+				container.appendChild(wrapper);
+			}
+		}
+
+		function readMembers() {
+			const teamSize = Number(document.getElementById('regTeamSize').value || 0);
+			const memberCount = Math.max(teamSize - 1, 0);
+			return Array.from({ length: memberCount }, (_, index) => {
+				const nameEl = document.getElementById(`regMember_${index}_name`);
+				const phoneEl = document.getElementById(`regMember_${index}_phone`);
+				const emailEl = document.getElementById(`regMember_${index}_email`);
+				const streamEl = document.getElementById(`regMember_${index}_stream`);
+				const yearEl = document.getElementById(`regMember_${index}_year`);
+				return {
+					name: nameEl ? nameEl.value.trim() : '',
+					email: emailEl ? emailEl.value.trim().toLowerCase() : '',
+					phone: phoneEl ? phoneEl.value.trim() : '',
+					stream: streamEl ? streamEl.value.trim() : '',
+					year: yearEl ? yearEl.value : ''
+				};
+			});
+		}
+
+		function validateStepOne() {
+			const teamName = document.getElementById('regTeamName').value.trim();
+			const leaderName = document.getElementById('regLeaderName').value.trim();
+			const leaderEmail = document.getElementById('regLeaderEmail').value.trim();
+			const year = document.getElementById('regYear').value;
+			const stream = document.getElementById('regStream').value.trim();
+			const contact = document.getElementById('regContact').value.trim();
+			const teamSize = document.getElementById('regTeamSize').value;
+			const members = readMembers();
+
+			if (!teamName || !leaderName || !leaderEmail || !/^\S+@\S+\.\S+$/.test(leaderEmail) || !year || !stream || !/^\d{10}$/.test(contact) || !teamSize) {
+				setStatus('Please complete all team details.', 'error');
+				return null;
+			}
+
+			// validate each member object
+			for (let i = 0; i < members.length; i += 1) {
+				const m = members[i];
+				if (!m.name) { setStatus(`Member ${i + 1}: name is required.`, 'error'); return null; }
+				if (!m.email || !/^\S+@\S+\.\S+$/.test(m.email)) { setStatus(`Member ${i + 1}: valid email is required.`, 'error'); return null; }
+				if (!/^\d{10}$/.test(m.phone)) { setStatus(`Member ${i + 1}: valid 10 digit phone is required.`, 'error'); return null; }
+				if (!m.stream) { setStatus(`Member ${i + 1}: stream is required.`, 'error'); return null; }
+				if (!m.year) { setStatus(`Member ${i + 1}: year is required.`, 'error'); return null; }
+			}
+
+			registrationState.members = members;
+			setStatus('', '');
+			return {
+				teamName,
+				teamLeaderName: leaderName,
+				email: leaderEmail,
+				year,
+				stream,
+				contactNumber: contact,
+				teamSize: Number(teamSize),
+				teamMembers: members
+			};
+		}
+
+		async function loadPaymentMeta() {
+			try {
+				// Load banner/payment meta
+				const response = await fetch(`${API_BASE}/api/payments/settings`);
+				if (!response.ok) throw new Error('Failed to load payment metadata');
+				const body = await response.json();
+				const settings = body?.paymentSettings || body || {};
+				registrationState.upiId = settings.upiId || '';
+				registrationState.upiImageUrl = settings.upiImageUrl || '';
+				registrationState.upiQrEnabled = settings.upiQrEnabled !== false;
+				registrationState.upiIdEnabled = settings.upiIdEnabled !== false;
+
+				// Load admin fee settings (separate API)
+				try {
+					const feeResp = await fetch(`${API_BASE}/api/fees`);
+					if (feeResp.ok) {
+						const feeBody = await feeResp.json();
+						registrationState.feeSettings = feeBody.feeSettings || { feeType: 'per_team', amount: '' };
+					}
+				} catch (err) {
+					console.warn('Failed to load fee settings', err);
+				}
+
+				// compute payment amount based on fee settings & team size
+				calculatePaymentAmount();
+
+				const upiDisplay = document.getElementById('upiDisplay');
+				const upiInfoText = document.getElementById('upiInfoText');
+				const upiAmountText = document.getElementById('upiAmountText');
+				const upiAmountTextModal = document.getElementById('upiAmountTextModal');
+				const upiAmountTextModalAlt = document.getElementById('upiAmountTextModalAlt');
+				const upiQrPreview = document.getElementById('upiQrPreview');
+				const openModalBtn = document.getElementById('openUpiPaymentModalBtn');
+				const upiMethodQrCard = document.getElementById('upiMethodQrCard');
+				const upiMethodIdCard = document.getElementById('upiMethodIdCard');
+				if (upiDisplay) upiDisplay.value = registrationState.upiId || 'UPI ID not configured';
+				if (upiInfoText) upiInfoText.textContent = registrationState.upiId ? 'Scan the QR or use the UPI ID below.' : 'UPI details are not configured yet.';
+				if (upiAmountText) upiAmountText.textContent = registrationState.paymentAmount ? `Registration fee: ₹${registrationState.paymentAmount}` : 'Registration fee: ask admin';
+				if (upiAmountTextModal) upiAmountTextModal.textContent = registrationState.paymentAmount ? `Registration fee: ₹${registrationState.paymentAmount}` : 'Registration fee: ask admin';
+				if (upiAmountTextModalAlt) upiAmountTextModalAlt.textContent = registrationState.paymentAmount ? `Registration fee: ₹${registrationState.paymentAmount}` : 'Registration fee: ask admin';
+				if (upiQrPreview) {
+					if (registrationState.upiImageUrl) {
+						upiQrPreview.src = registrationState.upiImageUrl;
+						upiQrPreview.classList.remove('hidden-image');
+						upiQrPreview.style.display = 'block';
+					} else {
+						upiQrPreview.removeAttribute('src');
+						upiQrPreview.classList.add('hidden-image');
+						upiQrPreview.style.display = 'none';
+					}
+				}
+				if (upiMethodQrCard) upiMethodQrCard.disabled = !registrationState.upiQrEnabled;
+				if (upiMethodIdCard) upiMethodIdCard.disabled = !registrationState.upiIdEnabled;
+
+				const upiPaymentSummaryStatus = document.getElementById('upiPaymentSummaryStatus');
+				if (upiPaymentSummaryStatus) {
+					upiPaymentSummaryStatus.textContent = registrationState.paymentSubmissionId
+						? 'Payment under verification. You can continue to the next step.'
+						: 'Payment will remain under verification after submission.';
+				}
+
+				registrationState.whatsappInviteLink = settings.whatsappGroupLink || registrationState.whatsappInviteLink;
+				const whatsappInviteText = document.getElementById('whatsappInviteText');
+				const joinBtn = document.getElementById('joinGroupBtn');
+				const confirmBtn = document.getElementById('confirmJoinedBtn');
+				const cardInner = document.querySelector('.whatsapp-card-inner');
+				if (whatsappInviteText) {
+					whatsappInviteText.textContent = registrationState.whatsappInviteLink || '';
+					whatsappInviteText.style.display = 'none';
+				}
+				if (joinBtn) joinBtn.disabled = !registrationState.whatsappInviteLink;
+				if (confirmBtn) confirmBtn.disabled = true;
+				if (cardInner && registrationState.whatsappInviteLink) {
+					cardInner.classList.add('fade-in-up');
+				}
+				setUpiPaymentMethod(registrationState.upiMethod || 'qr');
+				const completionPanel = document.getElementById('upiCompletionPanel');
+				if (completionPanel) completionPanel.classList.toggle('is-hidden', !registrationState.upiModalOpen && !registrationState.paymentCompleted);
+				updateUpiVerificationUi();
+			} catch (error) {
+				console.warn('[registration] load meta failed', error);
+			}
+		}
+
+		async function handleFinalSubmit() {
+			const token = requireAuth();
+			if (!token) {
+				setStatus('Please sign in again before submitting registration.', 'error');
+				return;
+			}
+
+			if (registrationState.isSubmitting) return;
+
+			try {
+				registrationState.isSubmitting = true;
+				updateContinueState();
+				setStatus('Submitting registration...', '');
+
+				const payload = {
+					teamName: document.getElementById('regTeamName').value.trim(),
+					teamLeaderName: document.getElementById('regLeaderName').value.trim(),
+					email: document.getElementById('regLeaderEmail').value.trim().toLowerCase(),
+					year: document.getElementById('regYear').value,
+					stream: document.getElementById('regStream').value.trim(),
+					collegeName: getProfileSource().collegeName || '',
+					contactNumber: document.getElementById('regContact').value.trim(),
+					teamSize: Number(document.getElementById('regTeamSize').value || 0),
+					teamMembers: readMembers(),
+					paymentMethod: registrationState.paymentMethod,
+					upiMethod: registrationState.upiMethod,
+					paymentReference: registrationState.paymentReference,
+					transactionId: registrationState.paymentReference,
+					paymentStatus: registrationState.paymentStatus,
+					paymentSubmissionId: registrationState.paymentSubmissionId,
+					whatsappJoined: registrationState.whatsappJoined,
+					whatsappInviteLink: registrationState.whatsappInviteLink,
+					submissionConfirmed: registrationState.registrationConfirmed,
+					members: readMembers()
+				};
+
+				const response = await fetch(`${API_BASE}/api/register`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify(payload)
+				});
+
+				const body = await response.json();
+				if (!response.ok) {
+					const rawMessage = body.msg || body.message || 'Registration failed';
+					if (/duplicate candidate|already registered/i.test(rawMessage)) {
+						throw new Error('Duplicate Candidate - This email is already registered.');
+					}
+					throw new Error(rawMessage);
+				}
+
+				setStatus('Your registration has been submitted successfully and is waiting for admin approval.', 'success');
+				showRegistrationSuccessPopup(body.team || {
+					teamName: payload.teamName,
+					leaderName: payload.teamLeaderName,
+					email: payload.email,
+					registrationStatus: body.registrationStatus || 'Pending Admin Approval',
+					emailDelivery: body.emailDelivery || null
+				});
+			} catch (error) {
+				const message = /duplicate candidate|already registered/i.test(error.message || '')
+					? 'Duplicate Candidate - This email is already registered.'
+					: (error.message || 'Registration failed');
+				setStatus(message, 'error');
+				if (/duplicate candidate|already registered/i.test(message)) {
+					alert(message);
+				}
+			} finally {
+				registrationState.isSubmitting = false;
+				updateContinueState();
+			}
+		}
+
+		registerButton?.addEventListener('click', async () => {
+			setOverlayVisible(true);
+			setActiveStep(1, 'forward');
+			await loadPaymentMeta();
+			buildMemberInputs();
+			document.querySelector('.registration-step[data-step="1"] #backToStep1')?.remove();
+		});
+
+		document.getElementById('closeRegistration').addEventListener('click', () => setOverlayVisible(false));
+		document.getElementById('cancelRegistration1').addEventListener('click', () => setOverlayVisible(false));
+		document.getElementById('backToStep1').addEventListener('click', () => setActiveStep(1, 'back'));
+		document.getElementById('backToStep2').addEventListener('click', () => setActiveStep(2, 'back'));
+		document.getElementById('backToStep3')?.addEventListener('click', () => setActiveStep(3, 'back'));
+			document.getElementById('regConfirmDetails').addEventListener('change', (event) => {
+				registrationState.registrationConfirmed = event.target.checked;
+				updateContinueState();
+			});
+
+		document.getElementById('regTeamSize').addEventListener('change', buildMemberInputs);
+		document.getElementById('regTeamSize').addEventListener('change', () => { buildMemberInputs(); calculatePaymentAmount(); });
+		document.getElementById('step1Submit').addEventListener('click', () => {
+			const validated = validateStepOne();
+			if (!validated) return;
+			registrationState.showRegistration = true;
+			setActiveStep(2, 'forward');
+		});
+
+		document.querySelectorAll('[data-payment-choice]').forEach((button) => {
+			button.addEventListener('click', () => {
+				document.querySelectorAll('[data-payment-choice]').forEach((item) => item.classList.remove('active'));
+				button.classList.add('active');
+				registrationState.paymentMethod = button.dataset.paymentChoice;
+				registrationState.paymentCompleted = false;
+				registrationState.paymentStatus = 'pending';
+				registrationState.paymentVerificationStatus = 'pending';
+				registrationState.paymentSubmissionId = '';
+				registrationState.paymentReference = '';
+				document.getElementById('razorpayPanel').style.display = registrationState.paymentMethod === 'razorpay' ? 'block' : 'none';
+				document.getElementById('upiPanel').style.display = registrationState.paymentMethod === 'upi' ? 'block' : 'none';
+				const completionPanel = document.getElementById('upiCompletionPanel');
+				if (completionPanel) completionPanel.classList.add('is-hidden');
+				const txnInput = document.getElementById('upiTransactionId');
+				if (txnInput) txnInput.value = '';
+				setUpiSubmitButtonState('idle');
+				if (registrationState.paymentMethod === 'upi') {
+					openUpiPaymentModal(registrationState.upiMethod || 'qr');
+				} else {
+					closeUpiPaymentModal();
+				}
+				updateContinueState();
+			});
+		});
+
+		document.querySelectorAll('[data-upi-method]').forEach((button) => {
+			button.addEventListener('click', () => {
+				if (button.disabled) return;
+				setUpiPaymentMethod(button.dataset.upiMethod || 'qr');
+				updateContinueState();
+			});
+		});
+
+		document.getElementById('openUpiPaymentModalBtn')?.addEventListener('click', () => openUpiPaymentModal(registrationState.upiMethod || 'qr'));
+		document.getElementById('closeUpiPaymentModalBtn')?.addEventListener('click', closeUpiPaymentModal);
+		document.getElementById('upiPaymentModal')?.addEventListener('click', (event) => {
+			if (event.target === event.currentTarget) {
+				closeUpiPaymentModal();
+			}
+		});
+
+		document.getElementById('copyUpiIdBtn')?.addEventListener('click', copyUpiIdValue);
+
+		const joinBtn = document.getElementById('joinGroupBtn');
+		const confirmBtn = document.getElementById('confirmJoinedBtn');
+
+		joinBtn?.addEventListener('click', () => {
+			const whatsappLink = String(registrationState.whatsappInviteLink || '').trim();
+			if (!whatsappLink) {
+				setStatus('WhatsApp group link not available. Please contact admin.', 'error');
+				return;
+			}
+
+			window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+			if (confirmBtn) {
+				confirmBtn.disabled = false;
+			}
+			setStatus('WhatsApp group opened. After joining, click "I Joined the Group" to continue.', 'success');
+		});
+
+		confirmBtn?.addEventListener('click', () => {
+			registrationState.whatsappJoined = true;
+			if (confirmBtn) {
+				confirmBtn.disabled = true;
+				confirmBtn.classList.add('success-animate');
+			}
+			setStatus('WhatsApp group confirmed.', 'success');
+			setTimeout(() => setActiveStep(4, 'forward'), 350);
+		});
+
+		document.getElementById('razorpayPayBtn').addEventListener('click', () => {
+			registrationState.paymentMethod = 'razorpay';
+			registrationState.paymentReference = `RAZORPAY-${Date.now()}`;
+			registrationState.paymentCompleted = true;
+			registrationState.paymentStatus = 'completed';
+			registrationState.upiMethod = 'razorpay';
+			setStatus('Razorpay payment completed successfully.', 'success');
+			setActiveStep(3, 'forward');
+		});
+
+		document.getElementById('upiSubmitPaymentBtn')?.addEventListener('click', submitUpiPayment);
+
+
+
+
+		document.getElementById('continueRegistrationBtn').addEventListener('click', handleFinalSubmit);
+
+		setActiveStep(1, 'forward');
+		loadPaymentMeta();
+		
+		async function saveProfileChanges() {
+			const fullName = document.getElementById('editFullName')?.value || '';
+			const phone = document.getElementById('editPhone')?.value || '';
+			const collegeName = document.getElementById('editCollege')?.value || '';
+			const department = document.getElementById('editDepartment')?.value || '';
+			const yearOfStudy = document.getElementById('editYear')?.value || '';
+			const token = requireAuth();
+			if (!token) return;
+
+			const names = splitFullName(fullName);
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/me`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify({
+						firstName: names.firstName,
+						middleName: names.middleName,
+						lastName: names.lastName,
+						phone,
+						collegeName,
+						department,
+						yearOfStudy
+					})
+				});
+				const body = await response.json().catch(() => ({}));
+				if (!response.ok || !body.user) {
+					throw new Error(body.message || 'Failed to update profile');
+				}
+				renderProfilePanel(body.user);
+				showStatus('profileStatus', 'Profile updated successfully.', 'success');
+				document.getElementById('editProfileForm')?.classList.remove('open');
+			} catch (error) {
+				showStatus('profileStatus', error.message || 'Failed to update profile.', 'error');
+			}
+		}
+
+		function initProfilePanel() {
+			const toggle = document.getElementById('profileToggle');
+			const panel = document.getElementById('profilePanel');
+			const backdrop = document.getElementById('profileBackdrop');
+			if (!toggle || !panel) return;
+
+			toggle.addEventListener('click', (event) => {
+				event.stopPropagation();
+				toggleProfilePanel();
+			});
+
+			document.addEventListener('click', (event) => {
+				if (!panel.contains(event.target) && !toggle.contains(event.target)) {
+					closeProfilePanel();
+				}
+			});
+
+			backdrop?.addEventListener('click', closeProfilePanel);
+
+			document.addEventListener('keydown', (event) => {
+					if (event.key === 'Escape') {
+						closeProfilePanel();
+						closeSettingsPanel();
+						hideRegistrationSuccessPopup();
+						hideIssueSuccessPopup();
+					}
+			});
+
+			document.getElementById('profileLogoutBtn')?.addEventListener('click', () => window.userLogout());
+			document.getElementById('editProfileBtn')?.addEventListener('click', () => {
+				document.getElementById('editProfileForm')?.classList.toggle('open');
+			});
+			document.getElementById('cancelProfileEditBtn')?.addEventListener('click', () => {
+				document.getElementById('editProfileForm')?.classList.remove('open');
+			});
+			document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfileChanges);
+			document.getElementById('settingsBtn')?.addEventListener('click', () => {
+					openSettingsPanel('report-issue');
+				closeProfilePanel();
+			});
+
+			const fallback = getStoredProfileFallback();
+			if (fallback) renderProfilePanel(fallback);
+			fetchMyProfile();
+		}
+
+		initProfilePanel();
+
+		const dashboardParams = new URLSearchParams(window.location.search);
+		if (dashboardParams.get('tab') === 'registration-details') {
+			setTimeout(() => openSettingsPanel('registration-details'), 150);
+		}
+
+		const settingsState = {
+			activeTab: 'report-issue'
+		};
+
+		const settingsOverlay = document.getElementById('settingsOverlay');
+		const issueSuccessOverlay = document.getElementById('issueSuccessOverlay');
+		const registrationSuccessOverlay = document.getElementById('registrationSuccessOverlay');
+		const registrationSuccessConfetti = document.getElementById('registrationSuccessConfetti');
+		const registrationSuccessParticles = document.getElementById('registrationSuccessParticles');
+		const registrationSuccessCountdown = document.getElementById('registrationSuccessCountdown');
+		const registrationSuccessHomeUrl = '/user/index.html';
+		let registrationSuccessTimer = null;
+		let registrationSuccessCountdownTimer = null;
+
+		function normalizeIssueStatus(status) {
+			const value = String(status || '').trim().toLowerCase();
+			if (value === 'processing' || value === 'in-progress' || value === 'in progress') return 'processing';
+			if (value === 'completed' || value === 'resolved') return 'resolved';
+			if (value === 'rejected' || value === 'declined') return 'rejected';
+			return 'pending';
+		}
+
+		function getIssueStatusLabel(status) {
+			const normalized = normalizeIssueStatus(status);
+			if (normalized === 'processing') return 'Processing';
+			if (normalized === 'resolved') return 'Resolved';
+			if (normalized === 'rejected') return 'Rejected';
+			return 'Pending';
+		}
+
+		function getIssueStatusClass(status) {
+			return normalizeIssueStatus(status);
+		}
+
+		function getRegistrationStatusLabel(status) {
+			const value = String(status || '').trim().toLowerCase();
+			if (value === 'approved') return 'Approved';
+			if (value === 'rejected') return 'Rejected';
+			return 'Pending';
+		}
+
+		function getRegistrationStatusClass(status) {
+			const value = String(status || '').trim().toLowerCase();
+			if (value === 'approved') return 'resolved';
+			if (value === 'rejected') return 'rejected';
+			return 'pending';
+		}
+
+		function getProfileSource() {
+			return profileState.data || getStoredProfileFallback() || getStoredUser() || {};
+		}
+
+		function prefillIssueForm() {
+			const profile = getProfileSource();
+			const nameField = document.getElementById('settingsIssueName');
+			const emailField = document.getElementById('settingsIssueEmail');
+			const phoneField = document.getElementById('settingsIssueContact');
+
+			if (nameField && !nameField.value) nameField.value = profile.fullName || [profile.firstName, profile.middleName, profile.lastName].filter(Boolean).join(' ').trim() || '';
+			if (emailField && !emailField.value) emailField.value = profile.email || '';
+			if (phoneField && !phoneField.value) phoneField.value = profile.phone || '';
+		}
+
+		function showIssueSuccessPopup(issue) {
+			const overlay = issueSuccessOverlay;
+			if (!overlay) return;
+			document.getElementById('issueSuccessTicketId').textContent = issue?._id ? String(issue._id) : '—';
+			document.getElementById('issueSuccessStatus').textContent = getIssueStatusLabel(issue?.status || 'pending');
+			document.getElementById('issueSuccessMessage').textContent = `Your support ticket has been created and the confirmation email has been sent to ${issue?.email || 'your registered email'}.`;
+			overlay.classList.add('open');
+			overlay.setAttribute('aria-hidden', 'false');
+		}
+
+		function hideIssueSuccessPopup() {
+			if (!issueSuccessOverlay) return;
+			issueSuccessOverlay.classList.remove('open');
+			issueSuccessOverlay.setAttribute('aria-hidden', 'true');
+		}
+
+		function buildSuccessParticles() {
+			if (!registrationSuccessConfetti || !registrationSuccessParticles) return;
+			registrationSuccessConfetti.innerHTML = '';
+			registrationSuccessParticles.innerHTML = '';
+
+			const confettiColors = ['#22c55e', '#4f46e5', '#7c3aed', '#86efac', '#a7f3d0'];
+			for (let index = 0; index < 18; index += 1) {
+				const piece = document.createElement('span');
+				piece.style.left = `${Math.random() * 100}%`;
+				piece.style.animationDelay = `${Math.random() * 1.2}s`;
+				piece.style.background = confettiColors[index % confettiColors.length];
+				piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+				piece.style.opacity = `${0.5 + Math.random() * 0.5}`;
+				registrationSuccessConfetti.appendChild(piece);
+			}
+
+			for (let index = 0; index < 10; index += 1) {
+				const dot = document.createElement('span');
+				dot.className = 'success-particle';
+				dot.style.left = `${8 + Math.random() * 84}%`;
+				dot.style.top = `${14 + Math.random() * 72}%`;
+				dot.style.animationDelay = `${Math.random() * 1.6}s`;
+				dot.style.transform = `scale(${0.7 + Math.random() * 0.8})`;
+				registrationSuccessParticles.appendChild(dot);
+			}
+		}
+
+		function redirectToRegistrationHome() {
+			window.location.href = registrationSuccessHomeUrl;
+		}
+
+		function showRegistrationSuccessPopup(team) {
+			if (!registrationSuccessOverlay) return;
+			if (registrationSuccessTimer) {
+				clearTimeout(registrationSuccessTimer);
+				registrationSuccessTimer = null;
+			}
+			if (registrationSuccessCountdownTimer) {
+				clearInterval(registrationSuccessCountdownTimer);
+				registrationSuccessCountdownTimer = null;
+			}
+			const teamName = team?.teamName || document.getElementById('regTeamName')?.value.trim() || '—';
+			const leaderName = team?.leaderName || document.getElementById('regLeaderName')?.value.trim() || '—';
+			const leaderEmail = team?.email || document.getElementById('regLeaderEmail')?.value.trim() || '—';
+			const status = team?.registrationStatus || team?.status || 'Pending Admin Approval';
+			const delivery = team?.emailDelivery || {};
+			const sentCount = Number(delivery.sentCount || 0);
+			const totalCount = Number(delivery.totalRecipients || 0);
+			const failedCount = Number(delivery.failedCount || 0);
+			const deliveryMessage = sentCount
+				? `Confirmation emails have been sent to ${sentCount}/${totalCount || sentCount} registered email${sentCount === 1 ? '' : 's'}${failedCount ? ` (${failedCount} failed)` : ''}.`
+				: 'Confirmation emails are being processed for all registered team members.';
+
+			document.getElementById('registrationSuccessTeam').textContent = teamName;
+			document.getElementById('registrationSuccessLeader').textContent = leaderName;
+			document.getElementById('registrationSuccessStatus').textContent = status;
+			document.getElementById('registrationSuccessEmail').textContent = leaderEmail;
+			const messageEl = document.getElementById('registrationSuccessMessage');
+			if (messageEl) {
+				messageEl.textContent = `${deliveryMessage} All further updates will be sent to your registered email addresses.`;
+			}
+
+			buildSuccessParticles();
+			registrationSuccessOverlay.classList.add('open');
+			registrationSuccessOverlay.setAttribute('aria-hidden', 'false');
+			document.body.style.overflow = 'hidden';
+			let remainingSeconds = 30;
+			if (registrationSuccessCountdown) {
+				registrationSuccessCountdown.textContent = `${remainingSeconds}s`;
+			}
+			registrationSuccessCountdownTimer = setInterval(() => {
+				remainingSeconds -= 1;
+				if (registrationSuccessCountdown) {
+					registrationSuccessCountdown.textContent = `${Math.max(remainingSeconds, 0)}s`;
+				}
+				if (remainingSeconds <= 0) {
+					clearInterval(registrationSuccessCountdownTimer);
+					registrationSuccessCountdownTimer = null;
+					hideRegistrationSuccessPopup();
+					redirectToRegistrationHome();
+				}
+			}, 1000);
+			registrationSuccessTimer = setTimeout(() => {
+				if (registrationSuccessCountdownTimer) {
+					clearInterval(registrationSuccessCountdownTimer);
+					registrationSuccessCountdownTimer = null;
+				}
+				hideRegistrationSuccessPopup();
+				redirectToRegistrationHome();
+			}, 30000);
+		}
+
+		function hideRegistrationSuccessPopup() {
+			if (!registrationSuccessOverlay) return;
+			if (registrationSuccessTimer) {
+				clearTimeout(registrationSuccessTimer);
+				registrationSuccessTimer = null;
+			}
+			if (registrationSuccessCountdownTimer) {
+				clearInterval(registrationSuccessCountdownTimer);
+				registrationSuccessCountdownTimer = null;
+			}
+			registrationSuccessOverlay.classList.remove('open');
+			registrationSuccessOverlay.setAttribute('aria-hidden', 'true');
+			document.body.style.overflow = '';
+		}
+
+		function openSettingsPanel(tab = 'report-issue') {
+			if (!settingsOverlay) return;
+			settingsOverlay.classList.add('open');
+			settingsOverlay.setAttribute('aria-hidden', 'false');
+			document.body.style.overflow = 'hidden';
+			document.body.classList.add('settings-open');
+			setSettingsTab(tab);
+			prefillIssueForm();
+		}
+
+		function closeSettingsPanel() {
+			if (!settingsOverlay) return;
+			settingsOverlay.classList.remove('open');
+			settingsOverlay.setAttribute('aria-hidden', 'true');
+			document.body.style.overflow = '';
+			document.body.classList.remove('settings-open');
+		}
+
+		async function setSettingsTab(tab = 'report-issue') {
+			settingsState.activeTab = tab;
+			const tabs = document.querySelectorAll('[data-settings-tab]');
+			const panes = document.querySelectorAll('[data-settings-pane]');
+			tabs.forEach((button) => button.classList.toggle('active', button.dataset.settingsTab === tab));
+			panes.forEach((pane) => pane.classList.toggle('active', pane.dataset.settingsPane === tab));
+
+			if (tab === 'registration-details') {
+				await loadSettingsRegistrationDetails();
+			} else if (tab === 'track-my-issues') {
+				await loadTrackedIssues();
+			} else {
+				prefillIssueForm();
+			}
+		}
+
+		function getMembersText(members) {
+			const list = Array.isArray(members) ? members : [];
+			if (!list.length) return '—';
+			return list.map((member) => member?.name || member?.fullName || '—').filter(Boolean).join(', ') || '—';
+		}
+
+		function getMemberEmails(members, leaderEmail) {
+			const list = Array.isArray(members) ? members : [];
+			const emails = [leaderEmail, ...list.map((member) => member?.email).filter(Boolean)];
+			return Array.from(new Set(emails.filter(Boolean))).join(', ') || leaderEmail || '—';
+		}
+
+		function getMemberPhones(members, leaderPhone) {
+			const list = Array.isArray(members) ? members : [];
+			const phones = [leaderPhone, ...list.map((member) => member?.phone || member?.contact).filter(Boolean)];
+			return Array.from(new Set(phones.filter(Boolean))).join(', ') || leaderPhone || '—';
+		}
+
+		function renderRegistrationDetails(teams) {
+			const summary = document.getElementById('registrationDetailsSummary');
+			const tbody = document.getElementById('registrationDetailsTableBody');
+			const empty = document.getElementById('registrationDetailsEmpty');
+			if (!summary || !tbody || !empty) return;
+
+			if (!teams.length) {
+				summary.innerHTML = '';
+				tbody.innerHTML = '';
+				empty.style.display = 'block';
+				return;
+			}
+
+			empty.style.display = 'none';
+			const latest = teams[0];
+			summary.innerHTML = `
+				<div class="settings-mini-card"><strong>Team Name</strong><span>${latest.teamName || '—'}</span></div>
+				<div class="settings-mini-card"><strong>Team Leader</strong><span>${latest.leaderName || '—'}</span></div>
+				<div class="settings-mini-card"><strong>Registration Status</strong><span>${getRegistrationStatusLabel(latest.registrationStatus)}</span></div>
+				<div class="settings-mini-card"><strong>Payment Status</strong><span>${latest.paymentReference || latest.transactionId ? 'Completed' : 'Pending'}</span></div>
+			`;
+
+			tbody.innerHTML = teams.map((team) => {
+				const members = Array.isArray(team.members) ? team.members : [];
+				const paymentStatus = team.paymentReference || team.transactionId ? 'Completed' : 'Pending';
+				const memberNames = members.map((member) => member?.name || member?.fullName || '—').filter(Boolean).join('<br>') || '—';
+				const memberEmails = getMemberEmails(members, team.email);
+				const memberPhones = getMemberPhones(members, team.contact);
+
+				return `
+					<tr>
+						<td>${team.teamName || '—'}</td>
+						<td>${team.leaderName || '—'}</td>
+						<td>${memberNames}</td>
+						<td>${memberEmails}</td>
+						<td>${memberPhones}</td>
+						<td>${team.stream || '—'}</td>
+						<td>${team.year || '—'}</td>
+						<td>${team.collegeName || getProfileSource().collegeName || '—'}</td>
+						<td><span class="issue-status-pill ${paymentStatus === 'Completed' ? 'resolved' : 'pending'}">${paymentStatus}</span></td>
+						<td>${team.transactionId || team.paymentReference || '—'}</td>
+						<td><span class="issue-status-pill ${getRegistrationStatusClass(team.registrationStatus)}">${getRegistrationStatusLabel(team.registrationStatus)}</span></td>
+					</tr>
+				`;
+			}).join('');
+		}
+
+		async function loadSettingsRegistrationDetails() {
+			const token = requireAuth();
+			if (!token) return;
+
+			try {
+				const response = await fetch(`${API_BASE}/api/teams/mine`, {
+					headers: { 'Authorization': `Bearer ${token}` }
+				});
+				if (!response.ok) {
+					throw new Error('Failed to load registration details');
+				}
+				const body = await response.json();
+				const teams = Array.isArray(body.teams) ? body.teams : [];
+				renderRegistrationDetails(teams);
+			} catch (error) {
+				console.warn('[settings] load registration details failed', error);
+				renderRegistrationDetails([]);
+			}
+		}
+
+		function renderIssueTimeline(issues) {
+			const container = document.getElementById('issueTimelineContainer');
+			const empty = document.getElementById('issueTimelineEmpty');
+			if (!container || !empty) return;
+
+			if (!issues.length) {
+				container.innerHTML = '';
+				empty.style.display = 'block';
+				return;
+			}
+
+			empty.style.display = 'none';
+			container.innerHTML = issues.map((issue) => {
+				const submitted = issue.createdAt ? new Date(issue.createdAt).toLocaleString() : '—';
+				const updated = issue.updatedAt ? new Date(issue.updatedAt).toLocaleString() : submitted;
+				const statusClass = getIssueStatusClass(issue.status);
+				const adminResponse = issue.adminResponse || issue.response || issue.adminReply || 'Awaiting admin response';
+				return `
+					<article class="issue-card">
+						<div class="issue-card__top">
+							<div>
+								<div class="issue-card__title">Ticket #${issue._id || '—'}</div>
+								<div class="issue-card__meta">${issue.issueType || '—'} · Submitted ${submitted}</div>
+							</div>
+							<span class="issue-status-pill ${statusClass}">${getIssueStatusLabel(issue.status)}</span>
+						</div>
+						<div class="issue-card__body">${issue.description || '—'}</div>
+						<div class="issue-card__footer" style="margin-top:10px;">Admin Response: ${adminResponse}</div>
+						<div class="issue-card__footer" style="margin-top:4px;">Last Updated: ${updated}</div>
+					</article>
+				`;
+			}).join('');
+		}
+
+		async function loadTrackedIssues() {
+			const token = requireAuth();
+			if (!token) return;
+
+			try {
+				const response = await fetch(`${API_BASE}/api/issues/mine`, {
+					headers: { 'Authorization': `Bearer ${token}` }
+				});
+				if (!response.ok) {
+					throw new Error('Failed to load issues');
+				}
+				const body = await response.json();
+				const issues = Array.isArray(body.issues) ? body.issues : [];
+				renderIssueTimeline(issues);
+			} catch (error) {
+				console.warn('[settings] load tracked issues failed', error);
+				renderIssueTimeline([]);
+			}
+		}
+
+		window.clearIssueForm = () => {
+			const fields = [
+				'settingsIssueType',
+				'settingsIssueName',
+				'settingsIssueEmail',
+				'settingsIssueContact',
+				'settingsIssueDescription'
+			];
+			fields.forEach((id) => {
+				const field = document.getElementById(id);
+				if (field) field.value = '';
+			});
+			const confirm = document.getElementById('settingsIssueConfirm');
+			if (confirm) confirm.checked = false;
+			showStatus('reportIssueStatus', '', 'success');
+		};
+
+		window.submitIssue = async () => {
+			const issueType = document.getElementById('settingsIssueType')?.value.trim();
+			const issueName = document.getElementById('settingsIssueName')?.value.trim();
+			const issueEmail = document.getElementById('settingsIssueEmail')?.value.trim();
+			const issuePhone = document.getElementById('settingsIssueContact')?.value.trim();
+			const issueDesc = document.getElementById('settingsIssueDescription')?.value.trim();
+			const confirm = document.getElementById('settingsIssueConfirm')?.checked;
+
+			if (!confirm) {
+				showStatus('reportIssueStatus', 'Please confirm the above details are correct before submitting.', 'error');
+				return;
+			}
+
+			if (!issueType || !issueName || !issueEmail || !issuePhone || !issueDesc) {
+				showStatus('reportIssueStatus', 'Please fill in all fields!', 'error');
+				return;
+			}
+
+			try {
+				const token = requireAuth();
+				if (!token) {
+					showStatus('reportIssueStatus', 'You must be logged in to report an issue.', 'error');
+					return;
+				}
+
+				const payload = {
+					issueType,
+					studentName: issueName,
+					contact: issuePhone,
+					email: issueEmail,
+					description: issueDesc
+				};
+
+				const response = await fetch(`${API_BASE}/api/issues`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					},
+					body: JSON.stringify(payload)
+				});
+
+				const body = await response.json().catch(() => ({}));
+				if (!response.ok) {
+					throw new Error(body.msg || body.error || 'Failed to submit issue');
+				}
+
+				showStatus('reportIssueStatus', 'Issue submitted successfully. Confirmation email sent.', 'success');
+				showIssueSuccessPopup(body.issue || body);
+				window.clearIssueForm();
+				await Promise.all([loadTrackedIssues(), loadSettingsRegistrationDetails()]);
+			} catch (err) {
+				console.error('Submit issue failed', err);
+				showStatus('reportIssueStatus', err.message || 'Failed to report issue. Try again later.', 'error');
+			}
+		};
+
+		window.loadTrackedIssues = loadTrackedIssues;
+		window.loadSettingsRegistrationDetails = loadSettingsRegistrationDetails;
+		window.openSettingsPanel = openSettingsPanel;
+		window.closeSettingsPanel = closeSettingsPanel;
+		window.setSettingsTab = setSettingsTab;
+
+		document.getElementById('closeSettingsBtn')?.addEventListener('click', closeSettingsPanel);
+		settingsOverlay?.addEventListener('click', (event) => {
+			if (event.target === settingsOverlay) {
+				closeSettingsPanel();
+			}
+		});
+		issueSuccessOverlay?.addEventListener('click', (event) => {
+			if (event.target === issueSuccessOverlay) {
+				hideIssueSuccessPopup();
+			}
+		});
+		registrationSuccessOverlay?.addEventListener('click', (event) => {
+			if (event.target === registrationSuccessOverlay) {
+				hideRegistrationSuccessPopup();
+			}
+		});
+		document.querySelectorAll('[data-settings-tab]').forEach((button) => {
+			button.addEventListener('click', () => setSettingsTab(button.dataset.settingsTab || 'report-issue'));
+		});
+		document.getElementById('submitIssueBtn')?.addEventListener('click', window.submitIssue);
+		document.getElementById('clearIssueFormBtn')?.addEventListener('click', window.clearIssueForm);
+		document.getElementById('refreshIssuesBtn')?.addEventListener('click', loadTrackedIssues);
+		document.getElementById('closeIssueSuccessBtn')?.addEventListener('click', hideIssueSuccessPopup);
+		document.getElementById('dismissIssueSuccessBtn')?.addEventListener('click', hideIssueSuccessPopup);
+		document.getElementById('viewIssueHistoryBtn')?.addEventListener('click', async () => {
+			hideIssueSuccessPopup();
+			openSettingsPanel('track-my-issues');
+			await loadTrackedIssues();
+		});
+		document.getElementById('closeRegistrationSuccessBtn')?.addEventListener('click', hideRegistrationSuccessPopup);
+		document.getElementById('goToDashboardBtn')?.addEventListener('click', () => {
+			hideRegistrationSuccessPopup();
+			redirectToRegistrationHome();
+		});
+		function showStatus(elementId, message, type) {
+			const el = document.getElementById(elementId);
+			if (!el) return;
+			el.textContent = message;
+			el.className = `status-message ${type}`;
+		}
+
+		function showStatus(elementId, message, type) {
+			const el = document.getElementById(elementId);
+			el.textContent = message;
+			el.className = `status-message ${type}`;
+		}
+
+		// load admin registration link and wire card buttons
+		async function loadAdminRegistrationLink() {
+			try {
+				const res = await fetch(`${API_BASE}/api/banner/active`);
+				if (!res.ok) throw new Error('Failed to load registration link');
+				const body = await res.json();
+				const regLink = String((body && body.registrationLink) || '').trim();
+				const input = document.getElementById('adminRegLink');
+				if (input) {
+					input.value = regLink || '';
+					input.placeholder = regLink ? '' : 'Registration link not available';
+					input.readOnly = true;
+				}
+				document.getElementById('openRegLink').onclick = () => { if (regLink) window.open(regLink, '_blank', 'noopener,noreferrer'); else alert('Registration link not available'); };
+				document.getElementById('copyRegLink').onclick = async () => { if (!regLink) { alert('No registration link to copy'); return; } try { await navigator.clipboard.writeText(regLink); alert('Link copied to clipboard'); } catch (e) { console.warn(e); alert('Copy failed'); } };
+				document.getElementById('saveRegLink').onclick = () => { if (!regLink) { alert('No registration link to save'); return; } localStorage.setItem('favorite_registration_link', regLink); alert('Registration link saved to favorites'); };
+			} catch (err) {
+				console.warn('[dashboard] failed to load admin registration link', err);
+				const input = document.getElementById('adminRegLink');
+				if (input) { input.value = ''; input.placeholder = 'Registration link not available'; input.readOnly = true; }
+				document.getElementById('openRegLink').onclick = () => alert('Registration link not available');
+				document.getElementById('copyRegLink').onclick = () => alert('Registration link not available');
+				document.getElementById('saveRegLink').onclick = () => alert('Registration link not available');
+			}
+		}
+		loadAdminRegistrationLink();
+
+		// load admin registration link and wire card buttons dynamically
+		async function loadAdminRegistrationLink() {
+			try {
+				const res = await fetch(`${API_BASE}/api/banner/active`);
+				if (!res.ok) throw new Error('Failed to load registration link');
+				const body = await res.json();
+				const regLink = String((body && body.registrationLink) || '').trim();
+				const input = document.getElementById('adminRegLink');
+				if (input) {
+					input.value = regLink || '';
+					input.placeholder = regLink ? '' : 'Registration link not available';
+					input.readOnly = true;
+				}
+				document.getElementById('openRegLink').onclick = () => { if (regLink) window.open(regLink, '_blank', 'noopener,noreferrer'); else alert('Registration link not available'); };
+				document.getElementById('copyRegLink').onclick = async () => { if (!regLink) { alert('No registration link to copy'); return; } try { await navigator.clipboard.writeText(regLink); alert('Link copied to clipboard'); } catch (e) { console.warn(e); alert('Copy failed'); } };
+				document.getElementById('saveRegLink').onclick = () => { if (!regLink) { alert('No registration link to save'); return; } localStorage.setItem('favorite_registration_link', regLink); alert('Registration link saved to favorites'); };
+			} catch (err) {
+				console.warn('[dashboard] failed to load admin registration link', err);
+				const input = document.getElementById('adminRegLink');
+				if (input) { input.value = ''; input.placeholder = 'Registration link not available'; input.readOnly = true; }
+				document.getElementById('openRegLink').onclick = () => alert('Registration link not available');
+				document.getElementById('copyRegLink').onclick = () => alert('Registration link not available');
+				document.getElementById('saveRegLink').onclick = () => alert('Registration link not available');
+			}
+		}
+		loadAdminRegistrationLink();
+
+		// Check if user is logged in
+		if (!requireAuth()) {
+		}
+	</script>
+</body>
+</html>

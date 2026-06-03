@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Edit Registration</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="../js/admin.js?v=4" defer></script>
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="topbar">
+      <div class="brand"><h1>Event Admin</h1><div class="muted">Edit Registration</div></div>
+      <div class="nav">
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/student.html">Registrations</a>
+        <a href="/admin/issues.html">Issues</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="search-row" style="margin-bottom:18px; gap:10px; display:flex; flex-wrap:wrap; align-items:center;">
+        <input id="teamSearchInput" placeholder="Enter team name to search" style="flex:1; min-width:220px; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:#081022; color:#fff;" />
+        <button id="teamSearchButton" class="btn btn-primary" type="button">Search Team</button>
+        <button id="clearSearchButton" class="btn btn-ghost" type="button">Clear</button>
+      </div>
+      <div id="searchResults" class="muted" style="margin-bottom:12px;"></div>
+
+      <div id="teamDetailsView" style="margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;">
+        <h3 style="margin-bottom:8px;">Team Details (Order-wise)</h3>
+        <div id="teamDetailsContent" class="muted">Enter a team name above to search and edit the registration details.</div>
+      </div>
+
+      <form id="editForm">
+        <input type="hidden" id="teamId" />
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <label>Team Name: <input id="teamName" /></label>
+          <label>Leader Name: <input id="leaderName" /></label>
+          <label>Year: <input id="year" /></label>
+          <label>Stream: <input id="stream" /></label>
+          <label>Contact: <input id="contact" /></label>
+
+          <div id="membersSection" style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <strong>Team Members</strong>
+              <button id="addMemberBtn" type="button" class="btn btn-ghost">Add Member</button>
+            </div>
+            <div id="memberRows" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Save</button><a class="btn btn-ghost" href="/admin/student.html">Back</a></div>
+        </div>
+      </form>
+      <div id="status" style="margin-top:8px;color:#7dd3fc"></div>
+    </div>
+  </div>
+
+  <script>
+  const API_URL = 'http://localhost:5001';
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  async function getAdminToken() {
+    if (typeof window.getToken === 'function') {
+      try {
+        return await window.getToken();
+      } catch (err) {
+        console.warn('[edit.html] getToken fallback failed:', err);
+      }
+    }
+    return localStorage.getItem('adminToken');
+  }
+
+  function createMemberRow(member = {}, index = 0) {
+    const name = escapeHtml(member.name || (typeof member === 'string' ? member : ''));
+    const phone = escapeHtml(member.phone || '');
+    const stream = escapeHtml(member.stream || '');
+    const year = escapeHtml(member.year || '');
+
+    return `
+      <div class="member-row" data-index="${index}" style="display:flex;gap:10px;flex-wrap:wrap;border:1px solid rgba(255,255,255,0.08);padding:10px;border-radius:8px;">
+        <div style="flex:1;min-width:180px;"><label>Name<br><input class="member-input" data-field="name" value="${name}" /></label></div>
+        <div style="flex:1;min-width:140px;"><label>Phone<br><input class="member-input" data-field="phone" value="${phone}" /></label></div>
+        <div style="flex:1;min-width:140px;"><label>Stream<br><input class="member-input" data-field="stream" value="${stream}" /></label></div>
+        <div style="flex:1;min-width:100px;"><label>Year<br><input class="member-input" data-field="year" value="${year}" /></label></div>
+        <div style="display:flex;align-items:flex-end;">
+          <button type="button" class="btn btn-danger remove-member-btn">Remove</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTeamDetails(team) {
+    const members = Array.isArray(team.members) ? team.members : [];
+    const memberItems = members.length
+      ? members.map((member, idx) => {
+          if (typeof member === 'string') {
+            return `<li><strong>Member ${idx + 1}:</strong> ${escapeHtml(member)}</li>`;
+          }
+          return `<li><strong>Member ${idx + 1}:</strong> ${escapeHtml(member.name || '')} | Phone: ${escapeHtml(member.phone || '')} | Stream: ${escapeHtml(member.stream || '')} | Year: ${escapeHtml(member.year || '')}</li>`;
+        }).join('')
+      : '<li>No members found</li>';
+
+    document.getElementById('teamDetailsContent').innerHTML = `
+      <div><strong>Team Name:</strong> ${escapeHtml(team.teamName || '')}</div>
+      <div><strong>Leader:</strong> ${escapeHtml(team.leaderName || '')}</div>
+      <div><strong>Year:</strong> ${escapeHtml(team.year || '')}</div>
+      <div><strong>Stream:</strong> ${escapeHtml(team.stream || '')}</div>
+      <div><strong>Contact:</strong> ${escapeHtml(team.contact || '')}</div>
+      <div><strong>Payment:</strong> ${escapeHtml(team.paymentMethod || '')} ${escapeHtml(team.paymentReference || team.transactionId || '')}</div>
+      <div><strong>WhatsApp Joined:</strong> ${team.whatsappJoined ? 'Yes' : 'No'}</div>
+      <div style="margin-top:8px;"><strong>Team Members:</strong>
+        <ol style="margin:6px 0 0 18px;">${memberItems}</ol>
+      </div>
+    `;
+  }
+
+  function renderMemberRows(members = []) {
+    const container = document.getElementById('memberRows');
+    container.innerHTML = members.length
+      ? members.map((member, idx) => createMemberRow(member, idx)).join('')
+      : createMemberRow({}, 0);
+    attachMemberRemoveHandlers();
+  }
+
+  function attachMemberRemoveHandlers() {
+    document.querySelectorAll('.remove-member-btn').forEach((button) => {
+      button.onclick = () => {
+        button.closest('.member-row')?.remove();
+        refreshMemberIndices();
+      };
+    });
+  }
+
+  function refreshMemberIndices() {
+    document.querySelectorAll('.member-row').forEach((row, index) => {
+      row.dataset.index = index;
+    });
+  }
+
+  function getMembersFromRows() {
+    return Array.from(document.querySelectorAll('.member-row')).map((row) => {
+      const name = row.querySelector('input[data-field="name"]').value.trim();
+      const phone = row.querySelector('input[data-field="phone"]').value.trim();
+      const stream = row.querySelector('input[data-field="stream"]').value.trim();
+      const year = row.querySelector('input[data-field="year"]').value.trim();
+      const member = { name, phone, stream, year };
+      if (!name && !phone && !stream && !year) return null;
+      return member;
+    }).filter(Boolean);
+  }
+
+  async function loadTeam(id) {
+    const token = await getAdminToken();
+    const res = await fetch(`${API_URL}/api/admin/registrations`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+    const body = await res.json();
+    const team = (body.teams || []).find((t) => t._id === id);
+    if (!team) {
+      document.getElementById('status').textContent = 'Team not found.';
+      return;
+    }
+    populateTeam(team);
+  }
+
+  async function searchTeam() {
+    const query = document.getElementById('teamSearchInput').value.trim();
+    if (!query) {
+      document.getElementById('searchResults').textContent = 'Please enter a team name to search.';
+      return;
+    }
+
+    const token = await getAdminToken();
+    const res = await fetch(`${API_URL}/api/admin/registrations`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+    const body = await res.json();
+    const teams = Array.isArray(body.teams) ? body.teams : [];
+    const matches = teams.filter((team) => String(team.teamName || '').toLowerCase().includes(query.toLowerCase()));
+
+    if (!matches.length) {
+      document.getElementById('searchResults').textContent = 'No matching teams found.';
+      return;
+    }
+
+    if (matches.length === 1) {
+      document.getElementById('searchResults').textContent = `Found team: ${matches[0].teamName}`;
+      populateTeam(matches[0]);
+      return;
+    }
+
+    const listItems = matches.map((team) => `
+      <li style="margin-bottom:6px;">
+        <button type="button" class="btn btn-ghost" data-id="${team._id}" style="width:100%;text-align:left;">${escapeHtml(team.teamName)} — ${escapeHtml(team.leaderName || '')} (${escapeHtml(team.email || '')})</button>
+      </li>
+    `).join('');
+
+    document.getElementById('searchResults').innerHTML = `Matching teams:<ul style="margin:8px 0 0 16px;">${listItems}</ul>`;
+    document.querySelectorAll('#searchResults button[data-id]').forEach((button) => {
+      button.addEventListener('click', () => loadTeam(button.dataset.id));
+    });
+  }
+
+  function populateTeam(team) {
+    document.getElementById('teamId').value = team._id;
+    document.getElementById('teamName').value = team.teamName || '';
+    document.getElementById('leaderName').value = team.leaderName || '';
+    document.getElementById('year').value = team.year || '';
+    document.getElementById('stream').value = team.stream || '';
+    document.getElementById('contact').value = team.contact || '';
+    renderTeamDetails(team);
+    renderMemberRows(team.members || []);
+    document.getElementById('status').textContent = 'Team loaded. You can edit member details and save.';
+  }
+
+  async function updateTeam(event) {
+    event.preventDefault();
+    const id = document.getElementById('teamId').value;
+    if (!id) {
+      document.getElementById('status').textContent = 'Select a team first before saving.';
+      return;
+    }
+
+    const payload = {
+      teamName: document.getElementById('teamName').value,
+      leaderName: document.getElementById('leaderName').value,
+      year: document.getElementById('year').value,
+      stream: document.getElementById('stream').value,
+      contact: document.getElementById('contact').value,
+      members: getMembersFromRows()
+    };
+
+    const token = await getAdminToken();
+    const res = await fetch(`${API_URL}/api/admin/registrations/${id}`, {
+      method: 'PUT',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'Authorization': `Bearer ${token}` } : {}),
+      body: JSON.stringify(payload)
+    });
+    const body = await res.json();
+    document.getElementById('status').textContent = body.msg || 'Updated';
+    if (res.ok) {
+      populateTeam(body.team);
+    }
+  }
+
+  function addMemberRow(member = {}) {
+    const container = document.getElementById('memberRows');
+    const index = container.children.length;
+    container.insertAdjacentHTML('beforeend', createMemberRow(member, index));
+    attachMemberRemoveHandlers();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('teamSearchButton').addEventListener('click', searchTeam);
+    document.getElementById('clearSearchButton').addEventListener('click', () => {
+      document.getElementById('teamSearchInput').value = '';
+      document.getElementById('searchResults').textContent = '';
+    });
+    document.getElementById('addMemberBtn').addEventListener('click', () => addMemberRow({}));
+    document.getElementById('editForm').addEventListener('submit', updateTeam);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('id')) {
+      loadTeam(params.get('id'));
+    }
+  });
+  </script>
+</body>
+</html>

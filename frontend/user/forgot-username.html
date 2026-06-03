@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Username - StartInno Solutions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 50%, #0f172a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #ffffff;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.5);
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 200ms ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(56, 189, 248, 0.5);
+      background: rgba(30, 41, 59, 0.8);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 35px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .message.info {
+      background: rgba(56, 189, 248, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .footer-links {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .footer-links a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 200ms ease;
+    }
+
+    .footer-links a:hover {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .link-separator {
+      color: #64748b;
+      margin: 0 8px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(56, 189, 248, 0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 30px 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>Forgot Username?</h1>
+        <p>Enter your registered email address and we'll send your username to your inbox.</p>
+      </div>
+
+      <form id="forgotUsernameForm">
+        <div id="messageContainer"></div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your registered email"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          Send Username
+        </button>
+
+        <div class="loading" id="loading">
+          <span class="spinner"></span>
+          Sending...
+        </div>
+      </form>
+
+      <div class="footer-links">
+        <a href="http://localhost:5001/user/login">Back to Login</a>
+        <span class="link-separator">•</span>
+        <a href="/user/forgot-password.html">Forgot Password?</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5001';
+    const form = document.getElementById('forgotUsernameForm');
+    const messageContainer = document.getElementById('messageContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const emailInput = document.getElementById('email');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        showMessage('Please enter your email address', 'error');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        loading.style.display = 'block';
+        messageContainer.innerHTML = '';
+
+        const response = await fetch(`${API_BASE}/api/auth/forgot-username`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.success) {
+          showMessage(data.message, 'success');
+          form.reset();
+          emailInput.focus();
+        } else {
+          showMessage(data.message || data.error || 'Unable to send the username right now. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Unable to connect to the server. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    });
+
+    function showMessage(message, type) {
+      messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+      messageContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

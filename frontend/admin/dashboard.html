@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="banner.css" />
+</head>
+<body>
+	<div class="admin-shell">
+		<div class="topbar">
+			<div class="brand"><h1>Event Admin</h1><div class="muted">Panel</div></div>
+			<div class="nav">
+				<a class="active" href="/admin/dashboard.html">Dashboard</a>
+				<a href="/admin/student.html">Registrations</a>
+				<a href="/admin/issues.html">Issues</a>
+				<a href="/admin/edit.html">Edit</a>
+				<button class="btn btn-logout" onclick="adminLogout()">Logout</button>
+			</div>
+		</div>
+
+		<div class="grid">
+			<div class="card">
+				<h3>Total Users</h3>
+				<div class="value" id="totalUsers">0</div>
+			</div>
+			<div class="card">
+				<h3>Total Registrations</h3>
+				<div class="value" id="totalTeams">0</div>
+			</div>
+			<div class="card">
+				<h3>Actions</h3>
+				<div class="controls">
+					<button class="btn btn-primary" onclick="downloadData()">Download Word</button>
+					<button class="btn btn-ghost" id="goRegistrations" onclick="window.location.href='/admin/student.html'">View</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="card banner-editor">
+			<div class="banner-editor__header">
+				<div>
+					<h3>Payment & Banner Settings</h3>
+					<div class="muted">Upload the banner, update UPI payment details, toggle payment methods, WhatsApp link, and registration link.</div>
+				</div>
+				<div class="banner-editor__badge">Payment Settings</div>
+			</div>
+
+			<form id="bannerForm" class="banner-editor__form">
+				<div class="banner-editor__row banner-editor__row--split">
+					<label class="banner-editor__field banner-editor__field--upload">
+						<span>Banner image</span>
+						<input type="file" id="bannerImage" accept="image/*" required />
+					</label>
+
+					<label class="banner-editor__field">
+						<span>Banner title</span>
+						<input type="text" id="bannerTitle" placeholder="e.g., Spring Event 2024" />
+					</label>
+				</div>
+
+				<div class="banner-editor__row banner-editor__row--split">
+					<label class="banner-editor__field">
+						<span>Banner link (optional)</span>
+						<input type="url" id="bannerLink" placeholder="https://example.com or /register" />
+					</label>
+
+					<label class="banner-editor__field">
+						<span>Registration link</span>
+						<input type="url" id="bannerRegistrationLink" placeholder="https://example.com/register" />
+					</label>
+				</div>
+
+				<div class="banner-editor__row banner-editor__row--split">
+					<label class="banner-editor__field">
+						<span>UPI ID</span>
+						<input type="text" id="bannerUpiId" placeholder="xyz@upi" />
+					</label>
+
+					<label class="banner-editor__field">
+						<span>UPI Amount</span>
+						<input type="text" id="bannerUpiAmount" placeholder="e.g., 499" />
+					</label>
+
+					<label class="banner-editor__field banner-editor__field--upload">
+						<span>UPI scanner image</span>
+						<input type="file" id="bannerUpiImage" accept="image/*" />
+					</label>
+				</div>
+
+				<div class="banner-editor__row banner-editor__row--split">
+					<label class="banner-editor__field banner-editor__field--inline">
+						<input type="checkbox" id="bannerUpiQrEnabled" checked />
+						<span class="banner-editor__field-label">Enable QR Scanner payments</span>
+					</label>
+
+					<label class="banner-editor__field banner-editor__field--inline">
+						<input type="checkbox" id="bannerUpiIdEnabled" checked />
+						<span class="banner-editor__field-label">Enable UPI ID payments</span>
+					</label>
+				</div>
+
+				<div class="banner-editor__row banner-editor__row--split">
+					<label class="banner-editor__field">
+						<span>Announcement text</span>
+						<input type="text" id="bannerAnnouncement" placeholder="e.g., Special offers available" />
+					</label>
+
+					<label class="banner-editor__field">
+						<span>WhatsApp group link</span>
+						<input type="url" id="bannerWhatsappGroupLink" placeholder="https://chat.whatsapp.com/..." />
+					</label>
+				</div>
+
+				<div class="banner-editor__row">
+					<label class="banner-editor__field banner-editor__field--full banner-editor__field--inline">
+						<input type="checkbox" id="bannerIsActive" />
+						<span class="banner-editor__field-label">Active (visible to users)</span>
+					</label>
+				</div>
+
+				<div class="banner-editor__actions">
+					<button class="btn btn-primary" type="submit" id="bannerSubmitBtn">Create</button>
+					<button class="btn btn-ghost" type="button" id="bannerResetBtn">Reset</button>
+				</div>
+
+				<div class="banner-status" id="bannerFormStatus"></div>
+			</form>
+		</div>
+
+		<div class="card">
+			<h3>Registration Fee Settings</h3>
+			<div class="muted">Control whether fee is charged per team or per participant.</div>
+			<form id="feeSettingsForm" style="margin-top:12px;">
+				<div style="display:flex;gap:12px;align-items:center;margin-bottom:8px;">
+					<label style="display:flex;align-items:center;gap:8px;"><input type="radio" name="feeType" value="per_team" checked /> Per Team</label>
+					<label style="display:flex;align-items:center;gap:8px;"><input type="radio" name="feeType" value="per_head" /> Per Head</label>
+				</div>
+				<label style="display:block;margin-bottom:8px;">
+					<span>Fee Amount (₹)</span>
+					<input type="text" id="feeAmount" placeholder="e.g., 499" />
+				</label>
+				<div style="margin-top:8px;">
+					<button class="btn btn-primary" type="submit" id="saveFeeSettingsBtn">Save Fee Settings</button>
+					<button class="btn btn-ghost" type="button" id="resetFeeSettingsBtn">Reset</button>
+				</div>
+				<div id="feeSettingsStatus" class="banner-status" style="margin-top:8px;"></div>
+			</form>
+		</div>
+	<!-- Management section: list of banners for edit/delete/activate -->
+	<div class="card banner-management">
+		<div class="banner-management__header">
+			<h3>Manage Banners</h3>
+			<div class="muted" id="bannerCount">0 banners</div>
+		</div>
+		<div class="banner-management__scroll">
+			<table class="banner-management__table">
+				<thead>
+					<tr>
+						<th>Preview</th>
+						<th>Title</th>
+						<th>WhatsApp Link</th>
+						<th>Registration Link</th>
+						<th>Status</th>
+						<th>Created</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="bannerTableBody">
+					<tr><td colspan="7" class="banner-management__loading">Loading banners...</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	</div>
+
+	<script>
+		// Protect admin pages - redirect to login if no token
+		(function() {
+			const token = localStorage.getItem('adminToken');
+			if (!token) {
+				console.log('[dashboard] No admin token found, redirecting to login');
+				window.location.replace('./login.html');
+			}
+		})();
+	</script>
+	<script src="../js/admin.js?v=4"></script>
+	<script src="../js/banner-admin.js"></script>
+	<script src="../js/diagnostic.js"></script>
+	<script>
+		// Initialize dashboard on page load
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('[dashboard] Page loaded, initializing...');
+			if (typeof loadDashboard === 'function') {
+				loadDashboard();
+			} else {
+				console.error('[dashboard] loadDashboard function not found');
+			}
+			if (typeof loadBannerAdmin === 'function') {
+				loadBannerAdmin();
+			} else {
+				console.error('[dashboard] loadBannerAdmin function not found');
+			}
+		});
+		// Fallback in case DOM is already loaded
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function() {
+				if (typeof loadDashboard === 'function') loadDashboard();
+				if (typeof loadBannerAdmin === 'function') loadBannerAdmin();
+			});
+		} else {
+			setTimeout(() => {
+				if (typeof loadDashboard === 'function') loadDashboard();
+				if (typeof loadBannerAdmin === 'function') loadBannerAdmin();
+			}, 100);
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login | StartInno Solutions</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #f5f0e8;
+			--ink: #2a2438;
+			--muted: #6d6478;
+			--panel: rgba(255, 255, 255, 0.72);
+			--accent: #2f80ed;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: "Poppins", sans-serif;
+			background:
+				radial-gradient(circle at top left, rgba(255,255,255,0.7), transparent 28%),
+				radial-gradient(circle at bottom right, rgba(47,128,237,0.12), transparent 30%),
+				var(--bg);
+			color: var(--ink);
+			overflow: hidden;
+		}
+
+		.page {
+			position: relative;
+			min-height: 100vh;
+			padding: 20px 24px 30px;
+		}
+
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.topbar-links {
+			display: flex;
+			gap: 12px;
+		}
+
+		.floating-btn {
+			position: relative;
+			background: #111827;
+			color: #ffffff;
+			border: none;
+			border-radius: 16px;
+			padding: 12px 20px;
+			font-weight: 600;
+			cursor: pointer;
+			overflow: hidden;
+			transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease;
+		}
+
+		.floating-btn:hover {
+			transform: translateY(-1px) scale(1.03);
+			color: #00f5ff;
+			box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
+		}
+
+		.floating-btn:active {
+			transform: translateY(1px) scale(0.98);
+		}
+
+		.recovery-btn {
+			position: relative;
+			background: #111827;
+			color: #ffffff;
+			border: none;
+			box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+			transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease;
+		}
+
+		.recovery-btn:hover {
+			box-shadow:
+				0 16px 32px rgba(15, 23, 42, 0.12),
+				0 8px 18px rgba(15, 23, 42, 0.12);
+		}
+
+		.recovery-btn::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 0;
+			height: 2px;
+			background: linear-gradient(90deg, #00f5ff, #8b5cf6, #ff00ff);
+			transition: width 0.5s;
+			pointer-events: none;
+		}
+
+		.recovery-btn:hover::before {
+			width: 100%;
+		}
+
+		.recovery-btn::after {
+			content: "";
+			position: absolute;
+			width: 0;
+			height: 2px;
+			bottom: 0;
+			right: 0;
+			background: linear-gradient(90deg, #00f5ff, #8b5cf6, #ff00ff);
+			transition: width 0.5s;
+			pointer-events: none;
+		}
+
+		.recovery-btn:hover::after {
+			width: 100%;
+		}
+
+		.recovery-btn span::before,
+		.recovery-btn span::after {
+			content: "";
+			position: absolute;
+			width: 2px;
+			height: 0;
+			background: linear-gradient(180deg, #00f5ff, #8b5cf6, #ff00ff);
+			transition: height 0.5s;
+			pointer-events: none;
+		}
+
+		.recovery-btn span::before {
+			top: 0;
+			right: 0;
+		}
+
+		.recovery-btn span::after {
+			bottom: 0;
+			left: 0;
+		}
+
+		.recovery-btn:hover span::before,
+		.recovery-btn:hover span::after {
+			height: 100%;
+		}
+
+		.recovery-btn span {
+			position: relative;
+			z-index: 1;
+		}
+
+		.hero {
+			max-width: 1000px;
+			margin: 0 auto;
+			display: grid;
+			grid-template-columns: 1.1fr 0.9fr;
+			align-items: center;
+			min-height: calc(100vh - 84px);
+			gap: 32px;
+		}
+
+		.brand {
+			padding-left: 8px;
+		}
+
+		.brand h1 {
+			margin: 0 0 8px;
+			font-size: clamp(2.4rem, 7vw, 5rem);
+			line-height: 0.95;
+			letter-spacing: -0.04em;
+			color: #2f2740;
+		}
+
+		.brand p {
+			margin: 0;
+			max-width: 520px;
+			color: var(--muted);
+			font-size: 1rem;
+		}
+
+		.card {
+			justify-self: center;
+			width: min(100%, 420px);
+			padding: 28px 26px 22px;
+			background: var(--panel);
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
+			border: 1px solid rgba(35, 28, 51, 0.08);
+			border-radius: 28px;
+			box-shadow: 0 30px 80px rgba(34, 28, 50, 0.12);
+		}
+
+		.field {
+			margin-bottom: 16px;
+		}
+
+		.field label {
+			display: block;
+			margin-bottom: 7px;
+			font-size: 0.9rem;
+			color: #3d3650;
+			font-weight: 600;
+		}
+
+		.input-wrap {
+			position: relative;
+		}
+
+		.input-wrap input {
+			width: 100%;
+			border: 0;
+			border-bottom: 2px solid rgba(50, 43, 68, 0.35);
+			background: transparent;
+			padding: 11px 42px 11px 2px;
+			outline: none;
+			color: var(--ink);
+			font-size: 1rem;
+		}
+
+		.password-toggle {
+			position: absolute;
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			border: 0;
+			background: transparent;
+			cursor: pointer;
+			color: #534866;
+			padding: 8px;
+			font-size: 1.05rem;
+		}
+
+		.actions {
+			display: flex;
+			gap: 14px;
+			flex-wrap: wrap;
+			margin-top: 18px;
+		}
+
+		.primary-btn,
+		.secondary-btn {
+			border: 0;
+			border-radius: 999px;
+			padding: 12px 22px;
+			cursor: pointer;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+		}
+
+		.primary-btn {
+			background: #111827;
+			color: #fff;
+			min-width: 120px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.secondary-btn {
+			background: #111827;
+			color: #ffffff;
+			border: none;
+			min-width: 120px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.bottom-link {
+			margin-top: 18px;
+			display: inline-block;
+			color: #2f2740;
+			text-decoration: underline;
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.status {
+			margin-top: 14px;
+			min-height: 22px;
+			font-size: 0.92rem;
+			color: #4a4260;
+		}
+
+		.reveal {
+			animation: rise 0.8s ease both;
+		}
+
+		@keyframes rise {
+			from { opacity: 0; transform: translateY(14px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.modal-backdrop {
+			position: fixed;
+			inset: 0;
+			background: rgba(17, 14, 26, 0.42);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+		}
+
+		.modal {
+			width: min(100%, 440px);
+			background: rgba(255,255,255,0.92);
+			border-radius: 24px;
+			padding: 24px;
+			box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+		}
+
+		.modal h2 { margin: 0 0 8px; }
+		.modal p { margin: 0 0 16px; color: var(--muted); }
+		.modal .field { margin-bottom: 14px; }
+
+		@media (max-width: 860px) {
+			body { overflow: auto; }
+			.hero { grid-template-columns: 1fr; min-height: 0; padding: 34px 0 24px; }
+			.brand { padding-left: 0; text-align: center; }
+			.card { width: min(100%, 480px); }
+		}
+	</style>
+</head>
+<body>
+	<div class="page">
+		<div class="topbar">
+			<div class="topbar-links">
+			<button class="floating-btn recovery-btn" type="button" onclick="window.location.href='/user/forgot-password.html'" title="Reset your password"><span>Forgot Password</span></button>
+			<button class="floating-btn recovery-btn" type="button" onclick="window.location.href='/user/forgot-username.html'" title="Recover your username"><span>Forgot Username</span></button>
+		</div>
+		<button class="floating-btn recovery-btn" type="button" onclick="window.location.href='/user/help.html'"><span>Help</span></button>
+		</div>
+
+		<section class="hero reveal">
+			<div class="brand">
+				<h1>StartInno<br>Solutions</h1>
+			</div>
+
+			<div class="card">
+				<div class="field">
+					<label for="identifier">Username / Email / Phone</label>
+					<div class="input-wrap">
+						<input id="identifier" type="text" placeholder="Enter username, email, or phone">
+					</div>
+				</div>
+
+				<div class="field">
+					<label for="password">Password</label>
+					<div class="input-wrap">
+						<input id="password" type="password" placeholder="Enter password">
+						<button class="password-toggle" type="button" id="togglePassword" aria-label="Show password">◔</button>
+					</div>
+				</div>
+
+				<div class="actions">
+					<button class="primary-btn" type="button" id="signInBtn">Sign In</button>
+					<button class="secondary-btn" type="button" onclick="window.location.href='/user/signup.html'">Sign Up</button>
+				</div>
+
+				<div class="status" id="statusText"></div>
+
+				<a class="bottom-link" href="/admin/login">Login with admin</a>
+
+			</div>
+		</section>
+	</div>
+
+	<div class="modal-backdrop" id="forgotModal">
+		<div class="modal">
+			<h2>Recover password / username</h2>
+			<p>Enter your registered email. If it exists in Firebase, we will send a password reset email and treat the email as your username.</p>
+			<div class="field">
+				<label for="recoveryEmail">Email</label>
+				<div class="input-wrap">
+					<input id="recoveryEmail" type="email" placeholder="Registered email address">
+				</div>
+			</div>
+			<div class="actions">
+				<button class="primary-btn" type="button" id="sendResetBtn">Send Reset Mail</button>
+				<button class="secondary-btn" type="button" id="closeForgotBtn">Cancel</button>
+			</div>
+			<div class="status" id="recoveryStatus"></div>
+		</div>
+	</div>
+
+	<script>
+		const API_BASE = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'http://localhost:5001';
+		const identifierInput = document.getElementById('identifier');
+		const passwordInput = document.getElementById('password');
+		const statusText = document.getElementById('statusText');
+		const signInBtn = document.getElementById('signInBtn');
+		const togglePassword = document.getElementById('togglePassword');
+
+		// Track login state
+		let isLoggingIn = false;
+
+		function setStatus(message, isError = false) {
+			statusText.textContent = message;
+			statusText.style.color = isError ? '#b3261e' : '#4a4260';
+			console.log('[Login Status]', message, 'Error:', isError);
+		}
+
+		function updateButtonState(loading) {
+			if (loading) {
+				signInBtn.disabled = true;
+				signInBtn.style.opacity = '0.6';
+				signInBtn.style.cursor = 'not-allowed';
+				signInBtn.textContent = 'Signing in...';
+			} else {
+				signInBtn.disabled = false;
+				signInBtn.style.opacity = '1';
+				signInBtn.style.cursor = 'pointer';
+				signInBtn.textContent = 'Sign In';
+			}
+		}
+
+		signInBtn.addEventListener('click', async (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+
+			// Prevent double submission
+			if (isLoggingIn) {
+				console.log('[Login] Already processing login request');
+				return;
+			}
+
+			const identifier = identifierInput.value.trim();
+			const password = passwordInput.value;
+
+			// Validate inputs
+			if (!identifier || !password) {
+				setStatus('Please enter both username/email/phone and password.', true);
+				return;
+			}
+
+			try {
+				isLoggingIn = true;
+				updateButtonState(true);
+				setStatus('Signing in...');
+
+				// Clear previous storage
+				localStorage.removeItem('token');
+				localStorage.removeItem('user');
+				sessionStorage.removeItem('token');
+				sessionStorage.removeItem('user');
+
+				// Fetch with timeout
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+				const response = await fetch(`${API_BASE}/api/auth/login`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						identifier: identifier,
+						password: password
+					}),
+					signal: controller.signal
+				});
+
+				clearTimeout(timeoutId);
+
+				// Parse response
+				let data = {};
+				try {
+					data = await response.json();
+				} catch (parseErr) {
+					console.error('[Login] JSON parse error:', parseErr);
+					setStatus('Server error. Please try again.', true);
+					return;
+				}
+
+				console.log('[Login] API response:', response.status, data);
+
+				if (!response.ok || !data.success) {
+					setStatus(data.message || 'Login failed. Please check your credentials.', true);
+					return;
+				}
+
+				// Store token and user
+				if (!data.token) {
+					setStatus('Login failed. No token received.', true);
+					return;
+				}
+
+				localStorage.setItem('token', data.token);
+				if (data.user) {
+					localStorage.setItem('user', JSON.stringify(data.user));
+				}
+
+				setStatus('Login successful. Redirecting...');
+				console.log('[Login] Success! Redirecting to dashboard');
+
+				// Redirect after a short delay
+				setTimeout(() => {
+					window.location.href = '/user/dashboard.html';
+				}, 800);
+
+			} catch (error) {
+				if (error.name === 'AbortError') {
+					setStatus('Request timeout. Please check your connection.', true);
+				} else {
+					console.error('[Login] Error:', error);
+					setStatus(error?.message || 'An error occurred. Please try again.', true);
+				}
+			} finally {
+				isLoggingIn = false;
+				updateButtonState(false);
+			}
+		});
+
+		// Password visibility toggle
+		togglePassword.addEventListener('click', (e) => {
+			e.preventDefault();
+			const isHidden = passwordInput.type === 'password';
+			passwordInput.type = isHidden ? 'text' : 'password';
+			togglePassword.textContent = isHidden ? '◕' : '◔';
+		});
+
+		// Allow Enter key to submit
+		passwordInput.addEventListener('keypress', (e) => {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				signInBtn.click();
+			}
+		});
+
+		// Log when page loads
+		console.log('[Login Page] Loaded. API Base:', API_BASE);
+	</script>
+</body>
+</html>

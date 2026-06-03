@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Login | StartInno Solutions</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg: #f5f0e8;
+			--ink: #2a2438;
+			--muted: #6d6478;
+			--panel: rgba(255, 255, 255, 0.72);
+			--accent: #2f80ed;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: "Poppins", sans-serif;
+			background:
+				radial-gradient(circle at top left, rgba(255,255,255,0.7), transparent 28%),
+				radial-gradient(circle at bottom right, rgba(47,128,237,0.12), transparent 30%),
+				var(--bg);
+			color: var(--ink);
+			overflow: hidden;
+		}
+
+		.page {
+			position: relative;
+			min-height: 100vh;
+			padding: 20px 24px 30px;
+		}
+
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 24px;
+		}
+
+		.topbar-actions {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.floating-btn {
+			position: relative;
+			padding: 12px 20px;
+			background: #111827;
+			color: #ffffff;
+			border: none;
+			border-radius: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			overflow: hidden;
+			transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease;
+		}
+
+		.floating-btn:hover {
+			transform: translateY(-1px) scale(1.03);
+			color: #00f5ff;
+			box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
+		}
+
+		.floating-btn:active {
+			transform: translateY(1px) scale(0.98);
+		}
+
+		.floating-btn::before,
+		.floating-btn::after,
+		.floating-btn span::before,
+		.floating-btn span::after {
+			content: "";
+			position: absolute;
+			background: linear-gradient(90deg, #00f5ff, #8b5cf6, #ff00ff);
+			transition: 0.5s;
+			pointer-events: none;
+		}
+
+		.floating-btn::before,
+		.floating-btn::after {
+			height: 2px;
+			width: 0;
+		}
+
+		.floating-btn::before {
+			top: 0;
+			left: 0;
+		}
+
+		.floating-btn::after {
+			bottom: 0;
+			right: 0;
+		}
+
+		.floating-btn span::before,
+		.floating-btn span::after {
+			width: 2px;
+			height: 0;
+			background: linear-gradient(180deg, #00f5ff, #8b5cf6, #ff00ff);
+		}
+
+		.floating-btn span::before {
+			top: 0;
+			right: 0;
+		}
+
+		.floating-btn span::after {
+			bottom: 0;
+			left: 0;
+		}
+
+		.floating-btn:hover::before,
+		.floating-btn:hover::after {
+			width: 100%;
+		}
+
+		.floating-btn:hover span::before,
+		.floating-btn:hover span::after {
+			height: 100%;
+		}
+
+		.hero {
+			max-width: 1000px;
+			margin: 0 auto;
+			display: grid;
+			grid-template-columns: 1.1fr 0.9fr;
+			align-items: center;
+			min-height: calc(100vh - 84px);
+			gap: 32px;
+		}
+
+		.brand {
+			padding-left: 8px;
+		}
+
+		.brand h1 {
+			margin: 0 0 8px;
+			font-size: clamp(2.4rem, 7vw, 5rem);
+			line-height: 0.95;
+			letter-spacing: -0.04em;
+			color: #2f2740;
+		}
+
+		.brand p {
+			margin: 0;
+			max-width: 520px;
+			color: var(--muted);
+			font-size: 1rem;
+		}
+
+		.card {
+			justify-self: center;
+			width: min(100%, 420px);
+			padding: 28px 26px 22px;
+			background: var(--panel);
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
+			border: 1px solid rgba(35, 28, 51, 0.08);
+			border-radius: 28px;
+			box-shadow: 0 30px 80px rgba(34, 28, 50, 0.12);
+		}
+
+		.card h2 {
+			margin: 0 0 12px;
+			font-size: 1.45rem;
+			color: var(--ink);
+		}
+
+		.card .subtitle {
+			margin: 0 0 20px;
+			color: var(--muted);
+			font-size: 0.95rem;
+			line-height: 1.6;
+		}
+
+		.field {
+			margin-bottom: 16px;
+		}
+
+		.field label {
+			display: block;
+			margin-bottom: 7px;
+			font-size: 0.9rem;
+			color: #3d3650;
+			font-weight: 600;
+		}
+
+		.input-wrap {
+			position: relative;
+		}
+
+		.input-wrap input {
+			width: 100%;
+			border: 0;
+			border-bottom: 2px solid rgba(50, 43, 68, 0.35);
+			background: transparent;
+			padding: 11px 42px 11px 2px;
+			outline: none;
+			color: var(--ink);
+			font-size: 1rem;
+		}
+
+		.input-wrap input:focus {
+			border-bottom-color: rgba(47, 128, 237, 0.6);
+		}
+
+		.actions {
+			display: flex;
+			gap: 14px;
+			flex-wrap: wrap;
+			margin-top: 18px;
+		}
+
+		.primary-btn,
+		.secondary-btn {
+			border: 0;
+			border-radius: 18px;
+			padding: 12px 22px;
+			cursor: pointer;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+			transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+		}
+
+		.primary-btn {
+			position: relative;
+			background: #111827;
+			color: #fff;
+			box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+			min-width: 140px;
+			overflow: hidden;
+		}
+
+		.primary-btn:hover {
+			transform: translateY(-1px) scale(1.02);
+			color: #00f5ff;
+			box-shadow: 0 18px 36px rgba(15, 23, 42, 0.2);
+		}
+
+		.primary-btn:active {
+			transform: translateY(1px) scale(0.98);
+		}
+
+		.secondary-btn {
+			background: #111827;
+			color: #ffffff;
+			border: none;
+			min-width: 120px;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.secondary-btn:hover {
+			color: #00f5ff;
+		}
+
+		.primary-btn::before,
+		.primary-btn::after,
+		.primary-btn span::before,
+		.primary-btn span::after,
+		.secondary-btn::before,
+		.secondary-btn::after,
+		.secondary-btn span::before,
+		.secondary-btn span::after {
+			content: "";
+			position: absolute;
+			background: linear-gradient(90deg, #00f5ff, #8b5cf6, #ff00ff);
+			transition: 0.5s;
+			pointer-events: none;
+		}
+
+		.primary-btn::before,
+		.primary-btn::after,
+		.secondary-btn::before,
+		.secondary-btn::after {
+			height: 2px;
+			width: 0;
+		}
+
+		.primary-btn::before,
+		.secondary-btn::before {
+			top: 0;
+			left: 0;
+		}
+
+		.primary-btn::after,
+		.secondary-btn::after {
+			bottom: 0;
+			right: 0;
+		}
+
+		.primary-btn span::before,
+		.primary-btn span::after,
+		.secondary-btn span::before,
+		.secondary-btn span::after {
+			width: 2px;
+			height: 0;
+			background: linear-gradient(180deg, #00f5ff, #8b5cf6, #ff00ff);
+		}
+
+		.primary-btn span::before,
+		.secondary-btn span::before {
+			top: 0;
+			right: 0;
+		}
+
+		.primary-btn span::after,
+		.secondary-btn span::after {
+			bottom: 0;
+			left: 0;
+		}
+
+		.primary-btn:hover::before,
+		.primary-btn:hover::after,
+		.secondary-btn:hover::before,
+		.secondary-btn:hover::after {
+			width: 100%;
+		}
+
+		.primary-btn:hover span::before,
+		.primary-btn:hover span::after,
+		.secondary-btn:hover span::before,
+		.secondary-btn:hover span::after {
+			height: 100%;
+		}
+
+		.bottom-link {
+			margin-top: 18px;
+			display: inline-block;
+			color: #2f2740;
+			text-decoration: underline;
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.status {
+			margin-top: 14px;
+			min-height: 22px;
+			font-size: 0.92rem;
+			color: #4a4260;
+		}
+
+		.status.error {
+			color: #b3261e;
+		}
+
+		.status.success {
+			color: #2a7a2a;
+		}
+
+		.reveal {
+			animation: rise 0.8s ease both;
+		}
+
+		@keyframes rise {
+			from { opacity: 0; transform: translateY(14px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		@media (max-width: 860px) {
+			body { overflow: auto; }
+			.hero { grid-template-columns: 1fr; min-height: 0; padding: 34px 0 24px; }
+			.brand { padding-left: 0; text-align: center; }
+			.card { width: min(100%, 480px); }
+		}
+	</style>
+</head>
+<body>
+	<div class="page">
+		<div class="topbar">
+			<div class="topbar-actions">
+				<button class="floating-btn" type="button" onclick="window.location.href='login.html'"><span>Back to User Login</span></button>
+			</div>
+			<button class="floating-btn" type="button" onclick="window.location.href='help.html'"><span>Help</span></button>
+		</div>
+
+		<section class="hero reveal">
+			<div class="brand">
+				<h1>Admin<br>Access</h1>
+				<p>Enter your admin credentials to manage the StartInno Solutions hackathon platform and oversee all activities.</p>
+			</div>
+
+			<div class="card">
+				<h2>Admin Login</h2>
+				<p class="subtitle">Verify your identity to access the admin dashboard.</p>
+
+				<div class="field">
+					<label for="adminUsername">Username / Admin ID</label>
+					<div class="input-wrap">
+						<input id="adminUsername" type="text" placeholder="Enter admin username or ID">
+					</div>
+				</div>
+
+				<div class="field">
+					<label for="adminID">Password</label>
+					<div class="input-wrap">
+						<input id="adminID" type="password" placeholder="Enter password">
+					</div>
+				</div>
+
+				<div class="actions">
+					<button class="primary-btn" type="button" id="adminLoginBtn"><span>Admin Login</span></button>
+					<button class="secondary-btn" type="button" onclick="window.location.href='login.html'"><span>Cancel</span></button>
+				</div>
+
+				<div class="status" id="adminStatus"></div>
+
+				<a class="bottom-link" href="login.html">Back to User Login</a>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		const adminLoginBtn = document.getElementById('adminLoginBtn');
+		const adminUsernameInput = document.getElementById('adminUsername');
+		const adminIDInput = document.getElementById('adminID');
+		const adminStatus = document.getElementById('adminStatus');
+		const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:5001' : window.location.origin;
+
+		function setStatus(message, isError = false) {
+			adminStatus.textContent = message;
+			adminStatus.className = isError ? 'status error' : 'status success';
+		}
+
+		adminLoginBtn.addEventListener('click', async () => {
+			const identifier = adminUsernameInput.value.trim();
+			const password = adminIDInput.value.trim();
+
+			if (!identifier || !password) {
+				setStatus('Please enter both username and password.', true);
+				return;
+			}
+
+			try {
+				setStatus('Verifying admin credentials...');
+
+				const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						identifier,
+						password
+					})
+				});
+
+				const data = await response.json().catch(() => ({}));
+
+				if (!response.ok || !data.token) {
+					setStatus(data.message || 'Invalid admin credentials.', true);
+					return;
+				}
+
+				localStorage.setItem('adminToken', data.token);
+				localStorage.setItem('admin_token', data.token);
+				setStatus('Admin login successful. Redirecting...');
+				setTimeout(() => {
+					window.location.href = '/admin/dashboard.html';
+				}, 800);
+			} catch (error) {
+				console.error('[admin-login] login error:', error);
+				setStatus('Authentication failed. Please try again.', true);
+			}
+		});
+
+		// Allow Enter key to submit
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				adminLoginBtn.click();
+			}
+		});
+	</script>
+</body>
+</html>

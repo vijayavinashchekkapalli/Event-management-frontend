@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Sign Up | StartInno Solutions</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		:root {
+			--bg: #eef4ff;
+			--ink: #172554;
+			--muted: #5b6b84;
+			--panel: rgba(255, 255, 255, 0.84);
+			--primary: #2563eb;
+			--primary-dark: #1d4ed8;
+			--border: rgba(37, 99, 235, 0.14);
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: "Poppins", sans-serif;
+			color: var(--ink);
+			background:
+				radial-gradient(circle at top left, rgba(96, 165, 250, 0.24), transparent 32%),
+				radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 28%),
+				linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+			padding: 24px;
+		}
+
+		.shell {
+			min-height: calc(100vh - 48px);
+			display: grid;
+			place-items: center;
+		}
+
+		.page {
+			width: min(100%, 1100px);
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 28px;
+			align-items: center;
+		}
+
+		.hero {
+			padding: 18px 8px;
+		}
+
+		.eyebrow {
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			padding: 9px 14px;
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.72);
+			border: 1px solid var(--border);
+			color: var(--primary-dark);
+			font-size: 13px;
+			font-weight: 600;
+			margin-bottom: 18px;
+		}
+
+		.hero h1 {
+			font-size: clamp(2.5rem, 6vw, 4.8rem);
+			line-height: 0.95;
+			letter-spacing: -0.05em;
+			margin-bottom: 14px;
+			color: #0f172a;
+		}
+
+		.hero p {
+			max-width: 560px;
+			color: var(--muted);
+			line-height: 1.75;
+			font-size: 1rem;
+		}
+
+		.card {
+			width: 100%;
+			max-width: 520px;
+			justify-self: center;
+			background: var(--panel);
+			border: 1px solid rgba(37, 99, 235, 0.1);
+			border-radius: 28px;
+			box-shadow: 0 28px 70px rgba(15, 23, 42, 0.12);
+			-webkit-backdrop-filter: blur(14px);
+			backdrop-filter: blur(14px);
+			padding: 28px;
+		}
+
+		.card h2 {
+			margin-bottom: 8px;
+			font-size: 1.55rem;
+			color: var(--ink);
+		}
+
+		.card .subtitle {
+			margin-bottom: 22px;
+			color: var(--muted);
+			line-height: 1.6;
+			font-size: 0.95rem;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.field {
+			margin-bottom: 14px;
+		}
+
+		.field.full {
+			grid-column: 1 / -1;
+		}
+
+		.field label {
+			display: block;
+			margin-bottom: 8px;
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: #334155;
+		}
+
+		.field input {
+			width: 100%;
+			min-height: 52px;
+			border: 1px solid rgba(37, 99, 235, 0.14);
+			border-radius: 16px;
+			background: rgba(255, 255, 255, 0.82);
+			padding: 0 16px;
+			color: var(--ink);
+			font: inherit;
+			outline: none;
+			transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+		}
+
+		.field input:focus {
+			border-color: rgba(37, 99, 235, 0.5);
+			box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+		}
+
+		.actions {
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+			margin-top: 8px;
+		}
+
+		.btn {
+			border: 0;
+			border-radius: 18px;
+			cursor: pointer;
+			font-family: inherit;
+			font-weight: 600;
+			transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			text-decoration: none;
+			-webkit-user-select: none;
+			user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		.btn:hover {
+			transform: translateY(-1px) scale(1.02);
+		}
+
+		.btn:active {
+			transform: translateY(1px) scale(0.98);
+		}
+
+		.btn-primary {
+			color: #fff;
+			background: linear-gradient(135deg, #f59e0b 0%, #f97316 55%, #9a3412 130%);
+			box-shadow: 0 14px 30px rgba(245, 158, 11, 0.26), 0 6px 16px rgba(15, 23, 42, 0.08);
+		}
+
+		.btn-secondary {
+			color: var(--ink);
+			background: rgba(255, 255, 255, 0.65);
+			border: 1px solid rgba(37, 99, 235, 0.16);
+			box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+		}
+
+		.btn-lg {
+			min-height: 52px;
+			padding: 0 22px;
+			font-size: 15px;
+			border-radius: 18px;
+		}
+
+		.status {
+			margin-top: 18px;
+			min-height: 56px;
+			padding: 14px 16px;
+			border-radius: 16px;
+			background: rgba(255, 255, 255, 0.72);
+			border: 1px solid rgba(37, 99, 235, 0.08);
+			color: var(--muted);
+			line-height: 1.6;
+			font-size: 0.95rem;
+		}
+
+		.status.success { color: #15803d; }
+		.status.error { color: #b91c1c; }
+
+		.password-strength {
+			margin-top: 12px;
+			padding: 12px;
+			border-radius: 12px;
+			background: rgba(255, 255, 255, 0.6);
+			border: 1px solid rgba(37, 99, 235, 0.08);
+			display: none;
+		}
+
+		.password-strength.visible {
+			display: block;
+		}
+
+		.strength-meter {
+			height: 6px;
+			background: #e5e7eb;
+			border-radius: 3px;
+			overflow: hidden;
+			margin-bottom: 8px;
+		}
+
+		.strength-bar {
+			height: 100%;
+			width: 0%;
+			border-radius: 3px;
+			transition: width 300ms ease, background-color 300ms ease;
+		}
+
+		.strength-bar.poor {
+			width: 33%;
+			background: #ef4444;
+		}
+
+		.strength-bar.medium {
+			width: 66%;
+			background: #f97316;
+		}
+
+		.strength-bar.strong {
+			width: 100%;
+			background: #22c55e;
+		}
+
+		.strength-label {
+			font-size: 0.85rem;
+			font-weight: 600;
+			color: #334155;
+		}
+
+		.strength-label.poor {
+			color: #dc2626;
+		}
+
+		.strength-label.medium {
+			color: #ea580c;
+		}
+
+		.strength-label.strong {
+			color: #16a34a;
+		}
+
+		.strength-hint {
+			font-size: 0.8rem;
+			color: #64748b;
+			margin-top: 6px;
+			line-height: 1.4;
+		}
+
+		@media (max-width: 920px) {
+			.page {
+				grid-template-columns: 1fr;
+			}
+
+			.hero {
+				text-align: center;
+			}
+
+			.hero p {
+				margin: 0 auto;
+			}
+
+			.card {
+				max-width: 100%;
+			}
+		}
+
+		@media (max-width: 640px) {
+			body {
+				padding: 16px;
+			}
+
+			.grid {
+				grid-template-columns: 1fr;
+			}
+
+			.card {
+				padding: 22px;
+				border-radius: 24px;
+			}
+
+			.actions .btn {
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="shell">
+		<div class="page">
+			<section class="hero">
+				<div class="eyebrow">Create your StartInno account</div>
+				<h1>Be part of the innovation.</h1>
+				<p>
+					StartInno Solutions is focused on organizing hackathons for students.
+					It encourages innovation, teamwork, and real-world problem solving.
+					Join us to build solutions that matter.
+				</p>
+			</section>
+
+			<section class="card">
+				<h2>Sign Up</h2>
+				<p class="subtitle">Fill in your details below to create your account securely.</p>
+
+				<div class="grid">
+					<div class="field">
+						<label for="firstName">First Name</label>
+						<input id="firstName" type="text" placeholder="Enter first name">
+					</div>
+
+					<div class="field">
+						<label for="middleName">Middle Name</label>
+						<input id="middleName" type="text" placeholder="Enter middle name">
+					</div>
+
+					<div class="field">
+						<label for="lastName">Last Name</label>
+						<input id="lastName" type="text" placeholder="Enter last name">
+					</div>
+
+					<div class="field full">
+						<label for="phone">Phone Number</label>
+						<input id="phone" type="tel" placeholder="Enter phone number">
+					</div>
+
+					<div class="field full">
+						<label for="email">Email</label>
+						<input id="email" type="email" placeholder="Enter email address">
+					</div>
+
+					<div class="field full">
+						<label for="password">Password</label>
+						<input id="password" type="password" placeholder="Enter password">
+						<div class="password-strength" id="strengthIndicator">
+							<div class="strength-meter">
+								<div class="strength-bar" id="strengthBar"></div>
+							</div>
+							<div class="strength-label" id="strengthLabel">Password strength</div>
+							<div class="strength-hint" id="strengthHint">Min 8 characters. Use uppercase, numbers, and symbols for strong password.</div>
+						</div>
+					</div>
+
+					<div class="field full">
+						<label for="confirmPassword">Confirm Password</label>
+						<input id="confirmPassword" type="password" placeholder="Confirm password">
+					</div>
+				</div>
+
+				<div class="actions">
+					<button class="btn btn-primary btn-lg" type="button" onclick="signup()">Create Account</button>
+					<button class="btn btn-secondary btn-lg" type="button" onclick="window.location.href='http://localhost:5001/user/login'">Back to Login</button>
+				</div>
+
+				<div class="status" id="signupStatus">Your account will be created after all fields are completed.</div>
+			</section>
+		</div>
+	</div>
+
+	<script type="module" src="../js/auth.js"></script>
+</body>
+</html>

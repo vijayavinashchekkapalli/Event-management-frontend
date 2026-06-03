@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StartInno Solutions - Password Reset Email Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f1020;
+      --panel: rgba(17, 20, 44, 0.78);
+      --panel-border: rgba(167, 139, 250, 0.18);
+      --text: #e2e8f0;
+      --text-strong: #f8fafc;
+      --muted: rgba(226, 232, 240, 0.72);
+      --indigo: #4f46e5;
+      --violet: #7c3aed;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.22), transparent 28%),
+        radial-gradient(circle at right center, rgba(124, 58, 237, 0.16), transparent 30%),
+        linear-gradient(180deg, #090b18 0%, #0f1020 100%);
+      overflow-x: hidden;
+    }
+
+    .grid-noise {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
+      opacity: 0.35;
+    }
+
+    .page { max-width: 1240px; margin: 0 auto; padding: 28px 20px 40px; position: relative; z-index: 1; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; font-size: 24px;
+      color: #e9d5ff; background: linear-gradient(135deg, rgba(79,70,229,0.34), rgba(124,58,237,0.28));
+      border: 1px solid rgba(167,139,250,0.24); box-shadow: 0 18px 40px rgba(79,70,229,0.16);
+    }
+    .brand h1 { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 24px; line-height: 1.1; color: var(--text-strong); }
+    .brand p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px;
+      border: 1px solid rgba(167,139,250,0.2); background: rgba(255,255,255,0.03); color: #ddd6fe; font-size: 13px; font-weight: 700;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .status-dot { width: 9px; height: 9px; border-radius: 999px; background: linear-gradient(135deg, #4f46e5, #7c3aed); box-shadow: 0 0 0 6px rgba(79,70,229,0.15); }
+
+    .hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.95fr); gap: 22px; align-items: stretch; }
+    .card {
+      background: var(--panel); border: 1px solid var(--panel-border); border-radius: 28px; box-shadow: 0 24px 80px rgba(2,6,23,0.55);
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); overflow: hidden; position: relative;
+    }
+    .card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 35%); pointer-events: none; }
+    .preview-shell { padding: 24px; }
+    .email-mock { width: 100%; background: #1a1a2e; border: 1px solid rgba(167,139,250,0.18); border-radius: 24px; overflow: hidden; box-shadow: 0 22px 48px rgba(2,6,23,0.35); }
+    .mock-header {
+      padding: 24px 22px 20px; background: linear-gradient(135deg, #0b1020 0%, #111633 45%, #1f1b4b 100%); border-bottom: 1px solid rgba(148,163,184,0.14);
+      display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 14px; align-items: center;
+    }
+    .mock-header .icon { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; color: #c4b5fd; font-size: 28px; background: linear-gradient(135deg, rgba(79,70,229,0.24), rgba(124,58,237,0.22)); border: 1px solid rgba(167,139,250,0.28); }
+    .eyebrow { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 800; color: #a5b4fc; }
+    .mock-title { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 26px; line-height: 1.15; color: var(--text-strong); }
+    .mock-tagline { margin-top: 6px; font-size: 13px; color: rgba(226,232,240,0.8); }
+    .mock-body { padding: 28px 22px 24px; }
+    .hero-icon {
+      width: 92px; height: 92px; margin: 0 auto 18px; border-radius: 28px; display: grid; place-items: center; font-size: 44px; color: #ddd6fe;
+      background: linear-gradient(135deg, rgba(79,70,229,0.18), rgba(124,58,237,0.22)); border: 1px solid rgba(129,140,248,0.28); box-shadow: 0 18px 40px rgba(79,70,229,0.18);
+    }
+    .mock-heading { margin: 0 0 12px; text-align: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 29px; line-height: 1.15; color: var(--text-strong); }
+    .mock-copy { max-width: 520px; margin: 0 auto 18px; text-align: center; font-size: 16px; line-height: 1.8; color: rgba(226,232,240,0.84); }
+    .info-card { margin: 18px 0; padding: 18px 20px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(148,163,184,0.16); color: #dbe4f0; line-height: 1.8; }
+    .cta-row { display: flex; justify-content: center; margin: 22px 0 18px; }
+    .cta {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 28px; border-radius: 999px; text-decoration: none;
+      font-size: 16px; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--indigo), var(--violet)); box-shadow: 0 18px 36px rgba(79,70,229,0.36);
+    }
+    .warning { margin: 18px 0; padding: 18px; border-radius: 18px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+    .warning .label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fcd34d; }
+    .warning p { margin: 0; color: var(--text-strong); line-height: 1.8; font-size: 15px; }
+    .code-block { margin: 18px 0; }
+    .code-block .label { display: inline-block; margin-bottom: 10px; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 800; color: #a5b4fc; }
+    .code-box { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 16px 16px 18px; border-radius: 16px; background: #0b1020; border: 1px solid rgba(148,163,184,0.2); color: #cbd5e1; font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.7; word-break: break-all; }
+    .code-box code { display: block; flex: 1; }
+    .copy-btn { flex: none; border: 1px solid rgba(167,139,250,0.24); background: rgba(255,255,255,0.04); color: #ddd6fe; border-radius: 12px; min-height: 38px; padding: 0 14px; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .copy-status { margin-top: 10px; min-height: 20px; font-size: 12px; color: #a7f3d0; }
+    .help-row { margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(148,163,184,0.14); }
+    .help-row p { margin: 0 0 14px; color: rgba(226,232,240,0.88); line-height: 1.8; }
+    .help-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(167,139,250,0.28); color: #ddd6fe; text-decoration: none; font-size: 14px; font-weight: 800; background: rgba(255,255,255,0.02); }
+    .help-note { margin-top: 10px; font-size: 13px; color: rgba(226,232,240,0.7); }
+    .side-panel { padding: 24px; }
+    .side-grid { display: grid; gap: 16px; }
+    .metric-card { padding: 18px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px solid rgba(167,139,250,0.18); }
+    .metric-title { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #a5b4fc; }
+    .timer { display: flex; align-items: baseline; gap: 10px; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; color: var(--text-strong); }
+    .timer strong { font-size: 42px; line-height: 1; letter-spacing: -0.04em; }
+    .timer span { font-size: 15px; color: rgba(226,232,240,0.7); font-weight: 600; }
+    .progress { margin-top: 14px; width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .progress-bar { width: 100%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--indigo), var(--violet)); transition: width 1s linear; }
+    .meta-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; color: rgba(226,232,240,0.82); font-size: 14px; line-height: 1.7; }
+    .meta-list li { display: flex; gap: 10px; align-items: flex-start; }
+    .meta-list li::before { content: '•'; color: #c4b5fd; font-weight: 900; }
+    .token-pill { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 12px; border-radius: 999px; background: rgba(255,255,255,0.04); border: 1px solid rgba(167,139,250,0.14); color: #ddd6fe; font-size: 12px; font-weight: 800; }
+    .footer-note { margin-top: 18px; font-size: 12px; color: rgba(226,232,240,0.66); line-height: 1.7; }
+    .subtle-link { color: #c4b5fd; text-decoration: none; font-weight: 700; }
+    @media (max-width: 980px) { .hero { grid-template-columns: 1fr; } .topbar { flex-direction: column; align-items: flex-start; } }
+    @media (max-width: 640px) { .page { padding: 20px 14px 28px; } .preview-shell, .side-panel { padding: 18px; } .mock-body { padding: 22px 16px 18px; } .mock-title, .mock-heading { font-size: 24px; } .mock-copy { font-size: 15px; } .code-box { flex-direction: column; align-items: stretch; } .copy-btn { width: 100%; } .timer strong { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <div class="grid-noise"></div>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">&#128737;</div>
+        <div>
+          <h1>StartInno Solutions</h1>
+          <p>Password reset email preview with secure token flow</p>
+        </div>
+      </div>
+      <div class="status-pill"><span class="status-dot"></span> 15-minute expiry · Copy-ready link</div>
+    </header>
+
+    <section class="hero">
+      <article class="card preview-shell">
+        <div class="email-mock">
+          <div class="mock-header">
+            <div class="icon">&#128737;</div>
+            <div>
+              <div class="eyebrow">StartInno Solutions</div>
+              <h2 class="mock-title">Password Reset Request</h2>
+              <div class="mock-tagline">Secure · Trusted · Innovative</div>
+            </div>
+          </div>
+          <div class="mock-body">
+            <div class="hero-icon">&#128272;</div>
+            <h3 class="mock-heading">Password Reset Request</h3>
+            <div class="mock-copy">We received a request to reset the account credentials for <strong style="color: var(--text-strong);">{{username}}</strong>. Continue below to complete the secure reset process.</div>
+            <div class="info-card">Thank you for contacting StartInno Solutions. We're here to help you regain access to your account securely.</div>
+            <div class="cta-row"><a id="ctaLink" class="cta" href="{{reset_link}}">🔐 Reset My Password</a></div>
+            <div class="warning">
+              <div class="label">&#128737; Security Notice</div>
+              <p><strong style="color:#fde68a;">These credentials are strictly confidential.</strong> Do NOT share this link with anyone — not even our support team. This link expires in 15 minutes.</p>
+            </div>
+            <div class="code-block">
+              <div class="label">Or copy this link manually:</div>
+              <div class="code-box"><code id="linkText">{{reset_link}}</code><button class="copy-btn" id="copyButton" type="button">Copy Link</button></div>
+              <div class="copy-status" id="copyStatus" aria-live="polite"></div>
+            </div>
+            <div class="help-row">
+              <p>Still facing an issue? Visit our Help Center and raise a support ticket.</p>
+              <a class="help-link" href="http://localhost:5000/user/help.html">Visit Help Section</a>
+              <div class="help-note">Our team will contact you within 24 hours.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card side-panel">
+        <div class="side-grid">
+          <div class="metric-card">
+            <div class="metric-title">Live Expiry Timer</div>
+            <div class="timer"><strong id="timerValue">15:00</strong><span>remaining</span></div>
+            <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Template Variables</div>
+            <ul class="meta-list">
+              <li><span><strong>{{username}}</strong> renders the account holder name in the greeting and hero copy.</span></li>
+              <li><span><strong>{{reset_link}}</strong> powers the CTA button and the copy-ready link box.</span></li>
+              <li><span>The design uses a dark glassmorphism shell, amber security warning, and indigo CTA gradient.</span></li>
+            </ul>
+            <div class="token-pill">Monospace link box · copy to clipboard enabled</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Production Notes</div>
+            <div class="footer-note">This preview is a web-native version for design review. The production email uses the table-based HTML template in <a class="subtle-link" href="EMAIL_PASSWORD_RESET_TEMPLATE.html">EMAIL_PASSWORD_RESET_TEMPLATE.html</a> for client compatibility.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const resetLink = 'https://startinno.example/reset-password?token=demo_reset_token_1234567890';
+    const templateUsername = 'jane.doe';
+    const copyButton = document.getElementById('copyButton');
+    const copyStatus = document.getElementById('copyStatus');
+    const linkText = document.getElementById('linkText');
+    const ctaLink = document.getElementById('ctaLink');
+    const timerValue = document.getElementById('timerValue');
+    const progressBar = document.getElementById('progressBar');
+
+    linkText.textContent = resetLink;
+    ctaLink.href = resetLink;
+    ctaLink.setAttribute('aria-label', `Reset password for ${templateUsername}`);
+
+    let remainingSeconds = 15 * 60;
+    const totalSeconds = remainingSeconds;
+    const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+    const renderTimer = () => {
+      timerValue.textContent = formatTime(Math.max(remainingSeconds, 0));
+      progressBar.style.width = `${Math.max(0, remainingSeconds / totalSeconds) * 100}%`;
+    };
+
+    renderTimer();
+    const tick = setInterval(() => {
+      remainingSeconds -= 1;
+      renderTimer();
+      if (remainingSeconds <= 0) {
+        clearInterval(tick);
+        copyStatus.textContent = 'The 15-minute session has expired in the preview.';
+        copyStatus.style.color = '#fca5a5';
+      }
+    }, 1000);
+
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(resetLink);
+        copyStatus.textContent = 'Reset link copied to clipboard.';
+        copyStatus.style.color = '#a7f3d0';
+      } catch (error) {
+        const input = document.createElement('textarea');
+        input.value = resetLink;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        copyStatus.textContent = 'Reset link copied using fallback mode.';
+        copyStatus.style.color = '#a7f3d0';
+      }
+    });
+  </script>
+</body>
+</html>

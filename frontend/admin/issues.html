@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Issues - Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="../js/admin.js?v=4" defer></script>
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 32%),
+        var(--bg);
+    }
+
+    .issues-page {
+      max-width: 1380px;
+      position: relative;
+    }
+
+    .issues-page::before,
+    .issues-page::after {
+      content: "";
+      position: fixed;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      filter: blur(50px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    .issues-page::before {
+      top: -80px;
+      right: -90px;
+      background: rgba(56, 189, 248, 0.18);
+    }
+
+    .issues-page::after {
+      bottom: -110px;
+      left: -100px;
+      background: rgba(37, 99, 235, 0.16);
+    }
+
+    .issues-page > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .issues-dashboard {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .issue-stat-card {
+      position: relative;
+      min-height: 160px;
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(13, 18, 31, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      box-shadow: 0 20px 48px rgba(2, 6, 23, 0.42);
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .issue-stat-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 35%);
+      pointer-events: none;
+    }
+
+    .issue-stat-card__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .issue-stat-card__label {
+      font-size: 17px;
+      font-weight: 500;
+      color: rgba(148, 163, 184, 0.86);
+      letter-spacing: 0.01em;
+      margin-bottom: 20px;
+    }
+
+    .issue-stat-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .issue-stat-card__value {
+      font-size: clamp(42px, 4vw, 52px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      margin-bottom: 12px;
+      color: #f8fafc;
+      text-shadow: 0 0 24px rgba(255, 255, 255, 0.08);
+    }
+
+    .issue-stat-card__trend {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .issue-stat-card--pending .issue-stat-card__value {
+      color: #f59e0b;
+    }
+
+    .issue-stat-card--pending .issue-stat-card__trend {
+      color: #fb7185;
+    }
+
+    .issue-stat-card--processing .issue-stat-card__value {
+      color: #3b82f6;
+    }
+
+    .issue-stat-card--processing .issue-stat-card__trend {
+      color: #93c5fd;
+    }
+
+    .issue-stat-card--resolved .issue-stat-card__value {
+      color: #22c55e;
+    }
+
+    .issue-stat-card--resolved .issue-stat-card__trend {
+      color: #4ade80;
+    }
+
+    .issue-stat-card--total .issue-stat-card__icon {
+      background: rgba(59, 130, 246, 0.16);
+      color: #93c5fd;
+    }
+
+    .issue-stat-card--pending .issue-stat-card__icon {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fbbf24;
+    }
+
+    .issue-stat-card--processing .issue-stat-card__icon {
+      background: rgba(59, 130, 246, 0.16);
+      color: #60a5fa;
+    }
+
+    .issue-stat-card--resolved .issue-stat-card__icon {
+      background: rgba(34, 197, 94, 0.16);
+      color: #4ade80;
+    }
+
+    .issues-card {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 24px 56px rgba(2, 6, 23, 0.42);
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .issues-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px 130px;
+      gap: 12px;
+      align-items: center;
+      padding: 20px 20px 0;
+    }
+
+    .issues-search,
+    .issues-filter {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .issues-search:focus,
+    .issues-filter:focus {
+      border-color: rgba(56, 189, 248, 0.42);
+      background: rgba(56, 189, 248, 0.08);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.08);
+    }
+
+    .issues-search::placeholder {
+      color: rgba(230, 238, 248, 0.45);
+    }
+
+    .issues-count {
+      padding: 14px 20px 0;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .issues-table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      padding: 0 20px 18px;
+    }
+
+    .issues-table {
+      width: 100%;
+      min-width: 1280px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .issues-table thead th {
+      position: sticky;
+      top: 0;
+      background: rgba(8, 15, 28, 0.96);
+      color: rgba(230, 238, 248, 0.86);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      z-index: 1;
+    }
+
+    .issues-table tbody tr {
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .issues-table tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .issues-table tbody tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .issues-table td,
+    .issues-table th {
+      padding: 16px 14px;
+      vertical-align: middle;
+      text-align: left;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .issues-table th.issue-select-cell,
+    .issues-table td.issue-select-cell {
+      width: 58px;
+      min-width: 58px;
+      padding-left: 16px;
+      padding-right: 8px;
+      text-align: center;
+    }
+
+    .issues-table td.issue-select-cell {
+      vertical-align: middle;
+    }
+
+    .issue-select-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .issue-select-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.92);
+      cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .issue-select-checkbox:hover {
+      transform: scale(1.03);
+      border-color: rgba(96, 165, 250, 0.9);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .issue-select-checkbox::before {
+      content: "";
+      width: 9px;
+      height: 5px;
+      border-left: 2px solid transparent;
+      border-bottom: 2px solid transparent;
+      transform: rotate(-45deg) scale(0.7);
+      transition: border-color 140ms ease, transform 140ms ease;
+    }
+
+    .issue-select-checkbox:checked {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      border-color: rgba(96, 165, 250, 1);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 0 18px rgba(59, 130, 246, 0.18);
+    }
+
+    .issue-select-checkbox:checked::before {
+      border-left-color: #ffffff;
+      border-bottom-color: #ffffff;
+      transform: rotate(-45deg) scale(1);
+    }
+
+    .issues-table .issue-row.is-selected {
+      background: rgba(37, 99, 235, 0.12) !important;
+      box-shadow: inset 3px 0 0 rgba(96, 165, 250, 0.9);
+    }
+
+    .issues-table .issue-row.is-selected:hover {
+      background: rgba(37, 99, 235, 0.16) !important;
+    }
+
+    .issues-table td {
+      font-size: 14px;
+      color: rgba(226, 232, 240, 0.92);
+    }
+
+    .issues-table td:nth-child(5) {
+      max-width: 250px;
+      white-space: normal;
+      line-height: 1.55;
+      color: rgba(226, 232, 240, 0.84);
+    }
+
+    .issues-table td:nth-child(6) {
+      max-width: 360px;
+      white-space: normal;
+      line-height: 1.6;
+      color: rgba(226, 232, 240, 0.84);
+    }
+
+    .issues-table td:nth-child(7) {
+      white-space: nowrap;
+      color: rgba(203, 213, 225, 0.9);
+    }
+
+    .issues-table .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+      box-shadow: 0 10px 18px rgba(2, 6, 23, 0.18);
+      white-space: nowrap;
+    }
+
+    .issues-table .badge.red {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.25);
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.12);
+    }
+
+    .issues-table .badge.orange {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fdba74;
+      border-color: rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.12);
+    }
+
+    .issues-table .badge.green {
+      background: rgba(16, 185, 129, 0.16);
+      color: #86efac;
+      border-color: rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.12);
+    }
+
+    .issues-table .table-actions {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      min-width: 270px;
+      white-space: nowrap;
+    }
+
+    .issues-table .table-actions .btn {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      min-width: 82px;
+      justify-content: center;
+      margin-right: 0;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .issues-table .table-actions .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff;
+    }
+
+    .issues-table .table-actions .btn-ghost {
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.03);
+      color: #dbeafe;
+    }
+
+    .issues-table .table-actions .btn-danger {
+      min-width: 74px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+
+    .issues-table .table-actions .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .issues-selection-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: 16px 20px 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .issues-selection-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(226, 232, 240, 0.82);
+      font-weight: 600;
+    }
+
+    .issues-selection-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.95);
+      box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.14);
+    }
+
+    .issues-selection-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .issues-selection-actions .btn-danger:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .issues-pagination {
+      padding: 0 20px 20px;
+    }
+
+    @media (max-width: 1080px) {
+      .issues-dashboard,
+      .issues-toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .issues-table-wrap {
+        padding: 0 12px 14px;
+      }
+
+      .issues-toolbar,
+      .issues-count,
+      .issues-pagination {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .issues-table .table-actions {
+        min-width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .issues-table .table-actions .btn {
+        flex: 1 1 92px;
+      }
+
+      .issues-selection-bar {
+        margin-left: 12px;
+        margin-right: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell issues-page">
+    <div class="topbar">
+      <div class="brand"><h1>Event Admin</h1><div class="muted">Issues</div></div>
+      <div class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="student.html">Registrations</a>
+        <a class="active" href="issues.html">Issues</a>
+      </div>
+    </div>
+
+    <section class="issues-dashboard" aria-label="Issue summary cards">
+      <div class="issue-stat-card issue-stat-card--total">
+        <div class="issue-stat-card__top">
+          <div>
+            <div class="issue-stat-card__label">Total Issues</div>
+            <div class="issue-stat-card__value" id="issueMetricTotal">0</div>
+            <div class="issue-stat-card__trend">↗ All issue submissions</div>
+          </div>
+          <div class="issue-stat-card__icon">📋</div>
+        </div>
+      </div>
+
+      <div class="issue-stat-card issue-stat-card--pending">
+        <div class="issue-stat-card__top">
+          <div>
+            <div class="issue-stat-card__label">Pending</div>
+            <div class="issue-stat-card__value" id="issueMetricPending">0</div>
+            <div class="issue-stat-card__trend">↗ Needs review</div>
+          </div>
+          <div class="issue-stat-card__icon">⏳</div>
+        </div>
+      </div>
+
+      <div class="issue-stat-card issue-stat-card--processing">
+        <div class="issue-stat-card__top">
+          <div>
+            <div class="issue-stat-card__label">Processing</div>
+            <div class="issue-stat-card__value" id="issueMetricProcessing">0</div>
+            <div class="issue-stat-card__trend">In progress</div>
+          </div>
+          <div class="issue-stat-card__icon">⚡</div>
+        </div>
+      </div>
+
+      <div class="issue-stat-card issue-stat-card--resolved">
+        <div class="issue-stat-card__top">
+          <div>
+            <div class="issue-stat-card__label">Resolved</div>
+            <div class="issue-stat-card__value" id="issueMetricCompleted">0</div>
+            <div class="issue-stat-card__trend">↗ Closed successfully</div>
+          </div>
+          <div class="issue-stat-card__icon">✓</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="card issues-card">
+      <div class="issues-toolbar">
+        <input class="issues-search" id="issueSearch" placeholder="Search issue, student, contact" />
+        <select class="issues-filter" id="issueStatusFilter">
+          <option value="">All Status</option>
+          <option value="not-started">Not Started</option>
+          <option value="processing">Processing</option>
+          <option value="completed">Completed</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadIssues()">Refresh</button>
+      </div>
+      <div class="muted issues-count" id="issueCount" style="margin-bottom:8px"></div>
+
+      <div class="issues-selection-bar">
+        <div class="issues-selection-info">
+          <span class="issues-selection-dot"></span>
+          <span id="selectedIssueCount">No issues selected</span>
+        </div>
+        <div class="issues-selection-actions">
+          <button class="btn btn-ghost" type="button" onclick="toggleAllIssues(true)">Select all</button>
+          <button class="btn btn-ghost" type="button" onclick="toggleAllIssues(false)">Clear</button>
+          <button class="btn btn-danger" type="button" id="bulkDeleteIssuesBtn" onclick="deleteSelectedIssues()" disabled>Delete Selected</button>
+        </div>
+      </div>
+
+      <div class="issues-table-wrap">
+        <table class="issues-table">
+          <thead>
+            <tr>
+              <th class="issue-select-cell">
+                <label class="issue-select-wrap" aria-label="Select all issues">
+                  <input class="issue-select-checkbox" type="checkbox" id="issueSelectAll" onchange="toggleAllIssues(this.checked)" />
+                </label>
+              </th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Issue</th>
+              <th>Description</th>
+              <th>Submitted</th>
+              <th>Admin Response</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="issueTable"></tbody>
+        </table>
+      </div>
+
+      <div class="issues-pagination" id="issuePagination"></div>
+    </div>
+  </div>
+</body>
+</html>

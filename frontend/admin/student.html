@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registrations - Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --reg-bg: #08111f;
+      --reg-panel: rgba(11, 18, 34, 0.96);
+      --reg-panel-2: rgba(15, 23, 42, 0.96);
+      --reg-border: rgba(148, 163, 184, 0.14);
+      --reg-text: rgba(226, 232, 240, 0.95);
+      --reg-muted: rgba(148, 163, 184, 0.82);
+      --reg-blue: #3b82f6;
+      --reg-blue-strong: #2563eb;
+      --reg-green: #22c55e;
+      --reg-orange: #f59e0b;
+      --reg-red: #ef4444;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.1), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 30%),
+        var(--reg-bg);
+    }
+
+    .admin-shell {
+      position: relative;
+      z-index: 1;
+    }
+
+    .registrations-page {
+      max-width: 1440px;
+    }
+
+    .registrations-card {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(11, 18, 34, 0.98));
+      border: 1px solid var(--reg-border);
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(2, 6, 23, 0.42);
+      overflow: hidden;
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px minmax(200px, 280px) 140px;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .search-row input,
+    .search-row select,
+    .search-row button {
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--reg-text);
+      font-size: 14px;
+      transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    .search-row input::placeholder {
+      color: rgba(226, 232, 240, 0.45);
+    }
+
+    .search-row input:focus,
+    .search-row select:focus {
+      outline: none;
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.08);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.08);
+    }
+
+    .search-row button {
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: none;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
+    }
+
+    .search-row button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.34);
+    }
+
+    .student-count {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--reg-muted);
+      font-weight: 600;
+    }
+
+    .student-table-wrap {
+      overflow-x: auto;
+      border-top: 1px solid rgba(148, 163, 184, 0.08);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .registrations-table {
+      width: 100%;
+      min-width: 1420px;
+      border-collapse: collapse;
+      table-layout: auto;
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .registrations-table td,
+    .registrations-table th {
+      vertical-align: middle;
+    }
+
+    .registrations-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 16px 14px;
+      background: rgba(8, 15, 28, 0.98);
+      color: rgba(230, 238, 248, 0.84);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .registrations-table th:first-child,
+    .registrations-table td:first-child {
+      width: 72px;
+      text-align: center;
+    }
+
+    .registrations-table th:nth-child(2) { width: 12%; }
+    .registrations-table th:nth-child(3) { width: 11%; }
+    .registrations-table th:nth-child(4) { width: 16%; }
+    .registrations-table th:nth-child(5) { width: 5%; }
+    .registrations-table th:nth-child(6) { width: 9%; }
+    .registrations-table th:nth-child(7) { width: 9%; }
+    .registrations-table th:nth-child(8) { width: 10%; }
+    .registrations-table th:nth-child(9) { width: 12%; }
+    .registrations-table th:nth-child(10) { width: 11%; }
+    .registrations-table th:nth-child(11) { width: 10%; }
+    .registrations-table th:nth-child(12) { width: 28%; }
+
+    .registrations-table td:nth-child(2) { width: 12%; }
+    .registrations-table td:nth-child(3) { width: 11%; }
+    .registrations-table td:nth-child(4) { width: 16%; }
+    .registrations-table td:nth-child(5) { width: 5%; }
+    .registrations-table td:nth-child(6) { width: 9%; }
+    .registrations-table td:nth-child(7) { width: 9%; }
+    .registrations-table td:nth-child(8) { width: 10%; }
+    .registrations-table td:nth-child(9) { width: 12%; }
+    .registrations-table td:nth-child(10) { width: 11%; }
+    .registrations-table td:nth-child(11) { width: 10%; }
+    .registrations-table td:nth-child(12) { width: 28%; }
+
+    .registrations-table tbody tr {
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .registrations-table tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.016);
+    }
+
+    .registrations-table tbody tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .registrations-table td {
+      padding: 16px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+      color: var(--reg-text);
+      font-size: 14px;
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .registrations-table td:first-child {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .registrations-table td:nth-child(2),
+    .registrations-table td:nth-child(3),
+    .registrations-table td:nth-child(4) {
+      font-weight: 600;
+    }
+
+    .registrations-table td:nth-child(6),
+    .registrations-table td:nth-child(7),
+    .registrations-table td:nth-child(9) {
+      color: rgba(226, 232, 240, 0.86);
+    }
+
+    .registrations-table td:nth-child(10),
+    .registrations-table td:nth-child(11) {
+      text-align: center;
+    }
+
+    .registrations-table td:last-child {
+      overflow: visible;
+    }
+
+    .registrations-table tbody tr .btn-details {
+      width: 40px;
+      min-width: 40px;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid rgba(96, 165, 250, 0.32);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(15, 23, 42, 0.9));
+      color: #93c5fd;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .registrations-table tbody tr .btn-details:hover {
+      transform: translateY(-1px) scale(1.04);
+      border-color: rgba(96, 165, 250, 0.7);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), 0 12px 24px rgba(37, 99, 235, 0.24);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.32), rgba(15, 23, 42, 0.94));
+    }
+
+    .registrations-table tbody tr .btn-details::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: -34px;
+      transform: translateX(-50%);
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: rgba(8, 15, 28, 0.98);
+      border: 1px solid rgba(96, 165, 250, 0.22);
+      color: #bfdbfe;
+      white-space: nowrap;
+      font-size: 11px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease;
+      z-index: 5;
+    }
+
+    .registrations-table tbody tr .btn-details:hover::after {
+      opacity: 1;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--reg-text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border-color: rgba(59, 130, 246, 0.42);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(148, 163, 184, 0.18);
+      color: rgba(226, 232, 240, 0.88);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-color: rgba(239, 68, 68, 0.42);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(239, 68, 68, 0.18);
+    }
+
+    .actions-cell {
+      min-width: 260px;
+      width: 260px;
+      text-align: center;
+      padding: 8px !important;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+    }
+
+    .action-buttons button {
+      min-width: 78px;
+      height: 36px;
+      border-radius: 10px;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(226, 232, 240, 0.88);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, filter 160ms ease;
+      flex-shrink: 0;
+    }
+
+    .action-buttons button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .action-buttons .edit-btn {
+      min-width: 76px;
+    }
+
+    .action-buttons .approve-btn {
+      min-width: 100px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border-color: rgba(59, 130, 246, 0.42);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .action-buttons .reject-btn {
+      min-width: 78px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      min-width: 120px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-align: center;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .badge.green {
+      background: rgba(34, 197, 94, 0.16);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.28);
+    }
+
+    .badge.orange {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fdba74;
+      border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    .badge.red {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.28);
+    }
+
+    .student-pagination {
+      padding: 16px 20px 20px;
+    }
+
+    .student-pagination .pagination {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .student-pagination .pagination .muted {
+      min-width: 140px;
+      text-align: center;
+      color: var(--reg-muted);
+      font-weight: 600;
+    }
+
+    .student-pagination .pagination .btn {
+      min-width: 108px;
+    }
+
+    .registrations-empty {
+      padding: 28px 20px;
+      color: var(--reg-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+      .search-row {
+        grid-template-columns: minmax(0, 1fr) 160px minmax(180px, 1fr) 128px;
+      }
+
+      .action-buttons {
+        gap: 8px;
+      }
+
+      .action-buttons button {
+        min-width: 76px;
+        font-size: 12px;
+      }
+
+      .action-buttons .approve-btn {
+        min-width: 94px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .search-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .search-row button {
+        grid-column: span 2;
+      }
+
+      .student-pagination .pagination {
+        justify-content: space-between;
+      }
+
+      .action-buttons {
+        gap: 6px;
+      }
+
+      .action-buttons button {
+        min-width: 70px;
+        font-size: 12px;
+      }
+
+      .action-buttons .approve-btn {
+        min-width: 88px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      .search-row button {
+        grid-column: auto;
+      }
+
+      .student-table-wrap {
+        margin: 0 -12px;
+      }
+
+      .student-pagination {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .actions-cell {
+        min-width: 240px;
+        width: 240px;
+      }
+
+      .action-buttons {
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+
+      .action-buttons button {
+        min-width: 64px;
+        font-size: 11px;
+        height: 36px;
+      }
+
+      .action-buttons .approve-btn {
+        min-width: 80px;
+      }
+    }
+
+    /* ===== Modal Styles ===== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.1);
+      animation: slideUp 0.4s ease;
+      z-index: 1001;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-section {
+      margin-bottom: 24px;
+    }
+
+    .modal-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #60a5fa;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .modal-field-value {
+      font-size: 14px;
+      color: #e5e7eb;
+      word-break: break-word;
+    }
+
+    .members-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .member-card {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      padding: 14px;
+      transition: all 0.2s;
+    }
+
+    .member-card:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .member-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* ===== Badge Styles ===== */
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .badge.green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .badge.red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge.orange {
+      background: rgba(251, 146, 60, 0.15);
+      color: #fdba74;
+      border: 1px solid rgba(251, 146, 60, 0.3);
+    }
+
+    /* ===== Responsive Design ===== */
+    @media (max-width: 1200px) {
+      table th,
+      table td {
+        padding: 12px 8px;
+        font-size: 12px;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-row {
+        gap: 8px;
+      }
+
+      .search-row input,
+      .search-row select,
+      .search-row button {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      table th {
+        padding: 12px 8px;
+        font-size: 11px;
+      }
+
+      table td {
+        padding: 10px 8px;
+      }
+
+      .btn {
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+
+      .modal {
+        width: 95%;
+        max-height: 90vh;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .modal-section {
+        margin-bottom: 16px;
+      }
+
+      .modal-grid {
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-row {
+        flex-direction: column;
+      }
+
+      .search-row input,
+      .search-row select,
+      .search-row button {
+        width: 100%;
+      }
+
+      .btn {
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+    }
+  </style>
+  <script src="../js/admin.js?v=4" defer></script>
+</head>
+<body>
+  <div class="admin-shell registrations-page">
+    <div class="topbar">
+      <div class="brand"><h1>Event Admin</h1><div class="muted">Registrations</div></div>
+      <div class="nav">
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a class="active" href="/admin/student.html">Registrations</a>
+        <a href="/admin/issues.html">Issues</a>
+      </div>
+      <div class="topbar-actions">
+      </div>
+    </div>
+
+    <div class="card registrations-card">
+      <div class="search-row">
+        <input id="studentSearch" class="student-search-input" placeholder="Search team or leader" />
+        <select id="studentYearFilter" class="student-year-filter" title="Filter by year">
+          <option value="">All Years</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <input id="studentStreamFilter" class="student-stream-filter" placeholder="Stream filter" />
+        <button class="btn btn-primary" onclick="loadStudents()">Refresh</button>
+      </div>
+      <div class="muted student-count" id="studentCount"></div>
+
+      <div class="student-table-wrap">
+        <table class="registrations-table">
+          <thead>
+            <tr>
+              <th>Details</th>
+              <th>Team</th>
+              <th>Leader</th>
+              <th>Email</th>
+              <th>Year</th>
+              <th>Stream</th>
+              <th>Contact</th>
+              <th>Payment Method</th>
+              <th>Transaction ID</th>
+              <th>Payment Status</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+      </div>
+      <div id="studentPagination" class="student-pagination"></div>
+    </div>
+  </div>
+
+  <!-- Team Details Modal -->
+  <div class="modal-backdrop" id="teamDetailsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Team Details</h2>
+        <button class="modal-close" onclick="closeTeamDetailsModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalContent">
+        <!-- Content will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Team Details Modal Functions
+    function openTeamDetailsModal(team) {
+      const modal = document.getElementById('teamDetailsModal');
+      const content = document.getElementById('modalContent');
+
+      // Format team details
+      const teamDetails = `
+        <div class="modal-section">
+          <div class="modal-section-title">📋 Team Information</div>
+          <div class="modal-grid">
+            <div class="modal-field">
+              <div class="modal-field-label">Team Name</div>
+              <div class="modal-field-value">${team.teamName || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Year</div>
+              <div class="modal-field-value">${team.year || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Stream</div>
+              <div class="modal-field-value">${team.stream || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Contact</div>
+              <div class="modal-field-value">${team.contact || '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">👤 Team Leader</div>
+          <div class="modal-grid">
+            <div class="modal-field">
+              <div class="modal-field-label">Name</div>
+              <div class="modal-field-value">${team.leaderName || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Email</div>
+              <div class="modal-field-value">${team.email || '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">💳 Payment Information</div>
+          <div class="modal-grid">
+            <div class="modal-field">
+              <div class="modal-field-label">Payment Method</div>
+              <div class="modal-field-value">${team.paymentMethod || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">UPI Method</div>
+              <div class="modal-field-value">${team.upiMethod || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Payment Status</div>
+              <div class="modal-field-value"><span class="badge ${getPaymentBadgeClass(team)}">${getPaymentStatusLabel(team)}</span></div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Transaction ID</div>
+              <div class="modal-field-value">${team.transactionId || team.paymentReference || '—'}</div>
+            </div>
+            <div class="modal-field">
+              <div class="modal-field-label">Registration Status</div>
+              <div class="modal-field-value"><span class="badge ${getRegistrationBadgeClass(team.registrationStatus)}">${getRegistrationStatusLabel(team.registrationStatus)}</span></div>
+            </div>
+          </div>
+        </div>
+
+        ${team.members && team.members.length > 0 ? `
+          <div class="modal-section">
+            <div class="modal-section-title">👥 Team Members</div>
+            <div class="members-grid">
+              ${team.members.map(member => `
+                <div class="member-card">
+                  <div class="member-name">${member.name || '—'}</div>
+                  <div class="member-info">
+                    <div><strong>Email:</strong> ${member.email || '—'}</div>
+                    <div><strong>Phone:</strong> ${member.phone || '—'}</div>
+                    <div><strong>Year:</strong> ${member.year || '—'}</div>
+                    <div><strong>Stream:</strong> ${member.stream || '—'}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+
+      content.innerHTML = teamDetails;
+      modal.classList.add('active');
+    }
+
+    function closeTeamDetailsModal() {
+      const modal = document.getElementById('teamDetailsModal');
+      modal.classList.remove('active');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('teamDetailsModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'teamDetailsModal') {
+        closeTeamDetailsModal();
+      }
+    });
+
+    function getRegistrationStatusLabel(status) {
+      const normalized = String(status || 'pending').toLowerCase();
+      if (normalized === 'approved') return 'Approved';
+      if (normalized === 'rejected') return 'Rejected';
+      return 'Pending Admin Approval';
+    }
+
+    function getPaymentStatusLabel(team) {
+      const paymentStatus = String(team?.paymentStatus || '').toLowerCase();
+      const registrationStatus = String(team?.registrationStatus || '').toLowerCase();
+      const hasPaymentProof = Boolean(team?.paymentReference || team?.transactionId || String(team?.paymentMethod || '').toLowerCase() === 'free');
+
+      if (registrationStatus === 'rejected') return 'Rejected';
+      if (paymentStatus === 'completed') return 'Completed';
+      if (paymentStatus === 'pending') return 'Pending';
+      if (hasPaymentProof) return 'Approved';
+      return 'Pending';
+    }
+
+    // Helper function for payment badge
+    function getPaymentBadgeClass(team) {
+      const paymentStatus = String(team?.paymentStatus || '').toLowerCase();
+      if (String(team?.registrationStatus || '').toLowerCase() === 'rejected') {
+        return 'red';
+      }
+      if (paymentStatus === 'completed' || team.paymentMethod === 'free' || team.paymentReference || team.transactionId) {
+        return 'green';
+      }
+      return 'orange';
+    }
+  </script>
+</body>
+</html>

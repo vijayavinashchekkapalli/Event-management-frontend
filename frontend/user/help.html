@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Support | StartInno Solutions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #eff6ff;
+      --ink: #172554;
+      --muted: #52607a;
+      --panel: rgba(255, 255, 255, 0.82);
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #dbeafe;
+      --border: rgba(37, 99, 235, 0.14);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.28), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      padding: 24px;
+    }
+
+    .shell {
+      min-height: calc(100vh - 48px);
+      display: grid;
+      place-items: center;
+    }
+
+    .topbar {
+      width: min(100%, 980px);
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #3b82f6 0%, var(--primary) 55%, #1e3a8a 130%);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22), 0 6px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-secondary {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid rgba(37, 99, 235, 0.16);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .btn-lg {
+      min-height: 52px;
+      padding: 0 22px;
+      font-size: 15px;
+      border-radius: 18px;
+    }
+
+    .btn-sm {
+      min-height: 44px;
+      padding: 0 18px;
+      font-size: 14px;
+      border-radius: 14px;
+    }
+
+    .page {
+      width: min(100%, 980px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero {
+      padding: 28px 10px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--border);
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+
+    .hero p {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .support-card {
+      width: 100%;
+      max-width: 460px;
+      justify-self: center;
+      background: var(--panel);
+      border: 1px solid rgba(37, 99, 235, 0.1);
+      border-radius: 28px;
+      box-shadow: 0 28px 70px rgba(15, 23, 42, 0.12);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      padding: 26px;
+    }
+
+    .support-card h2 {
+      font-size: 1.45rem;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .support-card .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 52px;
+      border: 1px solid rgba(37, 99, 235, 0.14);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 0 16px;
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+
+    .field textarea {
+      min-height: 120px;
+      padding: 14px 16px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .support-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      margin-top: 18px;
+      min-height: 60px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(37, 99, 235, 0.08);
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .status strong {
+      color: var(--ink);
+    }
+
+    .status .orange { color: #d97706; font-weight: 600; }
+    .status .green { color: #15803d; font-weight: 600; }
+    .status .red { color: #b91c1c; font-weight: 600; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .info-box {
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(37, 99, 235, 0.08);
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .info-box strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 18px; }
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 8px 0 0;
+      }
+
+      .hero p {
+        margin: 0 auto;
+      }
+
+      .support-card {
+        max-width: 100%;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .topbar .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .support-card {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="page">
+      <section class="hero">
+        <div class="eyebrow">StartInno Solutions Support</div>
+        <h1>Help that feels simple, clean, and quick.</h1>
+        <p>
+          Use the support form to raise a payment, registration, or WhatsApp group issue.
+          The form is designed to stay neat on mobile and desktop, with a rounded-rectangle
+          action button for a cleaner finish.
+        </p>
+      </section>
+
+      <section class="support-card">
+        <h2>Raise an Issue</h2>
+        <p class="subtitle">Choose a category, add your details, and submit the request for follow-up.</p>
+
+        <div class="field">
+          <label for="issueType">Issue Type</label>
+          <select id="issueType" required>
+            <option value="">Select issue type</option>
+            <option value="Payment Issue">Payment Issue</option>
+            <option value="WhatsApp Joining Issue">WhatsApp Joining Issue</option>
+            <option value="Registration Problem">Registration Problem</option>
+            <option value="Team Details Problem">Team Details Problem</option>
+            <option value="Login Problem">Login Problem</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="name">Your Name</label>
+          <input id="name" placeholder="Enter your full name">
+        </div>
+
+        <div class="field">
+          <label for="phone">Contact Number</label>
+          <input id="phone" placeholder="Enter your phone number">
+        </div>
+
+        <div class="field">
+          <label for="email">Registered Email</label>
+          <input id="email" type="email" placeholder="Enter your registered email address">
+        </div>
+
+        <div class="field">
+          <label for="description">Issue Description</label>
+          <textarea id="description" placeholder="Write the problem in a few lines..."></textarea>
+        </div>
+
+        <div class="support-actions">
+          <button class="btn btn-primary btn-lg" type="button" onclick="submitIssue()">Submit</button>
+          <button class="btn btn-secondary btn-lg" type="button" onclick="window.location.href='http://localhost:5001/user/login'">Back to Login</button>
+        </div>
+
+        <div class="status" id="status">Describe your issue clearly, and we’ll keep the response short and actionable.</div>
+
+        <div class="info-grid">
+          <div class="info-box">
+            <strong>Fast response</strong>
+            We will review the issue and contact you as soon as possible.
+          </div>
+          <div class="info-box">
+            <strong>Direct support</strong>
+            Use the same email address shown on the landing page for follow-up.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5001';
+
+    function submitIssue() {
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const description = document.getElementById('description').value.trim();
+      const issueType = document.getElementById('issueType').value;
+      const status = document.getElementById('status');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+      if (!name || !phone || !email || !issueType || !description) {
+        status.innerHTML = "<strong class='red'>Please fill all fields.</strong>";
+        return;
+      }
+
+      status.innerHTML = "<strong class='green'>Submitting your issue...</strong>";
+
+      fetch(`${API_BASE}/api/issues`, {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'Authorization': `Bearer ${token}` } : {}),
+        body: JSON.stringify({
+          issueType,
+          studentName: name,
+          contact: phone,
+          email,
+          description
+        })
+      })
+        .then((response) => response.json().then((body) => ({ response, body })))
+        .then(({ response, body }) => {
+          if (!response.ok) {
+            throw new Error(body.msg || 'Failed to submit issue');
+          }
+
+          status.innerHTML =
+            "<strong class='green'>Issue submitted successfully.</strong><br>" +
+            "Ticket ID: " + (body.issue && body.issue._id ? body.issue._id : 'generated') + "<br>" +
+            "Current Status: Pending Review<br>" +
+            "A confirmation email has been sent to your registered email address.";
+
+          document.getElementById('name').value = '';
+          document.getElementById('phone').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('description').value = '';
+          document.getElementById('issueType').value = '';
+        })
+        .catch((error) => {
+          status.innerHTML = "<strong class='red'>" + error.message + "</strong>";
+        });
+    }
+  </script>
+</body>
+</html>

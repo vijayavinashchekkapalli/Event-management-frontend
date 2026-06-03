@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" href="admin/styles.css" />
+	<link rel="stylesheet" href="admin/banner.css" />
+</head>
+<body>
+	<div class="admin-shell">
+		<div class="topbar">
+			<div class="brand"><h1>Event Admin</h1><div class="muted">Panel</div></div>
+			<div class="nav">
+				<a class="active" href="admin-dashboard-live.html">Dashboard</a>
+				<a href="admin-registrations-live.html">Registrations</a>
+				<a href="admin-issues-live.html">Issues</a>
+				<a href="admin-edit-live.html">Edit</a>
+				<button class="btn btn-logout" onclick="adminLogout()">Logout</button>
+			</div>
+		</div>
+
+		<div class="grid">
+			<div class="card">
+				<h3>Total Users</h3>
+				<div class="value" id="totalUsers">0</div>
+			</div>
+			<div class="card">
+				<h3>Total Registrations</h3>
+				<div class="value" id="totalTeams">0</div>
+			</div>
+			<div class="card">
+				<h3>Actions</h3>
+				<div class="controls">
+					<button class="btn btn-primary" onclick="downloadData()">Download Word</button>
+					<button class="btn btn-ghost" id="goRegistrations" onclick="window.location.href='admin-registrations-live.html'">View</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/admin.js"></script>
+	<script src="js/banner-admin.js"></script>
+
+	<script>
+		// Initialization on page load
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', async () => {
+				const token = localStorage.getItem('adminToken');
+				if (!token) {
+					window.location.replace('admin-login-live.html');
+					return;
+				}
+				await loadDashboard();
+				console.log('[dashboard] Admin dashboard loaded');
+			});
+		} else {
+			(async () => {
+				const token = localStorage.getItem('adminToken');
+				if (!token) {
+					window.location.replace('admin-login-live.html');
+					return;
+				}
+				await loadDashboard();
+				console.log('[dashboard] Admin dashboard loaded');
+			})();
+		}
+	</script>
+</body>
+</html>

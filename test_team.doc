@@ -1,0 +1,46 @@
+
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <style>
+            body { font-family: Calibri, Arial, sans-serif; font-size: 12pt; }
+            h1, h2 { margin: 0 0 10px 0; }
+            table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+            th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+            .section { margin-top: 14px; }
+          </style>
+        </head>
+        <body>
+          <h1>Team Registration Details</h1>
+          <table>
+            <tr><th>Team Name</th><td>gans</td></tr>
+            <tr><th>Leader Name</th><td>vijay</td></tr>
+            <tr><th>Year</th><td>1</td></tr>
+            <tr><th>Stream</th><td>cse</td></tr>
+            <tr><th>Contact</th><td>6305665040</td></tr>
+            <tr><th>Payment Method</th><td>razorpay</td></tr>
+            <tr><th>Payment Reference</th><td>RAZORPAY-1777973897580</td></tr>
+            <tr><th>WhatsApp Joined</th><td>Yes</td></tr>
+            <tr><th>WhatsApp Link</th><td>https://chat.whatsapp.com/example</td></tr>
+          </table>
+
+          <div class="section">
+            <h2>Team Members (Order-wise)</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Stream</th>
+                  <th>Year</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>avi</td><td>9491702445</td><td>ece</td><td>2</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </body>
+      </html>
+    
