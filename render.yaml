@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: event-management-backend
+    env: node
+    plan: starter
+    region: oregon
+    branch: main
+    repo: https://github.com/vijayavinashchekkapalli/Event-management-frontend.git
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: "REPLACE_WITH_YOUR_MONGODB_URI"
+      - key: REDIS_URL
+        value: "REPLACE_WITH_YOUR_REDIS_URL"
+      - key: JWT_SECRET
+        value: "REPLACE_WITH_A_STRONG_SECRET"
+      - key: CLOUDINARY_URL
+        value: "REPLACE_WITH_CLOUDINARY_URL_IF_USED"
