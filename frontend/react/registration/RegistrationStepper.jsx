@@ -65,7 +65,7 @@ function isValidPhone(value) {
 }
 
 export default function RegistrationStepper({
-  registerEndpoint = 'http://localhost:5001/api/register',
+  registerEndpoint = `${(import.meta.env.VITE_API_URL || 'https://event-management-frontend-og23.onrender.com').replace(/\/$/, '')}/api/register`,
   qrCodeSrc = '/assets/images/upi-qr.png',
   upiId = 'startinno@upi',
   whatsappInviteLink = ''

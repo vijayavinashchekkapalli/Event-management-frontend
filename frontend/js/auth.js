@@ -1,4 +1,15 @@
-const API_BASE = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'http://localhost:5001';
+const API_BASE = (() => {
+  if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+
+  try {
+    const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+    if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+  } catch (error) {
+    // ignore when import.meta is unavailable in non-module scripts
+  }
+
+  return 'https://event-management-frontend-og23.onrender.com';
+})();
 
 function calculatePasswordStrength(password) {
   if (password.length < 8) return 'poor';

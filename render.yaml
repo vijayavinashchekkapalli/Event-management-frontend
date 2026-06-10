@@ -12,11 +12,15 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: MONGODB_URI
+      - key: MONGO_URI
         value: "REPLACE_WITH_YOUR_MONGODB_URI"
       - key: REDIS_URL
         value: "REPLACE_WITH_YOUR_REDIS_URL"
       - key: JWT_SECRET
         value: "REPLACE_WITH_A_STRONG_SECRET"
+      - key: FRONTEND_URL
+        value: "https://your-frontend-domain.vercel.app"
+      - key: CORS_ORIGIN
+        value: "https://your-frontend-domain.vercel.app"
       - key: CLOUDINARY_URL
         value: "REPLACE_WITH_CLOUDINARY_URL_IF_USED"

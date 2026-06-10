@@ -352,7 +352,7 @@
 
         <div class="support-actions">
           <button class="btn btn-primary btn-lg" type="button" onclick="submitIssue()">Submit</button>
-          <button class="btn btn-secondary btn-lg" type="button" onclick="window.location.href='http://localhost:5001/user/login'">Back to Login</button>
+          <button class="btn btn-secondary btn-lg" type="button" onclick="window.location.href='/user/login'">Back to Login</button>
         </div>
 
         <div class="status" id="status">Describe your issue clearly, and we’ll keep the response short and actionable.</div>
@@ -372,7 +372,18 @@
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:5001';
+    const API_BASE = (() => {
+      if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+
+      try {
+        const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+        if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+      } catch (error) {
+        // ignore when import.meta is unavailable in non-module scripts
+      }
+
+      return 'https://event-management-frontend-og23.onrender.com';
+    })();
 
     function submitIssue() {
       const name = document.getElementById('name').value.trim();

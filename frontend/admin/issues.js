@@ -5,21 +5,16 @@
 
 // Detect which server is being used and set API URL accordingly
 const API_BASE = (() => {
-  const hostname = window.location.hostname;
-  const port = window.location.port;
-  
-  // If on port 5500 or 5501 (Live Server), use localhost:5000 for API
-  if (port === '5500' || port === '5501' || port === '3000') {
-    return 'http://localhost:5001';
+  if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+
+  try {
+    const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+    if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+  } catch (error) {
+    // ignore when import.meta is unavailable in non-module scripts
   }
-  
-  // If on port 5000 (Backend server), use that
-  if (port === '5000') {
-    return `http://${hostname}:5000`;
-  }
-  
-  // Default fallback
-  return 'http://localhost:5001';
+
+  return 'https://event-management-frontend-og23.onrender.com';
 })();
 
 console.log('🔗 API Base URL:', API_BASE);

@@ -421,7 +421,16 @@
 		const adminUsernameInput = document.getElementById('adminUsername');
 		const adminIDInput = document.getElementById('adminID');
 		const adminStatus = document.getElementById('adminStatus');
-		const API_BASE_URL = window.location.port === '5500' ? 'http://localhost:5001' : window.location.origin;
+		const API_BASE_URL = (() => {
+			try {
+				const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+				if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+			} catch (error) {
+				// ignore when import.meta is unavailable in non-module scripts
+			}
+
+			return 'https://event-management-frontend-og23.onrender.com';
+		})();
 
 		function setStatus(message, isError = false) {
 			adminStatus.textContent = message;

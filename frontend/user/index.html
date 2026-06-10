@@ -277,13 +277,14 @@
 
   <script>
     const APP_BASE_URL = (() => {
-      const port = window.location.port;
-      // If served by Live Server or React dev server, use backend at 5001
-      if (port === '5500' || port === '5501' || port === '3000') {
-        return 'http://localhost:5001';
+      try {
+        const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+        if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+      } catch (error) {
+        // ignore when import.meta is unavailable in non-module scripts
       }
-      // Otherwise use the current origin (works when backend serves frontend)
-      return window.location.origin;
+
+      return 'https://event-management-frontend-og23.onrender.com';
     })();
     const enterBtn = document.getElementById('enterBtn');
     

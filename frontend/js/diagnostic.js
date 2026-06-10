@@ -3,8 +3,21 @@
  */
 
 async function checkBackendConnectivity() {
+  const resolveBackendBase = () => {
+    if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+
+    try {
+      const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+      if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+    } catch (error) {
+      // ignore when import.meta is unavailable in non-module scripts
+    }
+
+    return 'https://event-management-frontend-og23.onrender.com';
+  };
+
   const diagnostics = {
-    backendUrl: 'http://localhost:5001',
+    backendUrl: resolveBackendBase(),
     checks: {}
   };
 
@@ -25,7 +38,7 @@ async function checkBackendConnectivity() {
   // Test 2: Dashboard API
   try {
     console.log('\n[2/5] Testing /api/admin/dashboard...');
-    const res = await fetch('http://localhost:5001/api/admin/dashboard', {
+    const res = await fetch(`${diagnostics.backendUrl}/api/admin/dashboard`, {
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await res.json();
@@ -39,7 +52,7 @@ async function checkBackendConnectivity() {
   // Test 3: Banner API
   try {
     console.log('\n[3/5] Testing /api/admin/banner...');
-    const res = await fetch('http://localhost:5001/api/admin/banner', {
+    const res = await fetch(`${diagnostics.backendUrl}/api/admin/banner`, {
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await res.json();
@@ -61,9 +74,9 @@ async function checkBackendConnectivity() {
 
   // Test 5: Check API endpoints
   console.log('\n[5/5] Registered API endpoints:');
-  console.log('- http://localhost:5001/api/admin/dashboard');
-  console.log('- http://localhost:5001/api/admin/banner');
-  console.log('- http://localhost:5001/api/auth/login');
+  console.log(`- ${diagnostics.backendUrl}/api/admin/dashboard`);
+  console.log(`- ${diagnostics.backendUrl}/api/admin/banner`);
+  console.log(`- ${diagnostics.backendUrl}/api/auth/login`);
 
   console.log('\n=== SUMMARY ===');
   console.log(JSON.stringify(diagnostics, null, 2));
@@ -77,17 +90,29 @@ window.checkBackendConnectivity = checkBackendConnectivity;
 // Additional diagnostic for banner loading
 async function checkBannerSystem() {
   console.log('\n=== BANNER SYSTEM DIAGNOSTICS ===');
+  const backendUrl = (() => {
+    if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+
+    try {
+      const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+      if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+    } catch (error) {
+      // ignore when import.meta is unavailable in non-module scripts
+    }
+
+    return 'https://event-management-frontend-og23.onrender.com';
+  })();
   
   const bannerDiagnostics = {
     timestamp: new Date().toISOString(),
-    bannerApiUrl: 'http://localhost:5001/api/admin/banner',
+    bannerApiUrl: `${backendUrl}/api/admin/banner`,
     checks: {}
   };
 
   // Check 1: Banner API without auth
   try {
     console.log('[1/4] Testing banner API without authentication...');
-    const res = await fetch('http://localhost:5001/api/admin/banner', {
+    const res = await fetch(`${backendUrl}/api/admin/banner`, {
       headers: { 'Content-Type': 'application/json' }
     });
     bannerDiagnostics.checks.bannerApiNoAuth = { 
@@ -108,7 +133,7 @@ async function checkBannerSystem() {
   try {
     const adminToken = localStorage.getItem('adminToken');
     console.log('[2/4] Testing banner API with authentication...');
-    const res = await fetch('http://localhost:5001/api/admin/banner', {
+    const res = await fetch(`${backendUrl}/api/admin/banner`, {
       headers: { 
         'Content-Type': 'application/json',
         ...(adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {})

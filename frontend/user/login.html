@@ -380,7 +380,16 @@
 	</div>
 
 	<script>
-		const API_BASE = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'http://localhost:5001';
+		const API_BASE = (() => {
+			try {
+				const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+				if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+			} catch (error) {
+				// ignore when import.meta is unavailable in non-module scripts
+			}
+
+			return 'https://event-management-frontend-og23.onrender.com';
+		})();
 		const identifierInput = document.getElementById('identifier');
 		const passwordInput = document.getElementById('password');
 		const statusText = document.getElementById('statusText');

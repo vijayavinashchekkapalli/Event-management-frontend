@@ -1,6 +1,15 @@
 import { auth } from "./firebase.js";
 
-const API_URL = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'http://localhost:5001';
+const API_URL = (() => {
+  try {
+    const viteApiUrl = import.meta.env.VITE_API_URL;
+    if (viteApiUrl) return String(viteApiUrl).replace(/\/$/, '');
+  } catch (error) {
+    // ignore and use fallback
+  }
+
+  return 'https://event-management-frontend-og23.onrender.com';
+})();
 
 window.registerTeam = async () => {
   const user = auth.currentUser;

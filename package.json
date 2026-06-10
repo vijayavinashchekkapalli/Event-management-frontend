@@ -28,10 +28,11 @@
 		"node-cache": "^5.1.2",
 		"nodemailer": "^8.0.7",
 		"razorpay": "^2.9.6",
-		"redis": "^5.12.1"
+		"redis": "^5.12.1",
+		"render": "^0.1.4"
 	},
 	"devDependencies": {
-		"autocannon": "^7.15.0",
+		"autocannon": "^2.0.1",
 		"nodemon": "^3.1.14"
 	}
 }

@@ -1,4 +1,14 @@
-const BANNER_PUBLIC_API = 'http://localhost:5001/api/banner';
+const BANNER_PUBLIC_API = (() => {
+  if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return `${window.API_BASE_OVERRIDE}/api/banner`;
+  let base = 'https://event-management-frontend-og23.onrender.com';
+  try {
+    const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
+    if (viteApiUrl) base = String(viteApiUrl).replace(/\/$/, '');
+  } catch (error) {
+    // ignore when import.meta is unavailable in non-module scripts
+  }
+  return `${base}/api/banner`;
+})();
 let bannerSliderCache = null;
 let bannerSliderLoading = false;
 
