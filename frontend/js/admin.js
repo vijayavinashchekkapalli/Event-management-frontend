@@ -8,7 +8,7 @@ const API_URL = (() => {
     // ignore when import.meta is unavailable in non-module scripts
   }
 
-  return 'https://event-management-frontend-og23.onrender.com';
+  return 'http://localhost:5001';
 })();
 
 const adminState = {

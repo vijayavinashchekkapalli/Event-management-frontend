@@ -8,7 +8,7 @@ const API_URL = (() => {
     // ignore and use fallback
   }
 
-  return 'https://event-management-frontend-og23.onrender.com';
+  return 'http://localhost:5001';
 })();
 
 window.registerTeam = async () => {

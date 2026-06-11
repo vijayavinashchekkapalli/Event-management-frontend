@@ -1,6 +1,6 @@
 const BANNER_API_URL = (() => {
   if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return `${window.API_BASE_OVERRIDE}/api/admin/banner`;
-  let base = 'https://event-management-frontend-og23.onrender.com';
+  let base = 'http://localhost:5001';
   try {
     const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
     if (viteApiUrl) base = String(viteApiUrl).replace(/\/$/, '');

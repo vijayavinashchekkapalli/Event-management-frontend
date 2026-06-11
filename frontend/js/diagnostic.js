@@ -13,7 +13,7 @@ async function checkBackendConnectivity() {
       // ignore when import.meta is unavailable in non-module scripts
     }
 
-    return 'https://event-management-frontend-og23.onrender.com';
+    return 'http://localhost:5001';
   };
 
   const diagnostics = {
@@ -100,7 +100,7 @@ async function checkBannerSystem() {
       // ignore when import.meta is unavailable in non-module scripts
     }
 
-    return 'https://event-management-frontend-og23.onrender.com';
+    return 'http://localhost:5001';
   })();
   
   const bannerDiagnostics = {
