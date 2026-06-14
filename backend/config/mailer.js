@@ -264,18 +264,20 @@ const sendRegistrationEmailBatch = async ({ recipients, subject, htmlFactory, te
   }
 
   uniqueRecipients.forEach((recipient) => {
-    scheduleMail(async () => {
-      const mailOptions = {
+    void sendMail(
+      {
         from: getSender(),
         to: recipient.email,
         subject,
         html: htmlFactory(recipient),
         text: typeof textFactory === 'function' ? textFactory(recipient) : undefined
-      };
-      await sendMail(mailOptions, { waitForDelivery: false, queueLabel: `${contextLabel}:${recipient.email}` });
+      },
+      { waitForDelivery: false, queueLabel: `${contextLabel}:${recipient.email}` }
+    ).then(() => {
       console.log(`[mailer] ${contextLabel} queued:`, recipient.email);
-      return { email: recipient.email, name: recipient.name, success: true };
-    }, `${contextLabel}:${recipient.email}`);
+    }).catch((error) => {
+      console.error(`[mailer] ${contextLabel} queue failed:`, recipient.email, error.message);
+    });
   });
 
   return {
@@ -418,16 +420,45 @@ const buildTeamDetailsTable = ({ teamName, leaderName, email, contact, stream, y
   `;
 };
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS
-  }
-});
+const transporter = nodemailer.createTransport(
+  process.env.SMTP_HOST
+    ? {
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT || 465),
+        secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
+        requireTLS: true,
+        auth: {
+          user: EMAIL_USER,
+          pass: EMAIL_PASS
+        },
+        pool: true,
+        maxConnections: 3,
+        maxMessages: 20,
+        connectionTimeout: 20000,
+        greetingTimeout: 10000,
+        socketTimeout: 30000
+      }
+    : {
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: EMAIL_USER,
+          pass: EMAIL_PASS
+        },
+        pool: true,
+        maxConnections: 3,
+        maxMessages: 20,
+        connectionTimeout: 20000,
+        greetingTimeout: 10000,
+        socketTimeout: 30000
+      }
+);
 
 console.log('[mailer] SMTP user:', maskEmail(EMAIL_USER));
 console.log('[mailer] SMTP password:', EMAIL_PASS ? 'configured' : 'missing');
+console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : 'gmail/smtp.gmail.com');
 
 const getSender = () => EMAIL_USER || 'noreply@startinno.com';
 
@@ -452,15 +483,20 @@ verifyTransporter().catch((error) => {
 
 const sendMail = async (mailOptions, { waitForDelivery = false, queueLabel = 'mail' } = {}) => {
   const recipientList = Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to];
+  const effectiveOptions = {
+    ...mailOptions,
+    from: mailOptions.from || getSender(),
+    replyTo: mailOptions.replyTo || EMAIL_USER || undefined
+  };
 
   if (waitForDelivery) {
     try {
       console.log('[mailer] sending email directly to:', recipientList);
-      const info = await transporter.sendMail(mailOptions);
+      const info = await transporter.sendMail(effectiveOptions);
       console.log('[mailer] sent:', {
         messageId: info.messageId,
         to: recipientList,
-        subject: mailOptions.subject
+        subject: effectiveOptions.subject
       });
       return info;
     } catch (error) {
@@ -476,11 +512,11 @@ const sendMail = async (mailOptions, { waitForDelivery = false, queueLabel = 'ma
   return scheduleMail(async () => {
     try {
       console.log('[mailer] sending queued email to:', recipientList);
-      const info = await transporter.sendMail(mailOptions);
+      const info = await transporter.sendMail(effectiveOptions);
       console.log('[mailer] queued delivery completed:', {
         messageId: info.messageId,
         to: recipientList,
-        subject: mailOptions.subject
+        subject: effectiveOptions.subject
       });
       return info;
     } catch (error) {
