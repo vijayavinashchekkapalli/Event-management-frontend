@@ -238,8 +238,11 @@ exports.forgotUsername = async (req, res) => {
       });
     }
 
-    // Send username to email and only report success once delivery completes
-    await sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000');
+    // Send username in the background so the request does not hang on SMTP delivery.
+    void sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000')
+      .catch((mailError) => {
+        console.error('[auth-mailer] forgot username delivery failed:', mailError.message);
+      });
 
     res.status(200).json({
       success: true,
@@ -286,9 +289,12 @@ exports.forgotPassword = async (req, res) => {
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    // Send reset email and only report success once the message is accepted by SMTP
+    // Send reset email in the background so Render does not timeout while SMTP completes.
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
-    await sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
+    void sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username)
+      .catch((mailError) => {
+        console.error('[auth-mailer] forgot password delivery failed:', mailError.message);
+      });
 
     res.status(200).json({
       success: true,
