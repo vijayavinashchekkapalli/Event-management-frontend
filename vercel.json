@@ -2,11 +2,63 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://event-management-frontend-og23.onrender.com/api/$1"
+      "destination": "/api"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/user/index.html"
+    },
+    {
+      "source": "/user/login",
+      "destination": "/frontend/user/login.html"
+    },
+    {
+      "source": "/user/(.*)",
+      "destination": "/frontend/user/$1"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/frontend/admin/$1"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
+    },
+    {
+      "source": "/css/(.*)",
+      "destination": "/frontend/css/$1"
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": "/frontend/js/$1"
+    },
+    {
+      "source": "/react/(.*)",
+      "destination": "/frontend/react/$1"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/frontend/user/dashboard.html"
+    },
+    {
+      "source": "/help",
+      "destination": "/frontend/user/help.html"
+    },
+    {
+      "source": "/track-registration",
+      "destination": "/frontend/user/dashboard.html?tab=registration-details"
+    },
+    {
+      "source": "/admin",
+      "destination": "/frontend/user/admin-login.html"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/frontend/user/admin-login.html"
     },
     {
       "source": "/(.*)",
-      "destination": "/$1"
+      "destination": "/frontend/$1"
     }
   ]
 }

@@ -306,7 +306,9 @@ function startServer(port = DEFAULT_PORT, retriesLeft = MAX_PORT_RETRIES) {
   });
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
 
 process.on('unhandledRejection', (reason) => {
   console.error('[Process] Unhandled promise rejection:', reason);
@@ -334,3 +336,5 @@ function shutdown() {
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
+
+module.exports = app;
