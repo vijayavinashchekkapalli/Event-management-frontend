@@ -1,13 +1,11 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
 const MAIL_PROVIDER = (process.env.MAIL_PROVIDER || 'gmail').toLowerCase();
 
 const mailQueue = [];
@@ -424,10 +422,6 @@ const buildTeamDetailsTable = ({ teamName, leaderName, email, contact, stream, y
 };
 
 const createTransporter = () => {
-  if (MAIL_PROVIDER === 'sendgrid' && SENDGRID_API_KEY) {
-    return nodemailer.createTransport(sendgridTransport({ apiKey: SENDGRID_API_KEY }));
-  }
-
   return nodemailer.createTransport(
     process.env.SMTP_HOST
       ? {
