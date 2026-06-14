@@ -1,7 +1,12 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "^/api/(.*)$", "dest": "https://event-management-backend.onrender.com/api/$1" },
-    { "src": "^/(.*)$", "dest": "/frontend/user/index.html" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://event-management-frontend-og23.onrender.com/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
   ]
 }

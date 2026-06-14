@@ -1,11 +1,17 @@
 const BANNER_API_URL = (() => {
   if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return `${window.API_BASE_OVERRIDE}/api/admin/banner`;
-  let base = 'http://localhost:5001';
+  let base = '';
   try {
     const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
     if (viteApiUrl) base = String(viteApiUrl).replace(/\/$/, '');
   } catch (error) {
     // ignore when import.meta is unavailable in non-module scripts
+  }
+  if (!base && typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+      base = 'http://localhost:5001';
+    }
   }
   return `${base}/api/admin/banner`;
 })();

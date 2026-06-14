@@ -5,7 +5,9 @@
 
 // Detect which server is being used and set API URL accordingly
 const API_BASE = (() => {
-  if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) return window.API_BASE_OVERRIDE;
+  if (typeof window !== 'undefined' && window.API_BASE_OVERRIDE) {
+    return String(window.API_BASE_OVERRIDE).replace(/\/$/, '');
+  }
 
   try {
     const viteApiUrl = Function('return (import.meta && import.meta.env && import.meta.env.VITE_API_URL) ? import.meta.env.VITE_API_URL : "";')();
@@ -14,7 +16,14 @@ const API_BASE = (() => {
     // ignore when import.meta is unavailable in non-module scripts
   }
 
-  return 'http://localhost:5001';
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+      return 'http://localhost:5001';
+    }
+  }
+
+  return '';
 })();
 
 console.log('🔗 API Base URL:', API_BASE);

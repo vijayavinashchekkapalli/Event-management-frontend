@@ -13,7 +13,14 @@ async function checkBackendConnectivity() {
       // ignore when import.meta is unavailable in non-module scripts
     }
 
-    return 'http://localhost:5001';
+    if (typeof window !== 'undefined' && window.location) {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+        return 'http://localhost:5001';
+      }
+    }
+
+    return '';
   };
 
   const diagnostics = {
@@ -100,7 +107,14 @@ async function checkBannerSystem() {
       // ignore when import.meta is unavailable in non-module scripts
     }
 
-    return 'http://localhost:5001';
+    if (typeof window !== 'undefined' && window.location) {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+        return 'http://localhost:5001';
+      }
+    }
+
+    return '';
   })();
   
   const bannerDiagnostics = {

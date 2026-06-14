@@ -33,11 +33,26 @@ const allowedOrigins = [
   .filter(Boolean)
 ].filter((origin, index, list) => list.indexOf(origin) === index);
 
+const allowedOriginPatterns = [
+  /^https:\/\/.*\.vercel\.app$/i,
+  /^https:\/\/.*\.vercel\.app\/.*$/i,
+  /^https:\/\/.*\.onrender\.com$/i,
+  /^https:\/\/.*\.render\.com$/i,
+  /^http:\/\/localhost(:\d+)?$/i,
+  /^http:\/\/127\.0\.0\.1(:\d+)?$/i
+];
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return allowedOriginPatterns.some((pattern) => pattern.test(origin));
+}
+
 const corsOptions = {
   origin(origin, callback) {
     // During local development allow all origins to avoid CORS mismatches
     if (isDev) return callback(null, true);
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));
