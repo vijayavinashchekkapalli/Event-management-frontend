@@ -300,7 +300,11 @@
     const enterBtn = document.getElementById('enterBtn');
 
     function navigateToLoginPage() {
-      const loginUrl = new URL('./login.html', window.location.href);
+      const currentPath = window.location.pathname || '/';
+      const isAlreadyInUserFolder = currentPath === '/user' || currentPath.startsWith('/user/') || currentPath.endsWith('/user');
+      const loginUrl = isAlreadyInUserFolder
+        ? new URL('./login.html', window.location.href)
+        : new URL('./user/login.html', window.location.href);
       window.location.assign(loginUrl.toString());
     }
 
