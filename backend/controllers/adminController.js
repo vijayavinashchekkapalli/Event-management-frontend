@@ -349,11 +349,11 @@ async function updateTeamApprovalStatus(res, teamId, status) {
     };
 
     if (status === 'approved') {
-      await sendRegistrationApprovedEmail(mailPayload);
+      void sendRegistrationApprovedEmail(mailPayload);
     }
 
     if (status === 'rejected') {
-      await sendRegistrationRejectedEmail(mailPayload);
+      void sendRegistrationRejectedEmail(mailPayload);
     }
   } catch (mailError) {
     console.error('[adminController] registration status email failed:', mailError.message);

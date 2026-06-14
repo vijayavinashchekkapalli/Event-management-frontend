@@ -37,7 +37,7 @@ exports.createIssue = async (req, res) => {
     // Send confirmation email (non-blocking)
     if (resolvedEmail) {
       try {
-        await sendIssueCreatedEmail({
+        void sendIssueCreatedEmail({
           email: resolvedEmail,
           issueId: issue._id.toString(),
           issueType: issue.issueType,
@@ -115,7 +115,7 @@ exports.updateIssue = async (req, res) => {
     // Send status update email if status changed and email exists
     if (status && status !== oldStatus && issue.email) {
       try {
-        await sendIssueStatusUpdateEmail({
+        void sendIssueStatusUpdateEmail({
           email: issue.email,
           issueId: issue._id.toString(),
           issueType: issue.issueType,

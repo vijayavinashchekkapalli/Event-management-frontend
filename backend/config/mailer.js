@@ -7,6 +7,45 @@ dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 
+const mailQueue = [];
+let isMailQueueProcessing = false;
+
+const enqueueMailJob = (taskFactory, label = 'mail') => {
+  return new Promise((resolve, reject) => {
+    mailQueue.push({ taskFactory, label, resolve, reject });
+    if (!isMailQueueProcessing) {
+      void processMailQueue();
+    }
+  });
+};
+
+const processMailQueue = async () => {
+  if (isMailQueueProcessing) return;
+  isMailQueueProcessing = true;
+
+  while (mailQueue.length) {
+    const job = mailQueue.shift();
+    if (!job) continue;
+
+    try {
+      const result = await job.taskFactory();
+      job.resolve(result);
+    } catch (error) {
+      console.error('[mailer] background job failed:', job.label, error.message);
+      job.reject(error);
+    }
+  }
+
+  isMailQueueProcessing = false;
+};
+
+const scheduleMail = (taskFactory, label = 'mail') => {
+  const queuedAt = Date.now();
+  const queuedPromise = enqueueMailJob(taskFactory, label);
+  console.log(`[mailer] queued background job: ${label} at ${queuedAt}`);
+  return queuedPromise;
+};
+
 const maskEmail = (email) => {
   if (!email || !email.includes('@')) return 'unset';
   const [localPart, domainPart] = email.split('@');
@@ -217,38 +256,35 @@ const sendRegistrationEmailBatch = async ({ recipients, subject, htmlFactory, te
       totalRecipients: 0,
       sentCount: 0,
       failedCount: 0,
+      queuedCount: 0,
       sentRecipients: [],
       failedRecipients: [],
       invalidRecipients: []
     };
   }
 
-  const sendResults = await Promise.all(uniqueRecipients.map(async (recipient) => {
-    try {
-      await sendMail({
+  uniqueRecipients.forEach((recipient) => {
+    scheduleMail(async () => {
+      const mailOptions = {
         from: getSender(),
         to: recipient.email,
         subject,
         html: htmlFactory(recipient),
         text: typeof textFactory === 'function' ? textFactory(recipient) : undefined
-      });
-      console.log(`[mailer] ${contextLabel} sent:`, recipient.email);
+      };
+      await sendMail(mailOptions, { waitForDelivery: false, queueLabel: `${contextLabel}:${recipient.email}` });
+      console.log(`[mailer] ${contextLabel} queued:`, recipient.email);
       return { email: recipient.email, name: recipient.name, success: true };
-    } catch (error) {
-      console.error(`[mailer] ${contextLabel} failed:`, recipient.email, error.message);
-      return { email: recipient.email, name: recipient.name, success: false, error: error.message };
-    }
-  }));
-
-  const sentRecipients = sendResults.filter((result) => result.success).map((result) => result.email);
-  const failedRecipients = sendResults.filter((result) => !result.success).map((result) => result.email);
+    }, `${contextLabel}:${recipient.email}`);
+  });
 
   return {
     totalRecipients: uniqueRecipients.length,
-    sentCount: sentRecipients.length,
-    failedCount: failedRecipients.length,
-    sentRecipients,
-    failedRecipients,
+    sentCount: 0,
+    failedCount: 0,
+    queuedCount: uniqueRecipients.length,
+    sentRecipients: [],
+    failedRecipients: [],
     invalidRecipients: []
   };
 };
@@ -414,24 +450,48 @@ verifyTransporter().catch((error) => {
   console.error('[mailer] SMTP startup verification error:', error.message);
 });
 
-const sendMail = async (mailOptions) => {
-  try {
-    console.log('[mailer] Sending email to:', Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to]);
-    const info = await transporter.sendMail(mailOptions);
-    console.log('[mailer] sent:', {
-      messageId: info.messageId,
-      to: Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to],
-      subject: mailOptions.subject
-    });
-    return info;
-  } catch (error) {
-    console.error('[mailer] send error:', {
-      message: error.message,
-      code: error.code,
-      response: error.response
-    });
-    throw error;
+const sendMail = async (mailOptions, { waitForDelivery = false, queueLabel = 'mail' } = {}) => {
+  const recipientList = Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to];
+
+  if (waitForDelivery) {
+    try {
+      console.log('[mailer] sending email directly to:', recipientList);
+      const info = await transporter.sendMail(mailOptions);
+      console.log('[mailer] sent:', {
+        messageId: info.messageId,
+        to: recipientList,
+        subject: mailOptions.subject
+      });
+      return info;
+    } catch (error) {
+      console.error('[mailer] send error:', {
+        message: error.message,
+        code: error.code,
+        response: error.response
+      });
+      throw error;
+    }
   }
+
+  return scheduleMail(async () => {
+    try {
+      console.log('[mailer] sending queued email to:', recipientList);
+      const info = await transporter.sendMail(mailOptions);
+      console.log('[mailer] queued delivery completed:', {
+        messageId: info.messageId,
+        to: recipientList,
+        subject: mailOptions.subject
+      });
+      return info;
+    } catch (error) {
+      console.error('[mailer] queued send error:', {
+        message: error.message,
+        code: error.code,
+        response: error.response
+      });
+      throw error;
+    }
+  }, queueLabel);
 };
 
 const buildForgotUsernameEmailHtml = ({ username, helpCenterUrl, currentYear }) => {

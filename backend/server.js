@@ -110,6 +110,7 @@ app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(isTesting ? (req, res, next) => next() : generalLimiter);
 
 const serverTimingThresholdMs = Number(process.env.SLOW_REQUEST_THRESHOLD_MS || 500);
+app.set('etag', 'weak');
 app.use((req, res, next) => {
   const startedAt = process.hrtime.bigint();
 

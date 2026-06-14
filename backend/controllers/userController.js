@@ -238,8 +238,8 @@ exports.forgotUsername = async (req, res) => {
       });
     }
 
-    // Send username to email
-    await sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000');
+    // Send username to email in the background without blocking the request
+    void sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000');
 
     res.status(200).json({
       success: true,
@@ -286,9 +286,9 @@ exports.forgotPassword = async (req, res) => {
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    // Send reset email with frontend URL (must point to frontend host, not backend port)
+    // Send reset email with frontend URL in the background without blocking the request
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
-    await sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
+    void sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
 
     res.status(200).json({
       success: true,
@@ -398,7 +398,7 @@ exports.testMail = async (req, res) => {
       return res.status(500).json({ success: false, message: 'EMAIL_USER is not configured correctly' });
     }
 
-    const info = await sendTestEmail(recipient);
+    const info = await sendTestEmail(recipient, { waitForDelivery: true });
 
     return res.status(200).json({
       success: true,
