@@ -23,6 +23,12 @@ services:
         value: vijayavinashchekkapalli4@gmail.com
       - key: EMAIL_PASS
         value: wlbkjzrmjkcplydf
+      - key: MAIL_PROVIDER
+        value: gmail
+      - key: MAIL_FROM
+        value: vijayavinashchekkapalli4@gmail.com
+      - key: MAIL_FROM_NAME
+        value: StartInno Solutions
       - key: CLOUDINARY_CLOUD_NAME
         value: dh8whjclb
       - key: CLOUDINARY_API_KEY
