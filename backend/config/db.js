@@ -96,10 +96,7 @@ const connectDB = async () => {
   const mongoUri = process.env.MONGO_URI?.trim().replace(/^['\"]|['\"]$/g, '');
 
   if (!mongoUri) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('MONGO_URI is not defined');
-    }
-
+    console.warn('[MongoDB] MONGO_URI is not defined. Falling back to in-memory MongoDB.');
     return connectMemoryDatabase();
   }
 
@@ -125,10 +122,6 @@ const connectDB = async () => {
 
   console.warn(`[MongoDB] All ${maxRetries} Atlas connection attempts failed. Falling back to in-memory MongoDB.`);
   console.warn(`[MongoDB] Last error:`, lastError?.message);
-
-  if (process.env.NODE_ENV === 'production') {
-    throw lastError;
-  }
 
   return connectMemoryDatabase();
 };

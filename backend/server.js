@@ -114,7 +114,9 @@ app.use((req, res, next) => {
   next();
 });
 
-connectDB();
+connectDB().catch((error) => {
+  console.error('MongoDB connection setup failed:', error.message);
+});
 connectRedis().catch((error) => {
   console.warn('Redis unavailable, continuing without cache:', error.message);
 });
