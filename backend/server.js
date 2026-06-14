@@ -6,7 +6,20 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const path = require('path');
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+const envPath = path.resolve(__dirname, '.env');
+const existingRuntimeEnv = {
+  PORT: process.env.PORT,
+  NODE_ENV: process.env.NODE_ENV
+};
+
+dotenv.config({ path: envPath });
+
+if (existingRuntimeEnv.PORT) {
+  process.env.PORT = existingRuntimeEnv.PORT;
+}
+if (existingRuntimeEnv.NODE_ENV) {
+  process.env.NODE_ENV = existingRuntimeEnv.NODE_ENV;
+}
 
 const connectDB = require('./config/db');
 const { connectRedis } = require('./config/redis');
