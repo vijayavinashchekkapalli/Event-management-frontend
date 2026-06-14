@@ -7,6 +7,10 @@ dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const MAIL_PROVIDER = (process.env.MAIL_PROVIDER || 'gmail').toLowerCase();
+const SMTP_USERNAME = process.env.SMTP_USER || process.env.SMTP_USERNAME || EMAIL_USER || '';
+const SMTP_PASSWORD = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || EMAIL_PASS || '';
+const MAIL_FROM = process.env.MAIL_FROM || EMAIL_USER || 'noreply@startinno.com';
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || 'StartInno Solutions';
 
 const mailQueue = [];
 let isMailQueueProcessing = false;
@@ -422,41 +426,75 @@ const buildTeamDetailsTable = ({ teamName, leaderName, email, contact, stream, y
 };
 
 const createTransporter = () => {
-  return nodemailer.createTransport(
-    process.env.SMTP_HOST
-      ? {
-          host: process.env.SMTP_HOST,
-          port: Number(process.env.SMTP_PORT || 465),
-          secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
-          requireTLS: true,
-          auth: {
-            user: EMAIL_USER,
-            pass: EMAIL_PASS
-          },
-          pool: true,
-          maxConnections: 3,
-          maxMessages: 20,
-          connectionTimeout: 20000,
-          greetingTimeout: 10000,
-          socketTimeout: 30000
-        }
-      : {
-          service: 'gmail',
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: EMAIL_USER,
-            pass: EMAIL_PASS
-          },
-          pool: true,
-          maxConnections: 3,
-          maxMessages: 20,
-          connectionTimeout: 20000,
-          greetingTimeout: 10000,
-          socketTimeout: 30000
-        }
-  );
+  const provider = MAIL_PROVIDER;
+  const smtpHost = process.env.SMTP_HOST || '';
+  const smtpPort = Number(process.env.SMTP_PORT || 0);
+  const smtpSecure = String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true';
+
+  const baseTransportConfig = {
+    pool: true,
+    maxConnections: 3,
+    maxMessages: 20,
+    connectionTimeout: 20000,
+    greetingTimeout: 10000,
+    socketTimeout: 30000
+  };
+
+  if (provider === 'sendgrid' && process.env.SENDGRID_API_KEY) {
+    console.log('[mailer] using sendgrid smtp transport');
+    return nodemailer.createTransport({
+      ...baseTransportConfig,
+      host: 'smtp.sendgrid.net',
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: 'apikey',
+        pass: process.env.SENDGRID_API_KEY
+      }
+    });
+  }
+
+  if (provider === 'resend' && process.env.RESEND_API_KEY) {
+    console.log('[mailer] using resend smtp transport');
+    return nodemailer.createTransport({
+      ...baseTransportConfig,
+      host: 'smtp.resend.com',
+      port: 465,
+      secure: true,
+      requireTLS: true,
+      auth: {
+        user: 'resend',
+        pass: process.env.RESEND_API_KEY
+      }
+    });
+  }
+
+  if (smtpHost) {
+    return nodemailer.createTransport({
+      ...baseTransportConfig,
+      host: smtpHost,
+      port: smtpPort || 465,
+      secure: smtpSecure,
+      requireTLS: true,
+      auth: {
+        user: SMTP_USERNAME,
+        pass: SMTP_PASSWORD
+      }
+    });
+  }
+
+  return nodemailer.createTransport({
+    ...baseTransportConfig,
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: SMTP_USERNAME,
+      pass: SMTP_PASSWORD
+    }
+  });
 };
 
 const transporter = createTransporter();
@@ -466,7 +504,11 @@ console.log('[mailer] SMTP password:', EMAIL_PASS ? 'configured' : 'missing');
 console.log('[mailer] mail provider:', MAIL_PROVIDER);
 console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : (MAIL_PROVIDER === 'sendgrid' ? 'sendgrid' : 'gmail/smtp.gmail.com'));
 
-const getSender = () => EMAIL_USER || 'noreply@startinno.com';
+const getSender = () => {
+  if (!MAIL_FROM || MAIL_FROM === 'undefined') return 'noreply@startinno.com';
+  if (MAIL_FROM_NAME && MAIL_FROM_NAME !== 'undefined') return `${MAIL_FROM_NAME} <${MAIL_FROM}>`;
+  return MAIL_FROM;
+};
 
 const verifyTransporter = async () => {
   try {
