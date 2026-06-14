@@ -238,8 +238,8 @@ exports.forgotUsername = async (req, res) => {
       });
     }
 
-    // Send username to email in the background without blocking the request
-    void sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000');
+    // Send username to email and only report success once delivery completes
+    await sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000');
 
     res.status(200).json({
       success: true,
@@ -286,9 +286,9 @@ exports.forgotPassword = async (req, res) => {
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    // Send reset email with frontend URL in the background without blocking the request
+    // Send reset email and only report success once the message is accepted by SMTP
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
-    void sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
+    await sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
 
     res.status(200).json({
       success: true,

@@ -578,7 +578,7 @@ const sendUsernameEmail = async (email, username, baseUrl = process.env.FRONTEND
     })
   };
 
-  return sendMail(mailOptions);
+  return sendMail(mailOptions, { waitForDelivery: true });
 };
 
 const buildRegistrationActions = (baseUrl) => ([
@@ -1039,7 +1039,7 @@ const sendPasswordResetEmail = async (email, resetToken, baseUrl = 'http://local
     })
   };
 
-  return sendMail(mailOptions);
+  return sendMail(mailOptions, { waitForDelivery: true });
 };
 
 const sendTestEmail = async (email) => {
