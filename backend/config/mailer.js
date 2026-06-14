@@ -1,11 +1,14 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+const MAIL_PROVIDER = (process.env.MAIL_PROVIDER || 'gmail').toLowerCase();
 
 const mailQueue = [];
 let isMailQueueProcessing = false;
@@ -420,45 +423,54 @@ const buildTeamDetailsTable = ({ teamName, leaderName, email, contact, stream, y
   `;
 };
 
-const transporter = nodemailer.createTransport(
-  process.env.SMTP_HOST
-    ? {
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT || 465),
-        secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
-        requireTLS: true,
-        auth: {
-          user: EMAIL_USER,
-          pass: EMAIL_PASS
-        },
-        pool: true,
-        maxConnections: 3,
-        maxMessages: 20,
-        connectionTimeout: 20000,
-        greetingTimeout: 10000,
-        socketTimeout: 30000
-      }
-    : {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: EMAIL_USER,
-          pass: EMAIL_PASS
-        },
-        pool: true,
-        maxConnections: 3,
-        maxMessages: 20,
-        connectionTimeout: 20000,
-        greetingTimeout: 10000,
-        socketTimeout: 30000
-      }
-);
+const createTransporter = () => {
+  if (MAIL_PROVIDER === 'sendgrid' && SENDGRID_API_KEY) {
+    return nodemailer.createTransport(sendgridTransport({ apiKey: SENDGRID_API_KEY }));
+  }
+
+  return nodemailer.createTransport(
+    process.env.SMTP_HOST
+      ? {
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT || 465),
+          secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
+          requireTLS: true,
+          auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS
+          },
+          pool: true,
+          maxConnections: 3,
+          maxMessages: 20,
+          connectionTimeout: 20000,
+          greetingTimeout: 10000,
+          socketTimeout: 30000
+        }
+      : {
+          service: 'gmail',
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS
+          },
+          pool: true,
+          maxConnections: 3,
+          maxMessages: 20,
+          connectionTimeout: 20000,
+          greetingTimeout: 10000,
+          socketTimeout: 30000
+        }
+  );
+};
+
+const transporter = createTransporter();
 
 console.log('[mailer] SMTP user:', maskEmail(EMAIL_USER));
 console.log('[mailer] SMTP password:', EMAIL_PASS ? 'configured' : 'missing');
-console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : 'gmail/smtp.gmail.com');
+console.log('[mailer] mail provider:', MAIL_PROVIDER);
+console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : (MAIL_PROVIDER === 'sendgrid' ? 'sendgrid' : 'gmail/smtp.gmail.com'));
 
 const getSender = () => EMAIL_USER || 'noreply@startinno.com';
 
