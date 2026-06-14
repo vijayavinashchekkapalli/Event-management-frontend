@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const { getFirebaseAdmin } = require('../config/firebase');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const crypto = require('crypto');
@@ -60,14 +60,19 @@ async function verifyToken(req, res, next) {
     return res.status(401).json({ msg: 'Authentication required' });
   }
 
-  try {
-    const decodedFirebase = await admin.auth().verifyIdToken(token);
-    req.user = decodedFirebase;
-    return next();
-  } catch (firebaseError) {
-    if (shouldLogAuth()) {
-      console.log('[authMiddleware] firebase verification failed, trying JWT');
+  const firebaseAdmin = getFirebaseAdmin();
+  if (firebaseAdmin && typeof firebaseAdmin.auth === 'function') {
+    try {
+      const decodedFirebase = await firebaseAdmin.auth().verifyIdToken(token);
+      req.user = decodedFirebase;
+      return next();
+    } catch (firebaseError) {
+      if (shouldLogAuth()) {
+        console.log('[authMiddleware] firebase verification failed, trying JWT');
+      }
     }
+  } else if (shouldLogAuth()) {
+    console.log('[authMiddleware] firebase unavailable, using JWT auth');
   }
 
   try {

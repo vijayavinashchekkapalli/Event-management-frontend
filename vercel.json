@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "https://startinno-registration-1.onrender.com/api/$1"
     },
     {
       "source": "/",

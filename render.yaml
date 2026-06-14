@@ -6,21 +6,30 @@ services:
     region: oregon
     branch: main
     repo: https://github.com/vijayavinashchekkapalli/Event-management-frontend.git
-    buildCommand: cd backend && npm ci
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
       - key: MONGO_URI
-        value: "REPLACE_WITH_YOUR_MONGODB_URI"
-      - key: REDIS_URL
-        value: "REPLACE_WITH_YOUR_REDIS_URL"
+        value: mongodb+srv://99230040961_db_user:USZG1PnkSBLz235q@cluster0.9dj5wqe.mongodb.net/?appName=Cluster0
       - key: JWT_SECRET
-        value: "REPLACE_WITH_A_STRONG_SECRET"
+        value: Avinash2005
+      - key: EMAIL_USER
+        value: vijayavinashchekkapalli4@gmail.com
+      - key: EMAIL_PASS
+        value: wlbkjzrmjkcplydf
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dh8whjclb
+      - key: CLOUDINARY_API_KEY
+        value: 241659117931119
+      - key: CLOUDINARY_API_SECRET
+        value: McVIfVmlHp1-ctwCwhooFoibOMo
       - key: FRONTEND_URL
-        value: "https://your-frontend-domain.vercel.app"
+        value: https://startinno-registration-1.onrender.com
       - key: CORS_ORIGIN
-        value: "https://your-frontend-domain.vercel.app"
-      - key: CLOUDINARY_URL
-        value: "REPLACE_WITH_CLOUDINARY_URL_IF_USED"
+        value: https://startinno-registration-1.onrender.com
