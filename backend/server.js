@@ -24,6 +24,7 @@ if (existingRuntimeEnv.NODE_ENV) {
 const connectDB = require('./config/db');
 const { connectRedis } = require('./config/redis');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const { verifyTransporter } = require('./config/mailer');
 
 const app = express();
 app.disable('x-powered-by');
@@ -320,7 +321,15 @@ function startServer(port = DEFAULT_PORT, retriesLeft = MAX_PORT_RETRIES) {
   });
 }
 
+const initializeMailer = async () => {
+  const isReady = await verifyTransporter();
+  if (!isReady) {
+    console.warn('[startup] SMTP verification failed; the server will continue to run, but email delivery may fail');
+  }
+};
+
 if (require.main === module) {
+  void initializeMailer();
   startServer();
 }
 

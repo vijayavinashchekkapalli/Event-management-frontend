@@ -4,13 +4,17 @@ const nodemailer = require('nodemailer');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
-const EMAIL_USER = process.env.EMAIL_USER || '';
-const EMAIL_PASS = process.env.EMAIL_PASS || '';
-const MAIL_PROVIDER = (process.env.MAIL_PROVIDER || 'gmail').toLowerCase();
-const SMTP_USERNAME = process.env.SMTP_USER || process.env.SMTP_USERNAME || EMAIL_USER || '';
-const SMTP_PASSWORD = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || EMAIL_PASS || '';
-const MAIL_FROM = process.env.MAIL_FROM || EMAIL_USER || 'noreply@startinno.com';
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || 'StartInno Solutions';
+const normalizeEnv = (value) => (typeof value === 'string' ? value.trim() : '');
+const EMAIL_USER = normalizeEnv(process.env.EMAIL_USER);
+const EMAIL_PASS = normalizeEnv(process.env.EMAIL_PASS);
+const MAIL_PROVIDER = (normalizeEnv(process.env.MAIL_PROVIDER) || 'gmail').toLowerCase();
+const SMTP_USERNAME = normalizeEnv(process.env.SMTP_USER || process.env.SMTP_USERNAME || EMAIL_USER);
+const SMTP_PASSWORD = normalizeEnv(process.env.SMTP_PASS || process.env.SMTP_PASSWORD || EMAIL_PASS);
+const MAIL_FROM = normalizeEnv(process.env.MAIL_FROM || EMAIL_USER || 'startinnosolutions@gmail.com');
+const MAIL_FROM_NAME = normalizeEnv(process.env.MAIL_FROM_NAME || 'StartInno Solutions');
+const SMTP_HOST = normalizeEnv(process.env.SMTP_HOST || 'smtp.gmail.com');
+const SMTP_PORT = Number(normalizeEnv(process.env.SMTP_PORT || '465'));
+const SMTP_SECURE = String(normalizeEnv(process.env.SMTP_SECURE || 'true')).toLowerCase() === 'true';
 
 const mailQueue = [];
 let isMailQueueProcessing = false;
@@ -499,33 +503,41 @@ const createTransporter = () => {
 
 const transporter = createTransporter();
 
-console.log('[mailer] SMTP user:', maskEmail(EMAIL_USER));
-console.log('[mailer] SMTP password:', EMAIL_PASS ? 'configured' : 'missing');
+console.log('[mailer] SMTP user:', maskEmail(SMTP_USERNAME || EMAIL_USER));
+console.log('[mailer] SMTP password:', SMTP_PASSWORD || EMAIL_PASS ? 'configured' : 'missing');
 console.log('[mailer] mail provider:', MAIL_PROVIDER);
 console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : (MAIL_PROVIDER === 'sendgrid' ? 'sendgrid' : 'gmail/smtp.gmail.com'));
+console.log('[mailer] SMTP credentials source:', SMTP_USERNAME === EMAIL_USER && (SMTP_PASSWORD === EMAIL_PASS || !SMTP_PASSWORD) ? 'EMAIL_USER/EMAIL_PASS' : 'SMTP_USER/SMTP_PASS');
+console.log('[mailer] Gmail app password guidance:', SMTP_HOST.includes('gmail') ? 'Ensure EMAIL_PASS or SMTP_PASS is a Gmail app password, not your normal Gmail password.' : 'Using custom SMTP provider.');
 
 const getSender = () => {
-  if (!MAIL_FROM || MAIL_FROM === 'undefined') return 'noreply@startinno.com';
+  if (!MAIL_FROM || MAIL_FROM === 'undefined') return 'startinnosolutions@gmail.com';
   if (MAIL_FROM_NAME && MAIL_FROM_NAME !== 'undefined') return `${MAIL_FROM_NAME} <${MAIL_FROM}>`;
   return MAIL_FROM;
 };
 
 const verifyTransporter = async () => {
+  if (!SMTP_USERNAME || !SMTP_PASSWORD) {
+    console.error('[mailer] SMTP verify skipped: missing SMTP credentials');
+    return false;
+  }
+
   try {
     await transporter.verify();
-    console.log('[mailer] SMTP Server Ready');
+    console.log('[mailer] SMTP connection verified successfully');
     return true;
   } catch (error) {
     console.error('[mailer] SMTP verify failed:', {
       message: error.message,
       code: error.code,
-      response: error.response
+      response: error.response,
+      stack: error.stack
     });
     return false;
   }
 };
 
-verifyTransporter().catch((error) => {
+void verifyTransporter().catch((error) => {
   console.error('[mailer] SMTP startup verification error:', error.message);
 });
 
@@ -537,21 +549,39 @@ const sendMail = async (mailOptions, { waitForDelivery = false, queueLabel = 'ma
     replyTo: mailOptions.replyTo || EMAIL_USER || undefined
   };
 
+  console.log('[mailer] sendMail requested', {
+    to: recipientList,
+    subject: effectiveOptions.subject,
+    from: effectiveOptions.from,
+    replyTo: effectiveOptions.replyTo,
+    mailOptions: {
+      ...effectiveOptions,
+      html: effectiveOptions.html ? '[html content]' : undefined,
+      text: effectiveOptions.text ? '[text content]' : undefined
+    }
+  });
+
   if (waitForDelivery) {
     try {
       console.log('[mailer] sending email directly to:', recipientList);
       const info = await transporter.sendMail(effectiveOptions);
-      console.log('[mailer] sent:', {
-        messageId: info.messageId,
+      console.log('[mailer] sendMail success', {
         to: recipientList,
+        messageId: info.messageId,
+        response: info.response,
+        accepted: info.accepted,
+        rejected: info.rejected,
         subject: effectiveOptions.subject
       });
       return info;
     } catch (error) {
-      console.error('[mailer] send error:', {
+      console.error('[mailer] sendMail failed', {
+        to: recipientList,
+        subject: effectiveOptions.subject,
         message: error.message,
         code: error.code,
-        response: error.response
+        response: error.response,
+        stack: error.stack
       });
       throw error;
     }
@@ -562,16 +592,22 @@ const sendMail = async (mailOptions, { waitForDelivery = false, queueLabel = 'ma
       console.log('[mailer] sending queued email to:', recipientList);
       const info = await transporter.sendMail(effectiveOptions);
       console.log('[mailer] queued delivery completed:', {
-        messageId: info.messageId,
         to: recipientList,
+        messageId: info.messageId,
+        response: info.response,
+        accepted: info.accepted,
+        rejected: info.rejected,
         subject: effectiveOptions.subject
       });
       return info;
     } catch (error) {
-      console.error('[mailer] queued send error:', {
+      console.error('[mailer] queued sendMail failed', {
+        to: recipientList,
+        subject: effectiveOptions.subject,
         message: error.message,
         code: error.code,
-        response: error.response
+        response: error.response,
+        stack: error.stack
       });
       throw error;
     }
@@ -1240,6 +1276,7 @@ const verifyEmailConfiguration = async () => {
 module.exports = {
   transporter,
   isValidEmail,
+  verifyTransporter,
   sendMail,
   sendUsernameEmail,
   sendPasswordResetEmail,

@@ -258,48 +258,69 @@ exports.forgotUsername = async (req, res) => {
  */
 exports.forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    const requestedEmail = String(req.body?.email || '').trim();
 
-    if (!email) {
+    if (!requestedEmail) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(requestedEmail)) {
       return res.status(400).json({ message: 'Please enter a valid email address' });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+passwordResetToken +passwordResetExpires');
+    const normalizedEmail = requestedEmail.toLowerCase();
+    console.log('[auth-mailer] forgot password request received', {
+      requestedEmail,
+      normalizedEmail
+    });
+
+    const user = await User.findOne({ email: normalizedEmail }).select('+passwordResetToken +passwordResetExpires');
 
     if (!user) {
-      // For security, don't reveal if email exists
       return res.status(200).json({
         success: true,
         message: 'If an account exists with this email, a password reset link has been sent to your inbox.'
       });
     }
 
-    // Generate reset token
     const resetToken = generateResetToken();
     const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
-    const resetExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    const resetExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-    // Save token and expiry to database
     user.passwordResetToken = resetTokenHash;
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    // Send reset email in the background so Render does not timeout while SMTP completes.
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
-    void sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username)
-      .catch((mailError) => {
-        console.error('[auth-mailer] forgot password delivery failed:', mailError.message);
+    console.log('[auth-mailer] sending password reset email', {
+      requestedEmail,
+      recipientEmail: user.email,
+      username: user.username
+    });
+
+    try {
+      await sendPasswordResetEmail(user.email, resetToken, baseUrl, user.username);
+      console.log('[auth-mailer] password reset email delivered successfully', {
+        recipientEmail: user.email
       });
 
-    res.status(200).json({
-      success: true,
-      message: 'Password reset link has been sent to your registered email address.'
-    });
+      return res.status(200).json({
+        success: true,
+        message: 'Password reset link has been sent to your registered email address.'
+      });
+    } catch (mailError) {
+      console.error('[auth-mailer] forgot password delivery failed', {
+        requestedEmail,
+        recipientEmail: user.email,
+        message: mailError.message,
+        stack: mailError.stack
+      });
+
+      return res.status(502).json({
+        success: false,
+        message: 'We could not send the password reset email right now. Please try again later.'
+      });
+    }
   } catch (err) {
     return handleMailerError(res, err, 'Failed to send password reset email');
   }

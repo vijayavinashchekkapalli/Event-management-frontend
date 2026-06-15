@@ -20,9 +20,19 @@ services:
       - key: JWT_SECRET
         value: Avinash2005
       - key: EMAIL_USER
-        value: vijayavinashchekkapalli4@gmail.com
+        value: startinnosolutions@gmail.com
       - key: EMAIL_PASS
-        value: wlbkjzrmjkcplydf
+        value: qwzbsjdjbhejdkji
+      - key: SMTP_USER
+        value: startinnosolutions@gmail.com
+      - key: SMTP_PASS
+        value: qwzbsjdjbhejdkji
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 465
+      - key: SMTP_SECURE
+        value: true
       - key: MAIL_PROVIDER
         value: gmail
       - key: MAIL_FROM
