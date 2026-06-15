@@ -12,6 +12,10 @@ const generateResetToken = () => {
   return crypto.randomBytes(32).toString('hex');
 };
 
+const getConfiguredFrontendBaseUrl = () => {
+  return process.env.FRONTEND_URL || process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_URL || 'https://startinno-registration-1.onrender.com';
+};
+
 const handleMailerError = (res, error, fallbackMessage) => {
   const statusCode = error.statusCode || 500;
   console.error('[auth-mailer] error:', {
@@ -217,37 +221,54 @@ exports.login = async (req, res) => {
  */
 exports.forgotUsername = async (req, res) => {
   try {
-    const { email } = req.body;
+    const requestedEmail = String(req.body?.email || '').trim();
 
-    if (!email) {
+    if (!requestedEmail) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(requestedEmail)) {
       return res.status(400).json({ message: 'Please enter a valid email address' });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() }).lean();
+    const normalizedEmail = requestedEmail.toLowerCase();
+    console.log('[auth-mailer] forgot username request received', {
+      requestedEmail,
+      normalizedEmail
+    });
+
+    const user = await User.findOne({ email: normalizedEmail }).lean();
 
     if (!user) {
-      // For security, don't reveal if email exists
       return res.status(200).json({
         success: true,
         message: 'If an account exists with this email, the username has been sent to your inbox.'
       });
     }
 
-    // Send username in the background so the request does not hang on SMTP delivery.
-    void sendUsernameEmail(user.email, user.username, process.env.FRONTEND_URL || 'http://localhost:5000')
-      .catch((mailError) => {
-        console.error('[auth-mailer] forgot username delivery failed:', mailError.message);
+    try {
+      await sendUsernameEmail(user.email, user.username, getConfiguredFrontendBaseUrl());
+      console.log('[auth-mailer] forgot username email delivered successfully', {
+        recipientEmail: user.email
       });
 
-    res.status(200).json({
-      success: true,
-      message: 'Username has been sent to your registered email address.'
-    });
+      return res.status(200).json({
+        success: true,
+        message: 'Username has been sent to your registered email address.'
+      });
+    } catch (mailError) {
+      console.error('[auth-mailer] forgot username delivery failed', {
+        requestedEmail,
+        recipientEmail: user.email,
+        message: mailError.message,
+        stack: mailError.stack
+      });
+
+      return res.status(502).json({
+        success: false,
+        message: 'We could not send the username email right now. Please try again later.'
+      });
+    }
   } catch (err) {
     return handleMailerError(res, err, 'Failed to send username email');
   }
@@ -291,7 +312,7 @@ exports.forgotPassword = async (req, res) => {
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
+    const baseUrl = getConfiguredFrontendBaseUrl();
     console.log('[auth-mailer] sending password reset email', {
       requestedEmail,
       recipientEmail: user.email,

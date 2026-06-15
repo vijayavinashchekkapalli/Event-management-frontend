@@ -73,7 +73,7 @@ const escapeHtml = (value) => String(value ?? '')
 
 const normalizeFrontendBaseUrl = (value) => {
   const isDevelopment = (process.env.NODE_ENV || 'development') === 'development';
-  const fallback = isDevelopment ? 'http://127.0.0.1:5001' : '';
+  const fallback = isDevelopment ? 'http://127.0.0.1:5001' : (process.env.FRONTEND_URL || process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_URL || 'https://startinno-registration-1.onrender.com');
 
   if (!value || typeof value !== 'string') {
     return fallback;
@@ -503,12 +503,14 @@ const createTransporter = () => {
 
 const transporter = createTransporter();
 
+console.log('[mailer] SMTP user configured:', Boolean(SMTP_USERNAME || EMAIL_USER));
+console.log('[mailer] SMTP password configured:', Boolean(SMTP_PASSWORD || EMAIL_PASS));
 console.log('[mailer] SMTP user:', maskEmail(SMTP_USERNAME || EMAIL_USER));
-console.log('[mailer] SMTP password:', SMTP_PASSWORD || EMAIL_PASS ? 'configured' : 'missing');
 console.log('[mailer] mail provider:', MAIL_PROVIDER);
 console.log('[mailer] SMTP transport:', process.env.SMTP_HOST ? `${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}` : (MAIL_PROVIDER === 'sendgrid' ? 'sendgrid' : 'gmail/smtp.gmail.com'));
 console.log('[mailer] SMTP credentials source:', SMTP_USERNAME === EMAIL_USER && (SMTP_PASSWORD === EMAIL_PASS || !SMTP_PASSWORD) ? 'EMAIL_USER/EMAIL_PASS' : 'SMTP_USER/SMTP_PASS');
 console.log('[mailer] Gmail app password guidance:', SMTP_HOST.includes('gmail') ? 'Ensure EMAIL_PASS or SMTP_PASS is a Gmail app password, not your normal Gmail password.' : 'Using custom SMTP provider.');
+console.log('[mailer] frontend base URL:', normalizeFrontendBaseUrl(process.env.FRONTEND_URL || process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_URL));
 
 const getSender = () => {
   if (!MAIL_FROM || MAIL_FROM === 'undefined') return 'startinnosolutions@gmail.com';
